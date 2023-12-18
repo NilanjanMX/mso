@@ -1,0 +1,1017 @@
+@extends('layouts.frontend')
+
+@section('js_after')
+    <script>
+        $("#is_client").click( function(){
+            if( $(this).is(':checked') ){
+                $('input[name="clientname"]').prop("readonly", false);
+            }else {
+                $('input[name="clientname"]').prop("readonly", true);
+            }
+        });
+        $("#is_note").click( function(){
+            if( $(this).is(':checked') ){
+                $('textarea[name="note"]').prop("readonly", false);
+            }else {
+                $('textarea[name="note"]').prop("readonly", true);
+            }
+        });
+        
+        function changeNote(){
+            var note = document.getElementById('note').value;
+            
+            document.getElementById('note_total_count').innerHTML = note.length;
+        }
+        $(document).on("keyup",".calme1",function(){
+            if($("#debt").val()!="")
+            {
+                var debt=$("#debt").val();
+            }else{
+                var debt=0;
+            }
+
+            if($("#balance").val()!="")
+            {
+                var balance=$("#balance").val();
+            }else{
+                var balance=0;
+            }
+
+            if($("#equity").val()!="")
+            {
+                var equity=$("#equity").val();
+            }else{
+                var equity=0;
+            }
+            
+            var totla_val=parseFloat(debt)+parseFloat(balance)+parseFloat(equity);
+
+            $("#total1").val(totla_val.toFixed(2));
+
+
+        });
+
+        $(document).on("keyup",".calme2",function(){
+            if($("#debt").val()!="")
+            {
+                var debt=$("#debt").val();
+            }else{
+                var debt=0;
+            }
+
+            if($("#balance").val()!="")
+            {
+                var balance=$("#balance").val();
+            }else{
+                var balance=0;
+            }
+
+            if($("#equity").val()!="")
+            {
+                var equity=$("#equity").val();
+            }else{
+                var equity=0;
+            }
+
+            if($("#debt2").val()!="")
+            {
+                var debt2=$("#debt2").val();
+            }else{
+                var debt2=0;
+            }
+
+            if($("#balance2").val()!="")
+            {
+                var balance2=$("#balance2").val();
+            }else{
+                var balance2=0;
+            }
+
+            if($("#equity2").val()!="")
+            {
+                var equity2=$("#equity2").val();
+            }else{
+                var equity2=0;
+            }
+            
+            var totla_val2=((parseFloat(debt)/100)*parseFloat(debt2))+((parseFloat(balance)/100)*parseFloat(balance2))+((parseFloat(equity)/100)*parseFloat(equity2));
+
+            $("#total2").val(totla_val2.toFixed(2));
+
+            if($("#initial_investment").val()!="")
+            {
+                var t9=$("#initial_investment").val();
+            }else{
+                alert("Please insert Initial investment");
+                $("#initial_investment").focus();
+                var t9=0;
+            }
+
+            if($("#deferment_period").val()!="")
+            {
+                var t10=$("#deferment_period").val();
+            }else{
+                alert("Please insert Deferment Period");
+                $("#deferment_period").focus();
+                var t10=0;
+            }
+
+            var au11=t9*(parseFloat(debt)/100);
+            var au12=t9*(parseFloat(balance)/100);
+            var au13=t9*(parseFloat(equity)/100);
+
+            var av11=au11*Math.pow(1+(parseFloat(debt2)/100),t10);
+            var av12=au12*Math.pow(1+(parseFloat(balance2)/100),t10);
+            var av13=au13*Math.pow(1+(parseFloat(equity2)/100),t10);
+
+            var total_sum=parseFloat(av11)+parseFloat(av12)+parseFloat(av13);
+            
+            $("#fund_value").val(total_sum.toFixed(2));
+            $("#fund_value_dis").val(total_sum.toFixed(0));
+            
+
+        });
+
+        $(".fixed_deposit_chk").click( function(){
+            if( $(this).val()=='Deferred_Annuity'){
+                $('#deferred_annuity_box').css("display", "block");
+            }else {
+                $('#deferred_annuity_box').css("display", "none");;
+            }
+        });
+
+        $("#is_client").click( function(){
+            if( $(this).is(':checked') ){
+                $('input[name="clientname"]').prop("readonly", false);
+            }else {
+                $('input[name="clientname"]').prop("readonly", true);
+            }
+        });
+
+        
+        $(document).on("keyup","#swp_period",function(){
+
+            var radioValue = $("input[name='annuity']:checked").val();
+            if(radioValue=='Immediate_Annuity')
+            {
+                var aw18=$("#initial_investment").val()*$("#debt_fund").val()/100;
+                var aw19=Math.pow(1+($("#annual_withdrawal_precent_investment").val()/100),(1/12))-1;
+                var aw20=$("#monthly_withdrawal_amount").val();
+                var aw21=Math.pow((1-(aw18*aw19/aw20)),-1);
+                var aw22=1+aw19;
+                var aw23=Math.log(aw21);
+                var aw24=Math.log(aw22);
+                var aw25=aw23/aw24;
+                var aw26=aw25/12;
+                $("#periodic_rebalance_period_val").val(Math.floor(aw26));
+                $("#alert2").text("Please enter a value less than "+Math.floor(aw26)+" Year");
+            }else{
+
+                var aw18=$("#fund_value").val()*$("#debt_fund").val()/100;
+                var aw19=Math.pow(1+($("#annual_withdrawal_precent_investment").val()/100),(1/12))-1;
+                var aw20=$("#monthly_withdrawal_amount").val();
+                var aw21=Math.pow((1-(aw18*aw19/aw20)),-1);
+                var aw22=1+aw19;
+                var aw23=Math.log(aw21);
+                var aw24=Math.log(aw22);
+                var aw25=aw23/aw24;
+                var aw26=aw25/12;
+                $("#periodic_rebalance_period_val").val(Math.floor(aw26));
+                $("#alert2").text("Please enter a value less than "+Math.floor(aw26)+" Year");
+
+            }
+
+        });
+
+        $(document).on("keyup","#annual_withdrawal_precent_investment",function(){
+
+            var radioValue = $("input[name='annuity']:checked").val();
+
+            if(radioValue=='Immediate_Annuity')
+            {
+
+            if($("#initial_investment").val()=="")
+            {
+                $(this).val('');
+                alert('Please insert Initial Investment');
+                $("#initial_investment").focus();
+            }else{
+                var val1=1+($(this).val()/100);
+                var val2=1/12;
+                var val3=Math.pow(val1, val2)-1;
+                var val4=$("#initial_investment").val()*val3;
+                //alert();
+                $("#monthly_withdrawal_amount").val(Math.floor(val4));
+                $("#monthly_withdrawal_amount_org").val(val4);
+                
+                var val1q=1+($(this).val()/100);
+                var val2q=1/4;
+                var val3q=Math.pow(val1q, val2q)-1;
+                var val4q=$("#initial_investment").val()*val3q;
+                //alert();
+                $("#monthly_withdrawal_amount2").val(Math.floor(val4q));
+                $("#monthly_withdrawal_amount2_org").val(val4q);
+
+                var val1h=1+($(this).val()/100);
+                var val2h=1/2;
+                var val3h=Math.pow(val1h, val2h)-1;
+                var val4h=$("#initial_investment").val()*val3h;
+                //alert();
+                $("#monthly_withdrawal_amount3").val(Math.floor(val4h));
+                $("#monthly_withdrawal_amount3_org").val(val4h);
+
+                var val1y=1+($(this).val()/100);
+                var val2y=1/1;
+                var val3y=Math.pow(val1y, val2y)-1;
+                var val4y=$("#initial_investment").val()*val3y;
+                //alert();
+                $("#monthly_withdrawal_amount4").val(Math.floor(val4y));
+                $("#monthly_withdrawal_amount4_org").val(val4y);
+
+            }
+        }else{
+
+            if($("#fund_value").val()=="")
+            {
+                $(this).val('');
+                alert('Please insert above fields!');
+            }else{
+                var val1=1+($(this).val()/100);
+                var val2=1/12;
+                var val3=Math.pow(val1, val2)-1;
+                var val4=$("#fund_value").val()*val3;
+                //alert();
+                $("#monthly_withdrawal_amount").val(Math.floor(val4));
+                $("#monthly_withdrawal_amount_org").val(val4);
+                
+                var val1q=1+($(this).val()/100);
+                var val2q=1/4;
+                var val3q=Math.pow(val1q, val2q)-1;
+                var val4q=$("#fund_value").val()*val3q;
+                //alert();
+                $("#monthly_withdrawal_amount2").val(Math.floor(val4q));
+                $("#monthly_withdrawal_amount2_org").val(val4q);
+
+                var val1h=1+($(this).val()/100);
+                var val2h=1/2;
+                var val3h=Math.pow(val1h, val2h)-1;
+                var val4h=$("#fund_value").val()*val3h;
+                //alert();
+                $("#monthly_withdrawal_amount3").val(Math.floor(val4h));
+                $("#monthly_withdrawal_amount3_org").val(val4h);
+
+                var val1y=1+($(this).val()/100);
+                var val2y=1/1;
+                var val3y=Math.pow(val1y, val2y)-1;
+                var val4y=$("#fund_value").val()*val3y;
+                //alert();
+                $("#monthly_withdrawal_amount4").val(Math.floor(val4y));
+                $("#monthly_withdrawal_amount4_org").val(val4y);
+                
+            }
+
+        }
+            
+        });
+
+        $(document).on("keyup","#debt_fund",function(){
+
+            if($("#expected_return_debt_fund").val()=="")
+            {
+                $(this).val('');
+                alert('Please insert Expected Return (Debt Fund)');
+                $("#expected_return_debt_fund").focus();
+            }else if($("#expected_return_balance_fund").val()=="")
+            {
+                $(this).val('');
+                alert('Expected Return (Balance Fund)');
+                $("#expected_return_balance_fund").focus();
+            }else{
+                var t21=100-$(this).val();
+                var af21=($(this).val()/100*$("#expected_return_debt_fund").val())+(t21/100*$("#expected_return_balance_fund").val());
+                $("#balance_fund").val(t21.toFixed(2));
+                $("#exp_portfolio_return").val(af21.toFixed(2));
+                $("#alert1").text("Please enter a value less than equal to "+af21.toFixed(2)+"%");
+            }
+            
+        });
+        
+    
+
+        $(function() {
+            jQuery.validator.addMethod("twodecimalplaces", function(value, element) {
+                return this.optional(element) || /^\d{0,4}(\.\d{0,2})?$/i.test(value);
+            }, "You must include two decimal places");
+
+            /*jQuery.validator.addMethod("lessThen", function(value, element, param) {
+            var sp="Annual Withdrawal (% of Initial Investment) should be less then or equal to "+jQuery(param).val()+"%";
+            alert(sp);
+            return ( Number(value) <= Number(jQuery(param).val()) );
+            }, "It should be less then or equal to Exp Portfolio Return");*/
+
+            jQuery.validator.addMethod('lessThen', function (value, element, param) {
+                return  Number(value) <= Number(jQuery(param).val());
+            }, function(params, element) {
+                return 'It should be less then or equal to ' + jQuery(params).val() + '%.';
+            });
+
+            jQuery.validator.addMethod('lessThento', function (value, element, param) {
+                return  Number(value) <= Number(jQuery(param).val());
+            }, function(params, element) {
+                return 'Please insert value less then ' + jQuery(params).val() + ' Year.';
+            });
+
+            
+            /*jQuery.validator.addMethod("lessThento", function(value, element, param) {
+            var spx="Please insert value less then to "+jQuery(param).val();
+            alert(spx);
+            return ( Number(value) <= Number(jQuery(param).val()) );
+            }, "Wrong input.");*/
+
+            var validator = $(".js-validate-form").validate({
+                errorElement: "em",
+                errorContainer: $("#warning, #summary"),
+                errorPlacement: function(error, element) {
+                    error.appendTo(element.parent());
+                },
+                rules: {
+                    current_age: {
+                        digits: true,
+                        maxlength: 10,
+                        range: [1, 99]
+                    },
+                    swp_period: {
+                        required: true,
+                        maxlength: 10,
+                        range: [1, 99]
+                    },
+                    initial_investment: {
+                        required: true,
+                        number: true,
+                        range: [100, 9999999999]
+                    },
+                    expected_return_debt_fund: {
+                        required: true,
+                        number: true,
+                        twodecimalplaces: true,
+                        range: [0.01, 8.00]
+                    },
+                    expected_return_balance_fund: {
+                        required: true,
+                        number: true,
+                        twodecimalplaces: true,
+                        range: [0.01, 10.00]
+                    },
+                    annual_withdrawal_precent_investment: {
+                        required: true,
+                        number: true,
+                        lessThen: "#exp_portfolio_return"
+                    },
+                    periodic_rebalance_period: {
+                        required: true,
+                        number: true,
+                        lessThento: "#periodic_rebalance_period_val"
+                    },
+                    debt_fund: {
+                        required: true,
+                        number: true,
+                        range: [50.00, 100.00]
+                    },
+                    deferment_period: {
+                        required: true,
+                        maxlength: 10,
+                        range: [1, 99]
+                    },
+                    debt: {
+                        required: true,
+                        number: true,
+                        range: [0.00, 100.00]
+                    },
+                    debt2: {
+                        required: true,
+                        number: true,
+                        range: [0.00, 100.00]
+                    },
+                    total1: {
+                        required: true,
+                        number: true,
+                        range: [100.00, 100.00]
+                    },
+                },
+                messages:{
+                    current_age: "Please enter a value between 1 and 99",
+                    initial_investment: "Please enter a value between 100 and 9,99,99,99,999.",
+                    expected_return_debt_fund: "Please enter a value between 0.01 - 8.00%.",
+                    expected_return_balance_fund: "Please enter a value between 0.01 - 10.00%.",
+                    total1: "Total maut be 100%."
+                }
+            });
+        });
+    </script>
+    <link rel="stylesheet" href="{{asset('')}}/f/css/calculator.css">
+    
+    @if(old('client')!='')
+        <script>
+            $('input[name="clientname"]').prop("readonly", false);
+        </script>
+    @else
+        <script>
+            $('input[name="clientname"]').prop("readonly", true);
+        </script>
+    @endif
+    @if(old('note')!='')
+        <script>
+            $('textarea[name="note"]').prop("readonly", false);
+        </script>
+    @else
+        <script>
+            $('textarea[name="note"]').prop("readonly", true);
+        </script>
+    @endif
+@endsection
+
+@section('content')
+    <div class="banner">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <h2 class="page-title">CALCULATORS CUM CLIENT PROPOSALS</h2>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <section class="main-sec">
+        <div class="container">
+            <div class="row">
+                @include('frontend.calculators.left_sidebar') 
+                <div class="col-md-12">
+                    <h3 class="smalllineHeading">SWP Rebalance Calculator</h3>
+                    @include('frontend.calculators.common_bio')
+                    <br>
+                    <form class="js-validate-form" action="{{route('frontend.swp_debt_balanc_fund_calculator_output')}}" method="post">
+                        <div class="card sip-calculator singleLineHolder calculatorFormShape">
+                            @csrf
+
+                             <div class="form-group row">
+                                <label class="col-sm-5 col-form-label"></label>
+                                <div class="col-sm-7">
+                                    
+                                    <div class="form-check form-check-inline">
+                                        <!--<input class="form-check-input fixed_deposit_chk" type="radio" name="annuity"  value="Immediate_Annuity" @if(old('annuity')=='Immediate_Annuity' || old('annuity')!='Deferred_Annuity') checked  @endif>-->
+                                        <!--<label class="form-check-label" for="inlineRadio1">Immediate Annuity</label>-->
+                                        
+                                        <label class="checkLinecontainer" for="Immediate_Annuity">Immediate Annuity
+                                            <input class="form-check-input fixed_deposit_chk" id="Immediate_Annuity" type="radio" name="annuity"  value="Immediate_Annuity" @if(old('annuity')=='Immediate_Annuity' || old('annuity')!='Deferred_Annuity') checked  @endif>
+                                            <span class="checkmark"></span>
+                                        </label> 
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <!--<input class="form-check-input fixed_deposit_chk" type="radio" name="annuity" value="Deferred_Annuity" @if(old('annuity')=='Deferred_Annuity') checked  @endif >-->
+                                        <!--<label class="form-check-label" for="inlineRadio2">Deferred Annuity</label>-->
+                                        
+                                        <label class="checkLinecontainer" for="Deferred_Annuity">Deferred Annuity
+                                            <input class="form-check-input fixed_deposit_chk" id="Deferred_Annuity" type="radio" name="annuity" value="Deferred_Annuity" @if(old('annuity')=='Deferred_Annuity') checked  @endif >
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-5 col-form-label">Current Age (Optional)</label>
+                                <div class="col-sm-7">
+                                    <input type="text" class="form-control maxtwodigit {{ $errors->has('current_age') ? ' is-invalid' : '' }}" name="current_age" value="{{old('current_age')}}" maxlength="10" >
+                                    <div class="cal-icon">
+                                        Yr
+                                    </div>
+                                    @if ($errors->has('current_age'))
+                                        <div class="invalid-feedback" role="alert">
+                                            <strong>{{ $errors->first('current_age') }}</strong>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-5 col-form-label">Initial Investment</label>
+                                <div class="col-sm-7">
+                                    <input type="text" id="initial_investment" class="form-control number {{ $errors->has('initial_investment') ? ' is-invalid' : '' }}" name="initial_investment" value="{{old('initial_investment')}}" >
+                                    <div class="cal-icon">
+                                        ₹
+                                    </div>
+                                    @if ($errors->has('initial_investment'))
+                                        <div class="invalid-feedback" role="alert">
+                                            <strong>{{ $errors->first('initial_investment') }}</strong>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                            <div id="deferred_annuity_box" style="display:none;">
+
+                                <div class="form-group row">
+                                    <label class="col-sm-5 col-form-label">Deferment Period</label>
+                                    <div class="col-sm-7">
+                                        <input type="text" id="deferment_period" class="form-control {{ $errors->has('deferment_period') ? ' is-invalid' : '' }}" name="deferment_period" value="{{old('deferment_period')}}" maxlength="10" >
+                                        <div class="cal-icon">
+                                            Yrs
+                                        </div>
+                                        @if ($errors->has('deferment_period'))
+                                            <div class="invalid-feedback" role="alert">
+                                                <strong>{{ $errors->first('deferment_period') }}</strong>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <div class="col-sm-12">
+                                        <h5 class="text-muted"><strong>DEFERMENT PERIOD:</strong></h5>
+                                        <h6 class="text-muted titleBlueUnderline"><strong>Select Asset Allocation</strong></h6>
+                                    </div>
+                                </div>
+
+                                <div class="equity_fund_box">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="form-group row">
+                                            <label class="col-sm-7 col-form-label">Debt</label>
+                                            <div class="col-sm-5">
+                                                <input type="text" class="calme1 form-control pr-2 mr-1 number {{ $errors->has('debt') ? ' is-invalid' : '' }}" name="debt" id="debt" value="{{old('debt')}}" >
+                                                <div class="cal-icon" style="width:33px;">
+                                                    %
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group row">
+                                            <label class="col-sm-7 col-form-label">Balance</label>
+                                            <div class="col-sm-5">
+                                                <input type="text" class="calme1 form-control pr-2 mr-1 number {{ $errors->has('balance') ? ' is-invalid' : '' }}" name="balance" id="balance" value="{{old('balance')}}" >
+                                                <div class="cal-icon" style="width:33px;">
+                                                    %
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                     <div class="col-md-3">
+                                        <div class="form-group row">
+                                            <label class="col-sm-7 col-form-label">Equity</label>
+                                            <div class="col-sm-5">
+                                                <input type="text" class="calme1 form-control pr-2 mr-1 number {{ $errors->has('equity') ? ' is-invalid' : '' }}" name="equity" id="equity" value="{{old('equity')}}" >
+                                                <div class="cal-icon" style="width:33px;">
+                                                    %
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group row">
+                                            <label class="col-sm-5 col-form-label">Total</label>
+                                            <div class="col-sm-7">
+                                                <input readonly type="text" class="form-control pr-2 mr-1 number {{ $errors->has('total1') ? ' is-invalid' : '' }}" name="total1" id="total1" value="{{old('total1')}}" >
+                                                <div class="cal-icon" style="width:33px;">
+                                                    %
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                    <div class="col-sm-12">
+                                        <h6 class="text-muted titleBlueUnderline"><strong>Expected Rate of Return</strong></h6>
+                                    </div>
+                            </div>
+
+                            <div class="equity_fund_box">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="form-group row">
+                                            <label class="col-sm-7 col-form-label">Debt</label>
+                                            <div class="col-sm-5">
+                                                <input type="text" class="calme2 form-control pr-2 mr-1 number {{ $errors->has('debt2') ? ' is-invalid' : '' }}" name="debt2" id="debt2" value="{{old('debt2')}}" >
+                                                <div class="cal-icon" style="width:33px;">
+                                                    %
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group row">
+                                            <label class="col-sm-7 col-form-label">Balance</label>
+                                            <div class="col-sm-5">
+                                                <input type="text" class="calme2 form-control pr-2 mr-1 number {{ $errors->has('balance2') ? ' is-invalid' : '' }}" name="balance2" id="balance2" value="{{old('balance2')}}" >
+                                                <div class="cal-icon" style="width:33px;">
+                                                    %
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                     <div class="col-md-3">
+                                        <div class="form-group row">
+                                            <label class="col-sm-7 col-form-label">Equity</label>
+                                            <div class="col-sm-5">
+                                                <input type="text" class="calme2 form-control pr-2 mr-1 number {{ $errors->has('equity2') ? ' is-invalid' : '' }}" name="equity2" id="equity2" value="{{old('equity2')}}" >
+                                                <div class="cal-icon" style="width:33px;">
+                                                    %
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group row">
+                                            <label class="col-sm-5 col-form-label">Total</label>
+                                            <div class="col-sm-7">
+                                                <input readonly type="text" class="form-control pr-2 mr-1 number {{ $errors->has('total2') ? ' is-invalid' : '' }}" name="total2" id="total2" value="{{old('total2')}}" >
+                                                <div class="cal-icon" style="width:33px;">
+                                                    %
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label class="col-sm-5 col-form-label">Fund Value (End of Deferment Period)</label>
+                                <div class="col-sm-7">
+                                    <input readonly type="text" id="fund_value_dis" class="form-control number {{ $errors->has('fund_value_dis') ? ' is-invalid' : '' }}" name="fund_value_dis" value="{{old('fund_value_dis')}}" >
+
+                                    <input readonly type="hidden" id="fund_value" class="form-control number {{ $errors->has('fund_value') ? ' is-invalid' : '' }}" name="fund_value" value="{{old('fund_value')}}" >
+                                    <div class="cal-icon">
+                                        ₹
+                                    </div>
+                                    @if ($errors->has('fund_value'))
+                                        <div class="invalid-feedback" role="alert">
+                                            <strong>{{ $errors->first('fund_value') }}</strong>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+
+                            </div>
+
+
+                            <div class="form-group row">
+                                    <div class="col-sm-12">
+                                        <h5 class="text-muted"><strong>DISTRIBUTION PERIOD: </strong></h5>
+                                        <h6 class="text-muted titleBlueUnderline"><strong>Expected Rate of Return </strong></h6>
+                                    </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="form-group row">
+                                        <label class="col-sm-5 col-form-label">Debt</label>
+                                        <div class="col-sm-7">
+                                            <input type="text" id="expected_return_debt_fund" class="form-control {{ $errors->has('expected_return_debt_fund') ? ' is-invalid' : '' }}" name="expected_return_debt_fund" value="{{old('expected_return_debt_fund')}}"  >
+                                            <div class="cal-icon">
+                                                %
+                                            </div>
+                                            <strong>Please enter a value between 0.00 - 8.00%</strong>
+                                            @if ($errors->has('expected_return_debt_fund'))
+                                                <div class="invalid-feedback" role="alert">
+                                                    <strong>{{ $errors->first('expected_return_debt_fund') }}</strong>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-6">
+                                    <div class="form-group row">
+                                        <label class="col-sm-5 col-form-label">Balance</label>
+                                        <div class="col-sm-7">
+                                            <input type="text" id="expected_return_balance_fund" class="form-control number {{ $errors->has('expected_return_balance_fund') ? ' is-invalid' : '' }}" name="expected_return_balance_fund" value="{{old('expected_return_balance_fund')}}" >
+                                            <div class="cal-icon">
+                                                %
+                                            </div>
+                                            <strong>Please enter a value between 0.00 - 10.00%</strong>
+                                            @if ($errors->has('expected_return_balance_fund'))
+                                                <div class="invalid-feedback" role="alert">
+                                                    <strong>{{ $errors->first('expected_return_balance_fund') }}</strong>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>   
+                            </div>
+                            
+                            <div class="form-group row">
+                                    <div class="col-sm-12">
+                                        <h6 class="text-muted titleBlueUnderline"><strong>Select Asset Allocation</strong></h6>
+                                    </div>
+                            </div>
+
+                            <div class="equity_fund_box">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group row">
+                                            <label class="col-sm-7 col-form-label">Debt Fund</label>
+                                            <div class="col-sm-5">
+                                                <input type="text" class="form-control pr-2 mr-1 number {{ $errors->has('debt_fund') ? ' is-invalid' : '' }}" name="debt_fund" id="debt_fund" value="{{old('debt_fund')}}" >
+                                                <div class="cal-icon">
+                                                    %
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group row">
+                                            <label class="col-sm-7 col-form-label">Balance Fund</label>
+                                            <div class="col-sm-5">
+                                                <input readonly type="text" class="form-control pr-2 mr-1 number {{ $errors->has('balance_fund') ? ' is-invalid' : '' }}" name="balance_fund" id="balance_fund" value="{{old('balance_fund')}}" >
+                                                <div class="cal-icon">
+                                                    %
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                     <div class="col-md-4">
+                                        <div class="form-group row">
+                                            <label class="col-sm-7 col-form-label">Exp Portfolio Return</label>
+                                            <div class="col-sm-5">
+                                                <input readonly type="text" class="form-control pr-2 mr-1 number {{ $errors->has('exp_portfolio_return') ? ' is-invalid' : '' }}" name="exp_portfolio_return" id="exp_portfolio_return" value="{{old('exp_portfolio_return')}}" >
+                                                <div class="cal-icon">
+                                                    %
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+
+                             
+
+                             <div class="form-group row">
+                                <label class="col-sm-5 col-form-label">Annual Withdrawal (% of Accumulated Corpus)</label>
+                                <div class="col-sm-7">
+                                    <input type="text" id="annual_withdrawal_precent_investment" class="form-control number {{ $errors->has('annual_withdrawal_precent_investment') ? ' is-invalid' : '' }}" name="annual_withdrawal_precent_investment" value="{{old('annual_withdrawal_precent_investment')}}" >
+                                    <div class="cal-icon">
+                                        %
+                                    </div>
+                                    <strong id="alert1"></strong>
+                                    @if ($errors->has('annual_withdrawal_precent_investment'))
+                                        <div class="invalid-feedback" role="alert">
+                                            <strong>{{ $errors->first('annual_withdrawal_precent_investment') }}</strong>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <!-- <div class="form-group row">
+                                <label class="col-sm-5 col-form-label">Monthly Withdrawal Amount</label>
+                                <div class="col-sm-7">
+                                    <input readonly type="text" id="monthly_withdrawal_amount" class="form-control number {{ $errors->has('monthly_withdrawal_amount') ? ' is-invalid' : '' }}" name="monthly_withdrawal_amount" value="{{old('monthly_withdrawal_amount')}}" >
+                                     <div class="cal-icon">
+                                        ₹
+                                    </div>
+                                    @if ($errors->has('monthly_withdrawal_amount'))
+                                        <div class="invalid-feedback" role="alert">
+                                            <strong>{{ $errors->first('monthly_withdrawal_amount') }}</strong>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div> -->
+
+                            <div class="form-group row">
+                                    <div class="col-sm-12">
+                                        <h6 class="text-muted titleBlueUnderline"><strong>Select SWP (in ₹):</strong></h6>
+                                    </div>
+                            </div>
+
+                            
+
+                            <div class="equity_fund_box SWPPeriodRadio">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="form-group row">
+                                            <!-- <label class="col-sm-7 col-form-label">Monthly</label> -->
+                                    <div class="form-check form-check-inline">
+                                        <!--<input class="form-check-input" type="radio" name="withdrawal"  value="Monthly" @if(old('withdrawal')=='Monthly' || old('withdrawal')!='Monthly') checked  @endif>-->
+                                        <!--<label class="form-check-label" for="inlineRadio1">Monthly</label>-->
+                                        
+                                        <label class="checkLinecontainer mb-0" for="Monthly">Monthly
+                                            <input class="form-check-input" type="radio" name="withdrawal" id="Monthly" value="Monthly" @if(old('withdrawal')=='Monthly' || old('withdrawal')!='Monthly') checked  @endif>
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                            <div class="col-sm-8">
+                                                <input readonly type="text" class="form-control pr-2 mr-1 number {{ $errors->has('monthly_withdrawal_amount') ? ' is-invalid' : '' }}" name="monthly_withdrawal_amount_dis" id="monthly_withdrawal_amount" value="{{old('monthly_withdrawal_amount')}}" >
+                                                <input type="hidden" id="monthly_withdrawal_amount_org" name="monthly_withdrawal_amount">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group row">
+                                            <!-- <label class="col-sm-7 col-form-label">Quarterly</label> -->
+                                    <div class="form-check form-check-inline">
+                                        <!--<input class="form-check-input" type="radio" name="withdrawal"  value="Quarterly" @if(old('withdrawal')=='Quarterly') checked  @endif>-->
+                                        <!--<label class="form-check-label" for="inlineRadio1">Quarterly</label>-->
+                                        
+                                        <label class="checkLinecontainer mb-0" for="Quarterly">Quarterly
+                                            <input class="form-check-input" type="radio" name="withdrawal" id="Quarterly" value="Quarterly" @if(old('withdrawal')=='Quarterly') checked  @endif>
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                            <div class="col-sm-8">
+                                                <input readonly type="text" class="form-control pr-2 mr-1 number {{ $errors->has('monthly_withdrawal_amount2') ? ' is-invalid' : '' }}" name="monthly_withdrawal_amount2_dis" id="monthly_withdrawal_amount2" value="{{old('monthly_withdrawal_amount2')}}" >
+                                                <input type="hidden" id="monthly_withdrawal_amount2_org" name="monthly_withdrawal_amount2">
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                     <div class="col-md-3">
+                                        <div class="form-group row">
+                                            <!-- <label class="col-sm-7 col-form-label">Half-Yearly</label> -->
+                                    <div class="form-check form-check-inline">
+                                        <!--<input class="form-check-input" type="radio" name="withdrawal"  value="Half-Yearly" @if(old('withdrawal')=='Half-Yearly') checked  @endif>-->
+                                        <!--<label class="form-check-label" for="inlineRadio1">Half-Yearly</label>-->
+                                        
+                                        <label class="checkLinecontainer mb-0" for="Half-Yearly">Half-Yearly
+                                            <input class="form-check-input" type="radio" name="withdrawal" id="Half-Yearly" value="Half-Yearly" @if(old('withdrawal')=='Half-Yearly') checked  @endif>
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                            <div class="col-sm-8">
+                                                <input readonly type="text" class="form-control pr-2 mr-1 number {{ $errors->has('monthly_withdrawal_amount3') ? ' is-invalid' : '' }}" name="monthly_withdrawal_amount3_dis" id="monthly_withdrawal_amount3" value="{{old('monthly_withdrawal_amount3')}}" >
+                                                <input type="hidden" id="monthly_withdrawal_amount3_org" name="monthly_withdrawal_amount3">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group row">
+                                            <!-- <label class="col-sm-7 col-form-label">Yearly</label> -->
+                                    <div class="form-check form-check-inline">
+                                        <!--<input class="form-check-input" type="radio" name="withdrawal"  value="Yearly" @if(old('withdrawal')=='Yearly') checked  @endif>-->
+                                        <!--<label class="form-check-label" for="inlineRadio1">Yearly</label>-->
+                                        
+                                        <label class="checkLinecontainer mb-0" for="Yearly">Yearly
+                                            <input class="form-check-input" type="radio" name="withdrawal" id="Yearly"  value="Yearly" @if(old('withdrawal')=='Yearly') checked  @endif>
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </div>
+                                            <div class="col-sm-8">
+                                                <input readonly type="text" class="form-control pr-2 mr-1 number {{ $errors->has('monthly_withdrawal_amount4') ? ' is-invalid' : '' }}" name="monthly_withdrawal_amount4_dis" id="monthly_withdrawal_amount4" value="{{old('monthly_withdrawal_amount4')}}" >
+                                                <input type="hidden" id="monthly_withdrawal_amount4_org" name="monthly_withdrawal_amount4">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                            
+                            <div class="form-group row">
+                                <label class="col-sm-5 col-form-label">SWP Period</label>
+                                <div class="col-sm-7">
+                                    <input type="text" id="swp_period" class="form-control number {{ $errors->has('swp_period') ? ' is-invalid' : '' }}" name="swp_period" value="{{old('swp_period')}}" >
+                                     <div class="cal-icon">
+                                        Yrs
+                                    </div>
+                                    @if ($errors->has('swp_period'))
+                                        <div class="invalid-feedback" role="alert">
+                                            <strong>{{ $errors->first('swp_period') }}</strong>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label class="col-sm-5 col-form-label">Periodic Rebalance Period</label>
+                                <div class="col-sm-7">
+                                    <input type="text" class="form-control number {{ $errors->has('periodic_rebalance_period') ? ' is-invalid' : '' }}" name="periodic_rebalance_period" value="{{old('periodic_rebalance_period')}}" >
+                                    <input type="hidden" name="periodic_rebalance_period_val" id="periodic_rebalance_period_val" value="{{old('periodic_rebalance_period_val')}}">
+                                     <div class="cal-icon">
+                                        Yrs
+                                    </div>
+                                    <strong id="alert2"></strong>
+                                    @if ($errors->has('periodic_rebalance_period'))
+                                        <div class="invalid-feedback" role="alert">
+                                            <strong>{{ $errors->first('periodic_rebalance_period') }}</strong>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+
+
+                            <!--<div class="form-group row">-->
+                            <!--    <label class="col-sm-5 col-form-label">-->
+                            <!--        <input id="is_client" type="checkbox" name="client" value="1" @if(old('client')=='1') checked  @endif> Add Client Name-->
+                            <!--    </label>-->
+                            <!--    <div class="col-sm-7">-->
+                            <!--        <input type="text" class="form-control {{ $errors->has('clientname') ? ' is-invalid' : '' }}" name="clientname"   value="{{old('clientname')}}" maxlength="30">-->
+                            <!--        <div class="cal-icon">-->
+                            <!--            <i class="fa fa-user"></i>-->
+                            <!--        </div>-->
+                            <!--        @if ($errors->has('clientname'))-->
+                            <!--            <div class="invalid-feedback" role="alert">-->
+                            <!--                <strong>{{ $errors->first('clientname') }}</strong>-->
+                            <!--            </div>-->
+                            <!--        @endif-->
+                            <!--    </div>-->
+                            <!--</div>-->
+                            
+
+                            
+
+                            <!--<div class="form-group row">-->
+
+                            <!--    <div class="offset-5 col-sm-7">-->
+                            <!--        <div class="row">-->
+                            <!--            <div class="col-md-4">-->
+                            <!--                <button type="button" onclick="window.history.go(-1); return false;" class="btn btn-primary btn-round btn-block"><i class="fa fa-angle-left"></i> Back</button>-->
+                            <!--            </div>-->
+                            <!--            <div class="col-md-8">-->
+                            <!--                <button class="btn btn-primary btn-round btn-block">Calculate</button>-->
+                            <!--            </div>-->
+                            <!--        </div>-->
+
+                            <!--    </div>-->
+                            <!--</div>-->
+                        </div>
+                        
+                        <div class="card sip-calculator singleLineHolder calculatorFormShape">
+                            <div class="form-group row">
+                                <div class="col-sm-6 d-flex">
+                                <label class="sqarecontainer" style="margin: 8px 0 0 0;">
+                                    <input id="is_client" type="checkbox" name="client" value="1" @if(isset($form_data) && $form_data['client']=='1') checked  @endif> 
+                                    <span class="checkmark"></span>
+                                </label>
+                                    <input placeholder="Add Client Name" type="text" class="form-control {{ $errors->has('clientname') ? ' is-invalid' : '' }}" name="clientname"   value="{{isset($data['clientname'])?$data['clientname']:''}}" maxlength="30">
+                                    <div class="cal-icon">
+                                        <i class="fa fa-user"></i>
+                                    </div>
+                                    @if ($errors->has('clientname'))
+                                        <div class="invalid-feedback" role="alert">
+                                            <strong>{{ $errors->first('clientname') }}</strong>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                            
+                            <div class="form-group row">
+                                <div class="col-sm-5">
+                                    <label class="sqarecontainer">Add Comments (If any)
+                                        <input id="is_note" type="checkbox" name="is_note" value="1"> 
+                                        <span class="checkmark"></span>
+                                    </label>
+                                </div>
+                                <div class="col-sm-7">
+                                    <textarea class="form-control {{ $errors->has('note') ? ' is-invalid' : '' }}" name="note" rows="2" id="note" style="height: 100px;" maxlength="500" onkeyup="changeNote();"></textarea>
+                                    <div class="text-right charcount"><span id="note_total_count">0</span>/500 characters left.</div>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-5 col-form-label">Get Report</label>
+                                <div class="col-sm-7">
+                                    <div class="form-check form-check-inline">
+                                        <label class="checkLinecontainer">Summary Report
+                                            <input class="form-check-input" type="radio" name="report" id="inlineRadio1" value="summary" @if(isset($data['report']) && $data['report']=='summary') checked  @endif>
+                                            <span class="checkmark"></span>
+                                        </label> 
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <label class="checkLinecontainer">Detailed Report
+                                            <input class="form-check-input" type="radio" name="report" id="inlineRadio2" value="detailed" @if(isset($data['report']) && $data['report']=='summary')  @else checked  @endif >
+                                            <span class="checkmark"></span>
+                                        </label> 
+                                    </div>
+                                </div>
+                            </div>
+                            @include('frontend.calculators.suggested.form')
+                            <div class="form-group row">
+                                
+                                <!-- <div class="offset-1 col-sm-10">
+                                    <div class=" calcBelowBtn">
+                                            <a href="javascript:history.back()" class="btn banner-btn whitebg mx-3">Back</a>
+                                            <button type="button" onclick="location.reload();" class="btn banner-btn whitebg mx-3"> Reset</button>
+                                            <button type="button" onclick="window.history.go(-1); return false;" class="btn btn-primary btn-round btn-block"><i class="fa fa-angle-left"></i> Back</button>
+                                            <button class="btn banner-btn mx-3">Calculate</button>
+                                    </div>
+                                </div> -->
+                                
+                                <div class="offset-1 col-sm-10">
+                                    <div class="calcBelowBtn">
+                                            <button type="button" onclick="window.history.go(-1); return false;" class="btn banner-btn whitebg mx-3"><!-- <i class="fa fa-angle-left"></i> --> Back</button>
+                                            <button type="button" onclick="location.reload();" class="btn banner-btn whitebg mx-3"> Reset</button>
+                                            <button class="btn banner-btn mx-3">Calculate</button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </form>
+                    
+                </div>
+            </div>
+        </div>
+        <!--<div class="btm-shape-prt">-->
+        <!--    <img class="img-fluid" src="{{asset('')}}/f/images/shape2.png" alt="" />-->
+        <!--</div>-->
+    </section>
+
+@endsection

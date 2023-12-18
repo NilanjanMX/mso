@@ -1,0 +1,1932 @@
+@extends('layouts.frontend')
+@section('js_after')
+    <script>
+        jQuery(document).ready(function(){
+            jQuery('#save_cal_btn').click(function(e){
+                e.preventDefault();
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+                    }
+                });
+                var title = jQuery('#save_title').val();
+                if(title.trim()==''){
+                    jQuery('#save_cal_msg').removeClass('alert-success alert-danger');
+                    jQuery('#save_cal_msg').addClass('alert-danger');
+                    jQuery('#save_cal_msg').html('Please Enter Desired Download File Name');
+                }else{
+                    jQuery('#save_cal_msg').removeClass('alert-success alert-danger');
+                    jQuery('#save_cal_msg').html('');
+                    jQuery('#save_title').val('');
+                    jQuery.ajax({
+                        url: "{{ route('frontend.monthlyAnnuityForLumpsumInvestment_save') }}",
+                        method: 'get',
+                        data: {
+                            title: title
+                        },
+                        success: function(result){
+                            jQuery('#save_cal_msg').removeClass('alert-success alert-danger');
+                            jQuery('#save_cal_msg').addClass('alert-success');
+                            jQuery('#save_cal_msg').html('Data Successfully Saved');
+                            setTimeout(function () {
+                                $('#saveOutput').modal('toggle');
+                                jQuery('#save_cal_msg').removeClass('alert-success alert-danger');
+                                jQuery('#save_cal_msg').html('');
+                            },500);
+                            jQuery('.save_only').hide();
+                            jQuery('.view_save_only').show();
+                        }});
+                }
+
+            });
+        });
+    </script>
+    <style>
+        nostyleshow {
+            display: none;
+        }
+    
+        main header{
+            display: none;
+        }
+        table {
+            width: 100%;
+            border-spacing: 0;
+            margin-bottom: 30px;
+        }
+    
+        table th,
+        table td {
+            text-align: center;
+            border: 1px solid #b8b8b8;
+            padding: 5px 20px;
+            font-weight: normal;
+            color: #000;
+        }
+    
+        table {
+            margin: 0;
+        }
+    
+        table th {
+            font-weight: bold;
+            background: #a9f3ff;
+        }
+    
+        .table-bordered th, .table-bordered td{
+            padding: 10px;
+            font-size: 18px;
+        }
+    
+        h1 {
+            font-size: 20px !important;
+            color: #131f55 !important;
+            margin-bottom: 0 !important;
+            margin-top: 15px !important;
+            width: 100%;
+        }
+        .page-break {
+            page-break-after: always;
+        }
+    
+    
+        @page {
+            margin-top: 160px
+        }
+    
+        footer p{
+            display: none;
+        }
+    
+        p{
+            text-align: left;
+        }
+    
+        .watermark{
+            font-size: 60px;
+            color: rgba(0,0,0,0.10);
+            position: absolute;
+            top: 42%;
+            left: 26%;
+            z-index: 1;
+            transform: rotate(-25deg);
+            font-weight: 700;
+            display: none;
+        }
+        main{
+            width: 100% !important;
+        }
+    </style>
+@endsection
+@section('content')
+@php
+        //Annuity Period (Months) T9*12
+        $annuity_period_months = $period*12;
+        //Monthly Rate of Return (1)  (1+T11%)^(1/12)-1
+        if($deferment=='yes')
+        {
+            $av33=$deferment_period*12;
+            $monthly_rate_of_return1 = pow((1+$distribution_phase_interest_rate_1/100),(1/12))-1 ;
+            $av35=pow((1+$accumulation_phase_interest_rate_1/100),(1/12))-1 ;
+            $av39=$initial_investment*pow((1+$av35),$av33); 
+            if (isset($distribution_phase_interest_rate_2)){
+                $av36=pow((1+$accumulation_phase_interest_rate_2/100),(1/12))-1 ; 
+                $av40=$initial_investment*pow((1+$av36),$av33); 
+            }
+        }else{
+            $monthly_rate_of_return1 = pow((1+$interest1/100),(1/12))-1 ;
+        }
+
+        if (isset($expected_inflation_rate)){
+           $av36_inf=pow((1+$expected_inflation_rate/100),(1/12))-1;
+        }
+
+        
+        //PV of Balance Required (1)  T13/(1+AV27)^(AV26)
+        $pv_of_balance_required1 = $balance_required/(1+$monthly_rate_of_return1)**($annuity_period_months);
+        //Balance Available for Annuity (1) T8-AV29
+        $balance_available_for_annuity1 = $initial_investment-$pv_of_balance_required1;
+        //Monthly SWP Amount (1) (AV27*AV31)/(1-(1+AV27)^(-AV26))
+        if($deferment=='yes')
+        {
+            $av43=$av39-$pv_of_balance_required1; 
+
+            if (isset($expected_inflation_rate)){
+                if($distribution_phase_interest_rate_1==$expected_inflation_rate)
+                {
+                    $monthly_annuity_amount1 = $av43*(1+$monthly_rate_of_return1);
+                }else{
+                    $monthly_annuity_amount1 = $av43/((1-((1+$av36_inf)**($annuity_period_months))*((1+$monthly_rate_of_return1)**(-$annuity_period_months)))/($monthly_rate_of_return1-$av36_inf));
+                }
+            }else{
+                $monthly_annuity_amount1 = ($monthly_rate_of_return1*$av43)/(1-(1+$monthly_rate_of_return1)**(-$annuity_period_months));
+            }
+            
+        }else{
+            if (isset($expected_inflation_rate)){
+                if($interest1==$expected_inflation_rate)
+                {
+                    $monthly_annuity_amount1 = $balance_available_for_annuity1*(1+$monthly_rate_of_return1);
+                }else{
+                    $monthly_annuity_amount1 = $balance_available_for_annuity1/((1-((1+$av36_inf)**($annuity_period_months))*((1+$monthly_rate_of_return1)**(-$annuity_period_months)))/($monthly_rate_of_return1-$av36_inf));
+                }
+            }else{
+                $monthly_annuity_amount1 = ($monthly_rate_of_return1*$balance_available_for_annuity1)/(1-(1+$monthly_rate_of_return1)**(-$annuity_period_months));
+            }
+        }
+        if($deferment=='yes')
+        {
+            if (isset($distribution_phase_interest_rate_2)){
+            //Monthly Rate of Return (2)  (1+T12%)^(1/12)-1
+            $monthly_rate_of_return2 = pow((1+$distribution_phase_interest_rate_2/100),(1/12))-1 ;
+            //PV of Balance Required (2)  T13/(1+AV27)^(AV26)
+            $pv_of_balance_required2 = $balance_required/(1+$monthly_rate_of_return2)**($annuity_period_months);
+             //Balance Available for Annuity (2) T8-AV30
+            $balance_available_for_annuity2 = $initial_investment-$pv_of_balance_required2;
+            //Monthly SWP Amount (2) (AV28*AV32)/(1-(1+AV28)^(-AV26))
+            
+            $av44=$av40-$pv_of_balance_required2;
+
+             if (isset($expected_inflation_rate)){
+                 if($distribution_phase_interest_rate_2==$expected_inflation_rate)
+                 {
+                    $monthly_annuity_amount2 = $av44*(1+$monthly_rate_of_return2);
+                 }else{
+                    $monthly_annuity_amount2 = $av44/((1-((1+$av36_inf)**($annuity_period_months))*((1+$monthly_rate_of_return2)**(-$annuity_period_months)))/($monthly_rate_of_return2-$av36_inf));
+                 }
+             }else{
+                $monthly_annuity_amount2 = ($monthly_rate_of_return2*$av44)/(1-(1+$monthly_rate_of_return2)**(-$annuity_period_months));
+             }
+        
+            }
+        }else{
+            if (isset($interest2)){
+            //Monthly Rate of Return (2)  (1+T12%)^(1/12)-1
+            $monthly_rate_of_return2 = pow((1+$interest2/100),(1/12))-1 ;
+            //PV of Balance Required (2)  T13/(1+AV27)^(AV26)
+            $pv_of_balance_required2 = $balance_required/(1+$monthly_rate_of_return2)**($annuity_period_months);
+             //Balance Available for Annuity (2) T8-AV30
+            $balance_available_for_annuity2 = $initial_investment-$pv_of_balance_required2;
+            //Monthly SWP Amount (2) (AV28*AV32)/(1-(1+AV28)^(-AV26))
+                if (isset($expected_inflation_rate)){
+                    if($interest1==$expected_inflation_rate)
+                    {
+                        $monthly_annuity_amount2 = $balance_available_for_annuity2*(1+$monthly_rate_of_return2);
+                    }else{
+                        $monthly_annuity_amount2 = $balance_available_for_annuity2/((1-((1+$av36_inf)**($annuity_period_months))*((1+$monthly_rate_of_return2)**(-$annuity_period_months)))/($monthly_rate_of_return2-$av36_inf));
+                    }
+                }else{
+                    $monthly_annuity_amount2 = ($monthly_rate_of_return2*$balance_available_for_annuity2)/(1-(1+$monthly_rate_of_return2)**(-$annuity_period_months));
+                }
+            }
+        }
+
+    @endphp
+    <div class="banner">
+        <div class="container">
+            {{-- <div class="row">
+                <div class="col-md-12 text-center">
+                    <h2 class="page-title">CALCULATORS CUM CLIENT PROPOSALS</h2>
+                </div>
+            </div> --}}
+        </div>
+    </div>
+    
+    <section  class="main-sec styleApril">
+        <div id="content" class="container">
+            <div class="row">
+                <div class="col-md-10 offset-md-1 text-center">
+                    <div class="outputTableHolder">
+                        <h5 class="midheading">Monthly SWP Calculation @if(isset($clientname)) <br> For {{$clientname?$clientname:''}} @endif</h5>
+                        <div class="roundBorderHolder">
+                            @php
+                            if(isset($current_age) && $current_age>0)
+                            {
+                                $count_sec=$current_age;
+                            }else{
+                                $count_sec=0;
+                            }
+
+                            if(isset($deferment_period) && $deferment_period>0)
+                            {
+                                $dif_sec=$deferment_period;
+                            }else{
+                                $dif_sec=0;
+                            }
+
+                            @endphp
+
+                            <table class="table table-bordered text-center">
+                                <tbody>
+                                @if(isset($current_age) && $current_age>0)
+                                <tr>
+                                    <td>
+                                        <strong>Current Age</strong>
+                                    </td>
+                                    <td colspan="2">
+                                        {{$current_age}} Years
+                                    </td>
+                                </tr>
+                                @endif
+                                <tr>
+                                    <td>
+                                        <strong>Initial Investment</strong>
+                                    </td>
+                                    <td colspan="2">
+                                        ₹ {{custome_money_format($initial_investment)}}
+                                    </td>
+                                </tr>
+                                @if($deferment=='yes')
+                                    <tr>
+                                        <td>
+                                            <strong>Deferment Period</strong>
+                                        </td>
+                                        <td colspan="2">
+                                            {{$deferment_period?$deferment_period:0}} Years
+                                        </td>
+                                    </tr>
+                                @endif
+                                <tr>
+                                    <td>
+                                        <strong>SWP Period</strong>
+                                    </td>
+                                    <td colspan="2">
+                                        {{$period?$period:0}} Years
+                                    </td>
+                                </tr>
+                                
+
+                                @if(isset($expected_inflation_rate) && $expected_inflation_rate>0)
+                                    <tr>
+                                        <td>
+                                            <strong>Expected Inflation Rate</strong>
+                                        </td>
+                                        <td colspan="2">
+                                        {{$expected_inflation_rate?number_format($expected_inflation_rate, 2, '.', ''):0}} %
+                                        </td>
+                                    </tr>
+                                    @if($include_taxation=='yes')
+                                    <tr>
+                                        <td rowspan="2" style="vertical-align: middle;">
+                                            <strong>Capital Gain Tax Rate</strong>
+                                        </td>
+                                        <td>
+                                            <strong>Short Term</strong>
+                                        </td>
+                                        <td>
+                                            <strong>Long Term</strong>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            {{$applicable_short_term_tax_rate?number_format($applicable_short_term_tax_rate, 2, '.', ''):0}} %
+                                        </td>
+                                        <td>
+                                            {{$applicable_long_term_tax_rate?number_format($applicable_long_term_tax_rate, 2, '.', ''):0}} %
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>Expected Indexation Rate</strong>
+                                        </td>
+                                        <td colspan="2">
+                                        {{$assumed_inflation_rate_for_indexation?number_format($assumed_inflation_rate_for_indexation, 2, '.', ''):0}} %
+                                        </td>
+                                    </tr>
+                                    @endif
+
+                                    @else
+
+                                    @if($include_taxation=='yes')
+                                    <tr>
+                                        <td>
+                                            <strong>Assumed Indexation Rate</strong>
+                                        </td>
+                                        <td colspan="2">
+                                        {{$assumed_inflation_rate_for_indexation?number_format($assumed_inflation_rate_for_indexation, 2, '.', ''):0}} %
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td rowspan="2" style="vertical-align: middle;">
+                                            <strong>Capital Gain Tax Rate</strong>
+                                        </td>
+                                        <td>
+                                            <strong>Short Term</strong>
+                                        </td>
+                                        <td>
+                                            <strong>Long Term</strong>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            {{$applicable_short_term_tax_rate?number_format($applicable_short_term_tax_rate, 2, '.', ''):0}} %
+                                        </td>
+                                        <td>
+                                            {{$applicable_long_term_tax_rate?number_format($applicable_long_term_tax_rate, 2, '.', ''):0}} %
+                                        </td>
+                                    </tr>
+                                    @endif
+
+                                @endif
+                                
+                                @if(isset($balance_required) && $balance_required == 0)
+                                    <tr>
+                                        <td>
+                                            <strong>Balance Required</strong>
+                                        </td>
+                                        <td colspan="2">
+                                            ₹ {{custome_money_format($balance_required)}}
+                                        </td>
+                                    </tr>
+                                @endif
+                                </tbody>
+                            </table>
+
+                            @if($deferment=='yes')
+                            <h1 style="color: #131f55;font-size:22px;margin-bottom:20px;text-align: center;">Accumulated Corpus @if($deferment=='yes') @if(!isset($accumulation_phase_interest_rate_2)) @ {{$accumulation_phase_interest_rate_1?number_format($accumulation_phase_interest_rate_1, 2, '.', ''):0}} % @endif @else @if(!isset($interest2)) @ {{$interest1?number_format($interest1, 2, '.', ''):0}} % @endif @endif</h1>
+                            
+                            @if(isset($accumulation_phase_interest_rate_2))
+                            <table class="table table-bordered text-center">
+                                <tbody>
+                                
+                                    <tr>
+                                        <td>
+                                            Scenario 1 @ {{$accumulation_phase_interest_rate_1?number_format($accumulation_phase_interest_rate_1, 2, '.', ''):0}} %
+                                        </td>
+                                        @if(isset($accumulation_phase_interest_rate_2))
+                                        <td>
+                                            Scenario 2 @ {{$accumulation_phase_interest_rate_2?number_format($accumulation_phase_interest_rate_2, 2, '.', ''):0}} %
+                                        </td>
+                                        @endif
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>₹ {{custome_money_format($av39)}} </strong>
+                                        </td>
+                                        @if(isset($accumulation_phase_interest_rate_2))
+                                        <td>
+                                            <strong>₹ {{custome_money_format($av40)}} </strong>
+                                        </td>
+                                        @endif
+                                    </tr>
+                                
+                                </tbody></table>
+                                @else
+                                <h2 style="color: #131f55;font-size:22px;margin-bottom:5px;">₹ {{custome_money_format($av39)}}</h2>
+                                @endif
+
+                            @endif
+
+                            @if($include_inflation=='yes')
+
+                                <h1 style="color: #131f55;font-size:22px;margin-bottom:20px;text-align: center;">First Year Average Monthly SWP @if($deferment=='yes') @if(!isset($distribution_phase_interest_rate_2)) @ {{$distribution_phase_interest_rate_1?number_format($distribution_phase_interest_rate_1, 2, '.', ''):0}} % @endif @else @if(!isset($interest2)) @ {{$interest1?number_format($interest1, 2, '.', ''):0}} % @endif @endif</h1>
+
+                            @else
+
+                            <h1 style="color: #131f55;font-size:22px;margin-bottom:20px;text-align: center;">Monthly SWP Amount @if($deferment=='yes') @if(!isset($distribution_phase_interest_rate_2)) @ {{$distribution_phase_interest_rate_1?number_format($distribution_phase_interest_rate_1, 2, '.', ''):0}} % @endif @else @if(!isset($interest2)) @ {{$interest1?number_format($interest1, 2, '.', ''):0}} % @endif @endif
+                            </h1>
+                            
+                            @endif
+
+                            @if($deferment=='no')
+                                @if(isset($interest2))
+                                    <table class="table table-bordered text-center">
+                                        <tbody>
+                                        
+                                            <tr>
+                                                <td>
+                                                    Scenario 1 @ {{$interest1?number_format($interest1, 2, '.', ''):0}} %
+                                                </td>
+                                                <td>
+                                                    Scenario 2 @ {{$interest2?number_format($interest2, 2, '.', ''):0}} %
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                @if($include_inflation=='yes')
+                                                @php
+                                                
+                                                $av43_new=($monthly_annuity_amount1*(1-(1+$av36_inf)**12)/(1-(1+$av36_inf)))/12;
+                                            
+                                                @endphp
+                                                <td>
+                                                    <strong>₹ {{custome_money_format($av43_new)}}</strong>
+                                                </td>
+                                                @else
+                                                <td>
+                                                    <strong>₹ {{custome_money_format($monthly_annuity_amount1)}} </strong>
+                                                </td>
+                                                @endif
+                                                @if($include_inflation=='yes')
+                                                @php
+                                                $av43_new2=($monthly_annuity_amount2*(1-(1+$av36_inf)**12)/(1-(1+$av36_inf)))/12;
+                                                @endphp
+                                                <td>
+                                                    <strong>₹ {{custome_money_format($av43_new2)}}</strong>
+                                                </td>
+                                                @else
+                                                <td>
+                                                    <strong>₹ {{custome_money_format($monthly_annuity_amount2)}} </strong>
+                                                </td>
+                                                @endif
+                                                
+                                            </tr>
+                                        
+                                        </tbody>
+                                    </table>
+
+                                @else
+
+                                    @if($include_inflation=='yes')
+                                        @php
+                                        $av43_new=($monthly_annuity_amount1*(1-(1+$av36_inf)**12)/(1-(1+$av36_inf)))/12;
+                                        @endphp
+                                        <h2 style="color: #131f55;font-size:22px;marginn-bottom:5px;">₹ {{custome_money_format($av43_new)}}</h2>
+                                    @else
+                                        <h2 style="color: #131f55;font-size:22px;marginn-bottom:5px;">₹ {{custome_money_format($monthly_annuity_amount1)}}</h2>
+                                    @endif
+
+                                @endif
+                            @else
+                            @if(isset($distribution_phase_interest_rate_2))
+                                <table class="table table-bordered text-center">
+                                <tbody>
+                                
+                                    <tr>
+                                        <td>
+                                            Scenario 1 @ {{$distribution_phase_interest_rate_1?number_format($distribution_phase_interest_rate_1, 2, '.', ''):0}} %
+                                        </td>
+                                        @if(isset($distribution_phase_interest_rate_2))
+                                        <td>
+                                            Scenario 2 @ {{$distribution_phase_interest_rate_2?number_format($distribution_phase_interest_rate_2, 2, '.', ''):0}} %
+                                        </td>
+                                        @endif
+                                    </tr>
+                                    <tr>
+                                        @if($include_inflation=='yes')
+                                        @php
+                                        $av43_new=($monthly_annuity_amount1*(1-(1+$av36_inf)**12)/(1-(1+$av36_inf)))/12;
+                                        @endphp
+                                        <td>
+                                            <strong>₹ {{custome_money_format($av43_new)}} </strong>
+                                        </td>
+                                        @else
+                                        <td>
+                                            <strong>₹ {{custome_money_format($monthly_annuity_amount1)}} </strong>
+                                        </td>
+                                        @endif
+                                        @if(isset($distribution_phase_interest_rate_2))
+                                        @if($include_inflation=='yes')
+                                        @php
+                                        $av43_new2=($monthly_annuity_amount2*(1-(1+$av36_inf)**12)/(1-(1+$av36_inf)))/12;
+                                        @endphp
+                                        <td>
+                                            <strong>₹ {{custome_money_format($av43_new2)}} </strong>
+                                        </td>
+                                        @else
+                                        <td>
+                                            <strong>₹ {{custome_money_format($monthly_annuity_amount2)}} </strong>
+                                        </td>
+                                        @endif
+                                        @endif
+                                    </tr>
+                                
+                                </tbody></table>
+                            @else
+
+                            @if($include_inflation=='yes')
+                            @php
+                            $av43_new=($monthly_annuity_amount1*(1-(1+$av36_inf)**12)/(1-(1+$av36_inf)))/12;
+                            @endphp
+                                <h2 style="color: #131f55;font-size:22px;margin-bottom:5px;">₹ {{custome_money_format($av43_new)}}</h2>
+                            @else
+                                <h2 style="color: #131f55;font-size:22px;margin-bottom:5px;">₹ {{custome_money_format($monthly_annuity_amount1)}}</h2>
+                            @endif
+
+                            @endif
+                            @endif
+
+                        <h1 style="color: #131f55;font-size:22px;margin-bottom:20px;text-align: center;">Total Withdrawal</h1>
+
+                                
+                            <?php if($deferment=='yes' && $include_inflation == 'yes' && $include_taxation == 'yes'){ ?>
+                                @if(isset($monthly_annuity_amount2))
+                                    <table class="table table-bordered text-center">
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    Scenario 1 @ {{$distribution_phase_interest_rate_1?number_format($distribution_phase_interest_rate_1, 2, '.', ''):0}} %
+                                                </td>
+                                                @if(isset($accumulation_phase_interest_rate_2))
+                                                <td>
+                                                    Scenario 2 @ {{$distribution_phase_interest_rate_2?number_format($distribution_phase_interest_rate_2, 2, '.', ''):0}} %
+                                                </td>
+                                                @endif
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    @php
+                                                        $av41_inf=(1+($expected_inflation_rate/100))**(1/12)-1;
+                                                        $av50_new=($monthly_annuity_amount1*((1+$av41_inf)**$annuity_period_months-1)/((1+$av41_inf)-1));
+                                                    @endphp
+                                                
+                                                    <strong>₹ {{custome_money_format($av50_new)}}</strong>
+                                                </td>
+                                                @if(isset($monthly_annuity_amount2))
+                                                    @php
+                                                        $av41_inf=(1+($expected_inflation_rate/100))**(1/12)-1;
+                                                        $av50_new=($monthly_annuity_amount2*((1+$av41_inf)**$annuity_period_months-1)/((1+$av41_inf)-1));
+                                                    @endphp
+                                                <td>
+                                                    <strong>₹ {{custome_money_format($av50_new)}} </strong>
+                                                </td>
+                                                @endif
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                @else
+                                    <h2 style="color: #131f55;font-size:22px;marginn-bottom:5px;">₹ 
+                                        @php
+                                            $av41_inf=(1+($expected_inflation_rate/100))**(1/12)-1;
+                                            $av50_new=($monthly_annuity_amount1*((1+$av41_inf)**$annuity_period_months-1)/((1+$av41_inf)-1));
+                                        @endphp
+                                            
+                                        {{custome_money_format($av50_new)}}
+                                    </h2>
+                                @endif
+                            <?php } elseif ($deferment == 'yes' && $include_inflation == 'yes' && $include_taxation == 'no'){ ?>
+                                @if(isset($monthly_annuity_amount2))
+                                    <table class="table table-bordered text-center">
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    Scenario 1 @ {{$distribution_phase_interest_rate_1?number_format($distribution_phase_interest_rate_1, 2, '.', ''):0}} %
+                                                </td>
+                                                @if(isset($accumulation_phase_interest_rate_2))
+                                                <td>
+                                                    Scenario 2 @ {{$distribution_phase_interest_rate_2?number_format($distribution_phase_interest_rate_2, 2, '.', ''):0}} %
+                                                </td>
+                                                @endif
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    @php
+                                                        $av41_inf=(1+($expected_inflation_rate/100))**(1/12)-1;
+                                                        $av50_new=($monthly_annuity_amount1*((1+$av41_inf)**$annuity_period_months-1)/((1+$av41_inf)-1));
+                                                    @endphp
+                                                
+                                                    <strong>₹ {{custome_money_format($av50_new)}}</strong>
+                                                </td>
+                                                @if(isset($monthly_annuity_amount2))
+                                                    @php
+                                                        $av41_inf=(1+($expected_inflation_rate/100))**(1/12)-1;
+                                                        $av50_new=($monthly_annuity_amount2*((1+$av41_inf)**$annuity_period_months-1)/((1+$av41_inf)-1));
+                                                    @endphp
+                                                <td>
+                                                    <strong>₹ {{custome_money_format($av50_new)}} </strong>
+                                                </td>
+                                                @endif
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                @else
+                                    <h2 style="color: #131f55;font-size:22px;marginn-bottom:5px;">₹ 
+                                        @php
+                                            $av41_inf=(1+($expected_inflation_rate/100))**(1/12)-1;
+                                            $av50_new=($monthly_annuity_amount1*((1+$av41_inf)**$annuity_period_months-1)/((1+$av41_inf)-1));
+                                        @endphp
+                                            
+                                        {{custome_money_format($av50_new)}}
+                                    </h2>
+                                @endif
+                        <?php } elseif ($deferment == 'yes' && $include_inflation == 'no' && $include_taxation == 'yes'){ ?>
+                                @if(isset($monthly_annuity_amount2))
+                                    <table class="table table-bordered text-center">
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    Scenario 1 @ {{$distribution_phase_interest_rate_1?number_format($distribution_phase_interest_rate_1, 2, '.', ''):0}} %
+                                                </td>
+                                                @if(isset($accumulation_phase_interest_rate_2))
+                                                <td>
+                                                    Scenario 2 @ {{$distribution_phase_interest_rate_2?number_format($distribution_phase_interest_rate_2, 2, '.', ''):0}} %
+                                                </td>
+                                                @endif
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    @php
+                                                        $av50_new=($monthly_annuity_amount1*$annuity_period_months);
+                                                    @endphp
+                                                
+                                                    <strong>₹ {{custome_money_format($av50_new)}}</strong>
+                                                </td>
+                                                @if(isset($monthly_annuity_amount2))
+                                                    @php
+                                                        $av50_new=($monthly_annuity_amount2*$annuity_period_months);
+                                                    @endphp
+                                                <td>
+                                                    <strong>₹ {{custome_money_format($av50_new)}} </strong>
+                                                </td>
+                                                @endif
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                @else
+                                    <h2 style="color: #131f55;font-size:22px;marginn-bottom:5px;">₹ 
+                                        @php
+                                            $av50_new=($monthly_annuity_amount1*$annuity_period_months);
+                                        @endphp
+                                            
+                                        {{custome_money_format($av50_new)}}
+                                    </h2>
+                                @endif
+                            <?php }elseif ($deferment == 'yes' && $include_inflation == 'no' && $include_taxation == 'no'){?>
+                                @if(isset($monthly_annuity_amount2))
+                                    <table class="table table-bordered text-center">
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    Scenario 1 @ {{$distribution_phase_interest_rate_1?number_format($distribution_phase_interest_rate_1, 2, '.', ''):0}} %
+                                                </td>
+                                                @if(isset($distribution_phase_interest_rate_2))
+                                                <td>
+                                                    Scenario 2 @ {{$distribution_phase_interest_rate_2?number_format($distribution_phase_interest_rate_2, 2, '.', ''):0}} %
+                                                </td>
+                                                @endif
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    @php
+                                                        $av50_new=($monthly_annuity_amount1*$annuity_period_months);
+                                                    @endphp
+                                                
+                                                    <strong>₹ {{custome_money_format($av50_new)}}</strong>
+                                                </td>
+                                                @if(isset($monthly_annuity_amount2))
+                                                    @php
+                                                        $av50_new=($monthly_annuity_amount2*$annuity_period_months);
+                                                    @endphp
+                                                <td>
+                                                    <strong>₹ {{custome_money_format($av50_new)}} </strong>
+                                                </td>
+                                                @endif
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                @else
+                                    <h2 style="color: #131f55;font-size:22px;marginn-bottom:5px;">₹ 
+                                        @php
+                                            $av50_new=($monthly_annuity_amount1*$annuity_period_months);
+                                        @endphp
+                                            
+                                        {{custome_money_format($av50_new)}}
+                                    </h2>
+                                @endif
+                            <?php }elseif ($deferment == 'no' && $include_inflation == 'yes' && $include_taxation == 'yes'){ ?>
+                                @if(isset($monthly_annuity_amount2))
+                                    <table class="table table-bordered text-center">
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    Scenario 1 @ {{$interest1?number_format($interest1, 2, '.', ''):0}} %
+                                                </td>
+                                                @if(isset($interest2))
+                                                <td>
+                                                    Scenario 2 @ {{$interest2?number_format($interest2, 2, '.', ''):0}} %
+                                                </td>
+                                                @endif
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    @php
+                                                        $av41_inf=(1+($expected_inflation_rate/100))**(1/12)-1;
+                                                        $av50_new=($monthly_annuity_amount1*((1+$av41_inf)**$annuity_period_months-1)/((1+$av41_inf)-1));
+                                                    @endphp
+                                                
+                                                    <strong>₹ {{custome_money_format($av50_new)}}</strong>
+                                                </td>
+                                                @if(isset($monthly_annuity_amount2))
+                                                    @php
+                                                        $av41_inf=(1+($expected_inflation_rate/100))**(1/12)-1;
+                                                        $av50_new=($monthly_annuity_amount2*((1+$av41_inf)**$annuity_period_months-1)/((1+$av41_inf)-1));
+                                                    @endphp
+                                                <td>
+                                                    <strong>₹ {{custome_money_format($av50_new)}} </strong>
+                                                </td>
+                                                @endif
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                @else
+                                    <h2 style="color: #131f55;font-size:22px;marginn-bottom:5px;">₹ 
+                                        @php
+                                            $av41_inf=(1+($expected_inflation_rate/100))**(1/12)-1;
+                                            $av50_new=($monthly_annuity_amount1*((1+$av41_inf)**$annuity_period_months-1)/((1+$av41_inf)-1));
+                                        @endphp
+                                            
+                                        {{custome_money_format($av50_new)}}
+                                    </h2>
+                                @endif
+                            <?php }elseif ($deferment == 'no' && $include_inflation == 'yes' && $include_taxation == 'no'){ ?>
+                                @if(isset($monthly_annuity_amount2))
+                                    <table class="table table-bordered text-center">
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    Scenario 1 @ {{$interest1?number_format($interest1, 2, '.', ''):0}} %
+                                                </td>
+                                                @if(isset($interest2))
+                                                <td>
+                                                    Scenario 2 @ {{$interest2?number_format($interest2, 2, '.', ''):0}} %
+                                                </td>
+                                                @endif
+                                            </tr>
+                                            <tr>
+                                                @php
+                                                    $av41_inf=(1+($expected_inflation_rate/100))**(1/12)-1;
+                                                    $av50_new=($monthly_annuity_amount1*((1+$av41_inf)**$annuity_period_months-1)/((1+$av41_inf)-1));
+                                                @endphp
+                                                <td>
+                                                    <strong>₹ {{custome_money_format($av50_new)}}</strong>
+                                                </td>
+                                                @if(isset($monthly_annuity_amount2))
+                                                @php
+                                                    $av41_inf=(1+($expected_inflation_rate/100))**(1/12)-1;
+                                                    $av50_new=($monthly_annuity_amount2*((1+$av41_inf)**$annuity_period_months-1)/((1+$av41_inf)-1));
+                                                @endphp
+                                                <td>
+                                                    <strong>₹ {{custome_money_format($av50_new)}}</strong>
+                                                </td>
+                                                @endif
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                @else
+                                    <h2 style="color: #131f55;font-size:22px;marginn-bottom:5px;">₹ 
+                                        @php
+                                            $av41_inf=(1+($expected_inflation_rate/100))**(1/12)-1;
+                                            $av50_new=($monthly_annuity_amount1*((1+$av41_inf)**$annuity_period_months-1)/((1+$av41_inf)-1));
+                                        @endphp
+                                            
+                                        {{custome_money_format($av50_new)}}
+                                    </h2>
+                                @endif
+                            <?php }elseif ($deferment == 'no' && $include_inflation == 'no' && $include_taxation == 'yes'){ ?>
+                                @if(isset($monthly_annuity_amount2))
+                                    <table class="table table-bordered text-center">
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    Scenario 1 @ {{$interest1?number_format($interest1, 2, '.', ''):0}} %
+                                                </td>
+                                                @if(isset($interest2))
+                                                <td>
+                                                    Scenario 2 @ {{$interest2?number_format($interest2, 2, '.', ''):0}} %
+                                                </td>
+                                                @endif
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    @php
+                                                        $av50_new=($monthly_annuity_amount1*$annuity_period_months);
+                                                    @endphp
+                                                
+                                                    <strong>₹ {{custome_money_format($av50_new)}}</strong>
+                                                </td>
+                                                @if(isset($monthly_annuity_amount2))
+                                                    @php
+                                                        $av50_new=($monthly_annuity_amount2*$annuity_period_months);
+                                                    @endphp
+                                                <td>
+                                                    <strong>₹ {{custome_money_format($av50_new)}} </strong>
+                                                </td>
+                                                @endif
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                @else
+                                    <h2 style="color: #131f55;font-size:22px;marginn-bottom:5px;">₹ 
+                                        @php
+                                            $av50_new=($monthly_annuity_amount1*$annuity_period_months);
+                                        @endphp
+                                            
+                                        {{custome_money_format($av50_new)}}
+                                    </h2>
+                                @endif
+                            <?php }elseif ($deferment == 'no' && $include_inflation == 'no' && $include_taxation == 'no'){ ?>
+                                @if(isset($monthly_annuity_amount2))
+                                    <table class="table table-bordered text-center">
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    Scenario 1 @ {{$interest1?number_format($interest1, 2, '.', ''):0}} %
+                                                </td>
+                                                @if(isset($interest2))
+                                                <td>
+                                                    Scenario 2 @ {{$interest2?number_format($interest2, 2, '.', ''):0}} %
+                                                </td>
+                                                @endif
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <strong>₹ {{custome_money_format($monthly_annuity_amount1 * $annuity_period_months)}}</strong>
+                                                </td>
+                                                @if(isset($monthly_annuity_amount2))
+                                                <td>
+                                                    <strong>₹ {{custome_money_format($monthly_annuity_amount2 * $annuity_period_months)}} </strong>
+                                                </td>
+                                                @endif
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                @else
+                                    <h2 style="color: #131f55;font-size:22px;marginn-bottom:5px;">₹ 
+                                        @php
+                                            $av50_new=($monthly_annuity_amount1*$annuity_period_months);
+                                        @endphp
+                                            
+                                        {{custome_money_format($av50_new)}}
+                                    </h2>
+                                @endif
+                            <?php } ?>
+
+                            @if(isset($report) && $report=='detailed')
+                            @if($deferment=='yes')
+                        
+                            <h5 class="text-center">Accumulation Phase <br> Projected Annual Investment Value</h5>
+                            <table class="table table-bordered text-center" style="background: #fff;">
+                                <tbody>
+                                    <tr>
+                                            <th>@if(isset($current_age) && $current_age!=0) Age @else Year @endif</th>
+                                            <th>Annual Investment</th>
+                                            <th>Year End Value @ {{$accumulation_phase_interest_rate_1?number_format((float)$accumulation_phase_interest_rate_1, 2, '.', ''):0}} %</th>
+
+                                            @if(isset($accumulation_phase_interest_rate_2))
+                                            <th>Year End Value @ {{$accumulation_phase_interest_rate_2?number_format((float)$accumulation_phase_interest_rate_2, 2, '.', ''):0}} %</th>
+                                            @endif
+                                    </tr>
+                                    @for($i=1;$i<=$deferment_period;$i++)
+                                    @php
+                                        $yev1=$initial_investment*(1+$accumulation_phase_interest_rate_1/100)**$i;
+                                        if(isset($accumulation_phase_interest_rate_2))
+                                        {
+                                            $yev2=$initial_investment*(1+$accumulation_phase_interest_rate_2/100)**$i;
+                                        }
+                                    @endphp
+                                    <tr>
+                                            <td>{{$count_sec+$i}}</td>
+                                            <td> @if($i==1) ₹ {{custome_money_format($initial_investment)}} @else -- @endif</td>
+                                            <td>₹ {{custome_money_format($yev1)}}</td>
+                                            @if(isset($accumulation_phase_interest_rate_2))
+                                            <td>₹ {{custome_money_format($yev2)}}</td>
+                                            @endif
+                                    </tr>
+                                    @endfor
+                                </tbody>
+                            </table>
+                            
+                            <h5 class="text-center">Distribution Phase <br> Monthly Withdrawal & Projected Investment Value</h5>
+                            @if(isset($expected_inflation_rate))
+                            <table class="table table-bordered text-center" style="background: #fff;">
+                            <tbody>
+                            <tr>
+                                    <th rowspan="2" style="vertical-align: middle;">@if(isset($current_age) && $current_age!=0) Age @else Year @endif</th>
+                                    <th colspan="2">Scenario 1 @ {{$distribution_phase_interest_rate_1?number_format((float)$distribution_phase_interest_rate_1, 2, '.', ''):0}} %</th>
+                                    @if(isset($distribution_phase_interest_rate_2))
+                                    <th colspan="2">Scenario 2 @ {{$distribution_phase_interest_rate_2?number_format((float)$distribution_phase_interest_rate_2, 2, '.', ''):0}} %</th>
+                                    @endif
+                            </tr>
+                            <tr>
+                                <th>Monthly SWP</th>
+                                <th>Year End Balance</th>
+                                @if(isset($distribution_phase_interest_rate_2))
+                                <th>Monthly SWP</th>
+                                <th>Year End Balance</th>
+                                @endif
+                            </tr>
+                                    @php
+                                        $ff1=0;
+                                        $ff2=0;
+                                        $z=1;
+                                        for($i=1;$i<=$period*12;$i++)
+                                        {
+                                        if($i==1)
+                                        {
+                                            $as63=$av39;
+                                        }else{
+                                            $as63=$ax63;
+                                        }
+                                        
+                                        $at63=$monthly_rate_of_return1;
+                                        $au63=$as63+$as63*$at63;
+                                        $av63=$av36_inf;
+                                        if($i==1)
+                                        {
+                                            $aw63=$monthly_annuity_amount1;
+                                        }else{
+                                            $aw63=$aw63+$aw63*$av63;
+                                        }
+                                        $ax63=$au63-$aw63;
+                                        $ff1+=$aw63;
+
+                                        if(isset($distribution_phase_interest_rate_2))
+                                        {
+                                            if($i==1)
+                                            {
+                                                $az63=$av40;
+                                            }else{
+                                                $az63=$be63;
+                                            }
+                                            
+                                            $ba63=$monthly_rate_of_return2;
+                                            $bb63=$az63+$az63*$ba63;
+                                            $bc63=$av36_inf;
+                                            if($i==1)
+                                            {
+                                                $bd63=$monthly_annuity_amount2;
+                                            }else{
+                                                $bd63=$bd63+$bd63*$bc63;
+                                            }
+                                            $be63=$bb63-$bd63;
+                                            $ff2+=$bd63;
+                                        }
+                                        
+                                        
+                                        if($i%12==0)
+                                        {
+                                        $ff1r=$ff1/12;
+                                        if(isset($distribution_phase_interest_rate_2))
+                                        {
+                                            $ff2r=$ff2/12;
+                                        }
+                                        @endphp
+                                            <tr>
+                                            <td>{{$count_sec+$dif_sec+$z}}</td>
+                                            <td>₹ {{custome_money_format($ff1r)}}</td>
+                                            <td>₹ {{custome_money_format($ax63)}}</td>
+                                            @if(isset($distribution_phase_interest_rate_2))
+                                            <td>₹ {{custome_money_format($ff2r)}}</td>
+                                            <td>₹ {{custome_money_format($be63)}}</td>
+                                            @endif
+                                            </tr>
+                                        @php
+                                        $z++;
+                                        $ff1=0;
+                                        if(isset($distribution_phase_interest_rate_2))
+                                        {
+                                            $ff2=0;
+                                        }
+                                        }
+                                        }
+                                    @endphp
+                            </tbody>
+                            </table>
+                            @if($include_taxation=='yes')
+                                <h5 class="text-center">Annual Tax & Post-Tax Withdrawal</h5>
+                                <table class="table table-bordered text-center" style="background: #fff;">
+                                    <tbody>
+                                    <tr>
+                                            <th rowspan="2" style="vertical-align: middle;">@if(isset($current_age) && $current_age!=0) Age @else Year @endif</th>
+                                            <th colspan="3">Scenario 1 @ {{$accumulation_phase_interest_rate_1?number_format((float)$accumulation_phase_interest_rate_1, 2, '.', ''):0}} %</th>
+                                            @if(isset($accumulation_phase_interest_rate_2))
+                                            <th colspan="3">Scenario 2 @ {{$accumulation_phase_interest_rate_2?number_format((float)$accumulation_phase_interest_rate_2, 2, '.', ''):0}} %</th>
+                                            @endif
+                                        </tr>
+                                        <tr>
+                                            <th>Annual Withdrawal</th>
+                                            <th>Tax Payable</th>
+                                            <th>Post - Tax Withdrawal</th>
+                                            @if(isset($accumulation_phase_interest_rate_2))
+                                            <th>Annual Withdrawal</th>
+                                            <th>Tax Payable</th>
+                                            <th>Post - Tax Withdrawal</th>
+                                            @endif
+                                    </tr>
+                                    @php
+                                        $yr=1;
+                                        $l147=0;
+                                        $q147=0;
+                                        $g103=0;
+
+                                        $w103=0;
+                                        $ab107=0;
+                                        $ag107=0;
+                                        for($i=1;$i<=$period*12;$i++)
+                                        {
+
+                                        $av41_inf=(1+($expected_inflation_rate/100))**(1/12)-1;
+                                        if($i==1)
+                                        {
+                                            $ax=$monthly_annuity_amount1;
+                                        }else{
+                                            $ax=$ax+$ax*$av41_inf;
+                                        }
+
+                                        $av37=(1+($distribution_phase_interest_rate_1/100))**(1/12)-1;
+                                        $az=$ax/(1+$av37)**$i;
+
+                                        $bc63=$az*(1+($assumed_inflation_rate_for_indexation/100))**($yr-1);
+
+                                        if($yr<=$for_period_upto)
+                                        {
+                                            $bd63=$ax-$az;
+                                        }else{
+                                            $bd63=$ax-$bc63;
+                                        }
+
+                                        if($yr<=$for_period_upto)
+                                        {
+                                            $bg63=$bd63*($applicable_short_term_tax_rate/100);
+                                        }else{
+                                            $bg63=$bd63*($applicable_long_term_tax_rate/100);
+                                        }
+
+                                        $bh63=$ax-$bg63;
+
+                                        $g103+=$ax;
+                                        $l147+=$bg63;
+                                        $q147+=$bh63;
+                                        
+                                    //--------
+
+                                        if(isset($distribution_phase_interest_rate_2))
+                                        {
+
+                                        $av41_inf=(1+($expected_inflation_rate/100))**(1/12)-1;
+                                        if($i==1)
+                                        {
+                                            $bo=$monthly_annuity_amount2;
+                                        }else{
+                                            $bo=$bo+$bo*$av41_inf;
+                                        }
+
+                                        $w103+=$bo;
+
+                                        $bl63=(1+($distribution_phase_interest_rate_2/100))**(1/12)-1;
+                                        $bq63=$bo/(1+$bl63)**$i;
+
+                                        $bt63=$bq63*(1+($assumed_inflation_rate_for_indexation/100))**($yr-1);
+
+                                        if($yr<=$for_period_upto)
+                                        {
+                                            $bu63=$bo-$bq63;
+                                        }else{
+                                            $bu63=$bo-$bt63;
+                                        }
+
+                                        if($yr<=$for_period_upto)
+                                        {
+                                            $bx63=$bu63*($applicable_short_term_tax_rate/100);
+                                        }else{
+                                            $bx63=$bu63*($applicable_long_term_tax_rate/100);
+                                        }
+
+                                        $ab107+=$bx63;
+                                        $by63=$bo-$bx63;
+                                        $ag107+=$by63;
+
+                                        }
+
+                                        if($i%12==0)
+                                        {
+                                    @endphp
+                                    <!-- nnnnnnnnnnnnnn -->
+                                    <tr>
+                                        <td>{{$count_sec+$dif_sec+$yr}}</td>
+                                        <td>₹ {{custome_money_format($g103)}}</td>
+                                        <td>₹ {{custome_money_format($l147)}}</td>
+                                        <td>₹ {{custome_money_format($q147)}}</td>
+                                        @if(isset($distribution_phase_interest_rate_2))
+                                        <td>₹ {{custome_money_format($w103)}}</td>
+                                        <td>₹ {{custome_money_format($ab107)}}</td>
+                                        <td>₹ {{custome_money_format($ag107)}}</td>
+                                        @endif
+                                    </tr>
+                                    @php
+                                            $g103=0;
+                                            $q147=0;
+                                            $l147=0;
+                                            
+                                            $w103=0;
+                                            $ag107=0;
+                                            $ab107=0;
+                                            $yr++;
+                                        }
+                                        }
+                                    @endphp
+                                    </tbody>
+                                </table>
+
+                                @endif
+                            @else
+
+                                <table class="table table-bordered text-center" style="background: #fff;">
+                                    <tbody>
+                                    @if(isset($distribution_phase_interest_rate_2))
+                                        <tr>
+                                            <th rowspan="2" style="vertical-align: middle;">@if(isset($current_age) && $current_age!=0) Age @else Year @endif</th>
+                                            <th colspan="2">Scenario 1 @ {{$distribution_phase_interest_rate_1?number_format((float)$distribution_phase_interest_rate_1, 2, '.', ''):0}} %</th>
+                                            <th colspan="2">Scenario 2 @ {{$distribution_phase_interest_rate_2?number_format((float)$distribution_phase_interest_rate_2, 2, '.', ''):0}} %</th>
+                                        </tr>
+                                        <tr>
+                                            <th>Monthly SWP</th>
+                                            <th>Year End Balance</th>
+                                            <th>Monthly SWP</th>
+                                            <th>Year End Balance</th>
+                                        </tr>
+
+                                        @for($i=1;$i<=$period;$i++)
+                                            @php
+                                            //Year End Value (AS67*(1+AU67)^(AR67*12)-(AW67*((1+AU67)^(AR67*12)-1)/AU67))
+                                                $year_end_value_senario_1 = ($av39*(1+$monthly_rate_of_return1)**($i*12)-($monthly_annuity_amount1*((1+$monthly_rate_of_return1)**($i*12)-1)/$monthly_rate_of_return1));
+                                                //Year End Value (AT67*(1+AV67)^(AR67*12)-(AX67*((1+AV67)^(AR67*12)-1)/AV67))
+                                                $year_end_value_senario_2 = ($av40*(1+$monthly_rate_of_return2)**($i*12)-($monthly_annuity_amount2*((1+$monthly_rate_of_return2)**($i*12)-1)/$monthly_rate_of_return2));
+                                            @endphp
+                                            <tr>
+                                                <td>{{$count_sec+$dif_sec+$i}}</td>
+                                                <td>₹ {{custome_money_format($monthly_annuity_amount1)}}</td>
+                                                <td>₹ {{custome_money_format($year_end_value_senario_1)}}</td>
+                                                <td>₹ {{custome_money_format($monthly_annuity_amount2)}}</td>
+                                                <td>₹ {{custome_money_format($year_end_value_senario_2)}}</td>
+                                            </tr>
+                                        @endfor
+                                    @else
+                                        <tr>
+                                            <th rowspan="2" style="vertical-align: middle;">@if(isset($current_age) && $current_age!=0) Age @else Year @endif</th>
+                                            <th colspan="2">Scenario 1 @ {{$distribution_phase_interest_rate_1?number_format((float)$distribution_phase_interest_rate_1, 2, '.', ''):0}} %</th>
+                                        
+                                        </tr>
+                                        <tr>
+                                            <th>Monthly SWP</th>
+                                            <th>Year End Balance</th>
+                                            
+                                        </tr>
+
+                                        @for($i=1;$i<=$period;$i++)
+                                            @php
+                                            //Year End Value (AS67*(1+AU67)^(AR67*12)-(AW67*((1+AU67)^(AR67*12)-1)/AU67))
+                                                $year_end_value_senario_1 = ($av39*(1+$monthly_rate_of_return1)**($i*12)-($monthly_annuity_amount1*((1+$monthly_rate_of_return1)**($i*12)-1)/$monthly_rate_of_return1));
+                                                //Year End Value (AT67*(1+AV67)^(AR67*12)-(AX67*((1+AV67)^(AR67*12)-1)/AV67))
+                                            
+                                            @endphp
+                                            <tr>
+                                                <td>{{$count_sec+$dif_sec+$i}}</td>
+                                                <td>₹ {{custome_money_format($monthly_annuity_amount1)}}</td>
+                                                <td>₹ {{custome_money_format($year_end_value_senario_1)}}</td>
+                                                
+                                            </tr>
+                                        @endfor
+                                        <!-- <tr>
+                                            <th rowspan="2" style="vertical-align: middle;">Year</th>
+                                            @if($deferment=='no')
+                                            <th colspan="2">Scenario 1 @ {{$interest1?number_format((float)$interest1, 2, '.', ''):0}} %</th>
+                                            @else
+                                            <th colspan="2">Scenario 1 @ {{$distribution_phase_interest_rate_1?number_format((float)$distribution_phase_interest_rate_1, 2, '.', ''):0}} %</th>
+                                            @endif
+                                        </tr>
+                                        <tr>
+                                            <th>wwwwww Monthly SWP</th>
+                                            <th>Year End Balance</th>
+                                        </tr>
+
+                                        @for($i=1;$i<=$period;$i++)
+                                            @php
+                                                //Year End Value (AS67*(1+AU67)^(AR67*12)-(AW67*((1+AU67)^(AR67*12)-1)/AU67))
+                                                $year_end_value_senario_1 = ($initial_investment*(1+$monthly_rate_of_return1)**($i*12)-($monthly_annuity_amount1*((1+$monthly_rate_of_return1)**($i*12)-1)/$monthly_rate_of_return1));
+
+                                            @endphp
+                                            <tr>
+                                                <td>{{$i}}</td>
+                                                <td>₹ {{custome_money_format($monthly_annuity_amount1)}}</td>
+                                                <td>₹ {{custome_money_format($year_end_value_senario_1)}}</td>
+                                            </tr>
+                                        @endfor -->
+                                    @endif
+                                    </tbody>
+                                </table>
+
+                                @if($include_taxation=='yes')
+                                <h5 class="text-center">Annual Tax & Post-Tax Withdrawal</h5>
+                                <table class="table table-bordered text-center" style="background: #fff;">
+                                    <tbody>
+                                    <tr>
+                                            <th rowspan="2" style="vertical-align: middle;">@if(isset($current_age) && $current_age!=0) Age @else Year @endif</th>
+                                            <th colspan="3">Scenario 1 @ {{$distribution_phase_interest_rate_1?number_format((float)$distribution_phase_interest_rate_1, 2, '.', ''):0}} %</th>
+                                            @if(isset($distribution_phase_interest_rate_2))
+                                            <th colspan="3">Scenario 2 @ {{$distribution_phase_interest_rate_2?number_format((float)$distribution_phase_interest_rate_2, 2, '.', ''):0}} %</th>
+                                            @endif
+                                        </tr>
+                                        <tr>
+                                            <th>Annual Withdrawal</th>
+                                            <th>Tax Payable</th>
+                                            <th>Post - Tax Withdrawal</th>
+                                            @if(isset($distribution_phase_interest_rate_2))
+                                            <th>Annual Withdrawal</th>
+                                            <th>Tax Payable</th>
+                                            <th>Post - Tax Withdrawal</th>
+                                            @endif
+                                    </tr>
+                                    @php
+                                        $yr=1;
+                                        $l147=0;
+                                        $q147=0;
+                                        $ab107=0;
+                                        $ag107=0;
+                                        for($i=1;$i<=$period*12;$i++)
+                                        {
+                                        $av37=(1+($distribution_phase_interest_rate_1/100))**(1/12)-1;
+                                        $ay107=$monthly_annuity_amount1/(1+$av37)**$i;
+                                        $bb107=$ay107*(1+($assumed_inflation_rate_for_indexation/100))**($yr-1);
+                                        if($yr<=$for_period_upto)
+                                        {
+                                            $bc=$monthly_annuity_amount1-$ay107;
+                                        }else{
+                                            $bc=$monthly_annuity_amount1-$bb107;
+                                        }
+
+                                        if($yr<=$for_period_upto)
+                                        {
+                                            $bf=$bc*($applicable_short_term_tax_rate/100);
+                                        }else{
+                                            $bf=$bc*($applicable_long_term_tax_rate/100);
+                                        }
+
+                                        $l147+=$bf;
+                                        $bg107=$monthly_annuity_amount1-$bf;
+                                        $q147+=$bg107;
+                                        
+                                        if(isset($distribution_phase_interest_rate_2))
+                                        {
+                                        $bm107=$monthly_annuity_amount2;
+                                        $bk107=(1+($distribution_phase_interest_rate_2/100))**(1/12)-1;
+                                        $bo107=$monthly_annuity_amount2/(1+$bk107)**$i;
+                                        $br107=$bo107*(1+($assumed_inflation_rate_for_indexation/100))**($yr-1);
+                                        
+                                        if($yr<=$for_period_upto)
+                                        {
+                                            $bs107=$bm107-$bo107;
+                                        }else{
+                                            $bs107=$bm107-$br107;
+                                        }
+
+                                        if($yr<=$for_period_upto)
+                                        {
+                                            $bv107=$bs107*$applicable_short_term_tax_rate/100;
+                                        }else{
+                                            $bv107=$bs107*$applicable_long_term_tax_rate/100;
+                                        }
+                                        $ab107+=$bv107;
+                                        $bw107=$bm107-$bv107;
+                                        $ag107+=$bw107;
+                                        }
+                                        if($i%12==0)
+                                        {
+                                    @endphp
+                                    <tr>
+                                        <td>{{$count_sec+$dif_sec+$yr}}</td>
+                                        <td>₹ {{custome_money_format($monthly_annuity_amount1*12)}}</td>
+                                        <td>₹ {{custome_money_format($l147)}}</td>
+                                        <td>₹ {{custome_money_format($q147)}}</td>
+                                        @if(isset($distribution_phase_interest_rate_2))
+                                        <td>₹ {{custome_money_format($monthly_annuity_amount2*12)}}</td>
+                                        <td>₹ {{custome_money_format($ab107)}}</td>
+                                        <td>₹ {{custome_money_format($ag107)}}</td>
+                                        @endif
+                                    </tr>
+                                    @php
+                                            $ag107=0;
+                                            $ab107=0;
+                                            $q147=0;
+                                            $l147=0;
+                                            $yr++;
+                                        }
+                                        }
+                                    @endphp
+                                    </tbody>
+                                </table>
+
+                                @endif
+
+                                @endif
+                                <!-- xxxxxxxxxxxx -->
+                            @else
+                                <h5 class="text-center">Monthly Withdrawal & Projected Investment Value</h5>
+
+                            @if(isset($expected_inflation_rate))
+                            <table class="table table-bordered text-center" style="background: #fff;">
+                            <tbody>
+                            <tr>
+                                    <th rowspan="2" style="vertical-align: middle;">@if(isset($current_age) && $current_age!=0) Age @else Year @endif</th>
+                                    <th colspan="2">Scenario 1 @ {{$interest1?number_format((float)$interest1, 2, '.', ''):0}} %</th>
+                                    @if(isset($interest2))
+                                    <th colspan="2">Scenario 2 @ {{$interest2?number_format((float)$interest2, 2, '.', ''):0}} %</th>
+                                    @endif
+                            </tr>
+                            <tr>
+                                <th>Monthly SWP</th>
+                                <th>Year End Balance</th>
+                                @if(isset($interest2))
+                                <th>Monthly SWP</th>
+                                <th>Year End Balance</th>
+                                @endif
+                            </tr>
+                                    @php
+                                        $ff1=0;
+                                        $ff2=0;
+                                        $z=1;
+                                        for($i=1;$i<=$period*12;$i++)
+                                        {
+                                        if($i==1)
+                                        {
+                                            $as63=$initial_investment;
+                                        }else{
+                                            $as63=$ax63;
+                                        }
+                                        
+                                        $at63=$monthly_rate_of_return1;
+                                        $au63=$as63+$as63*$at63;
+                                        $av63=$av36_inf;
+                                        if($i==1)
+                                        {
+                                            $aw63=$monthly_annuity_amount1;
+                                        }else{
+                                            $aw63=$aw63+$aw63*$av63;
+                                        }
+                                        $ax63=$au63-$aw63;
+                                        $ff1+=$aw63;
+                                        if(isset($interest2))
+                                        {
+                                            if($i==1)
+                                            {
+                                                $az63=$initial_investment;
+                                            }else{
+                                                $az63=$be63;
+                                            }
+                                            
+                                            $ba63=$monthly_rate_of_return2;
+                                            $bb63=$az63+$az63*$ba63;
+                                            $bc63=$av36_inf;
+                                            if($i==1)
+                                            {
+                                                $bd63=$monthly_annuity_amount2;
+                                            }else{
+                                                $bd63=$bd63+$bd63*$bc63;
+                                            }
+                                            $be63=$bb63-$bd63;
+                                            $ff2+=$bd63;
+                                        }
+                                        
+                                        
+                                        if($i%12==0)
+                                        {
+                                        $ff1r=$ff1/12;
+                                        if(isset($interest2))
+                                        {
+                                            $ff2r=$ff2/12;
+                                        }
+                                        @endphp
+                                            <tr>
+                                            <td>{{$count_sec+$dif_sec+$z}}</td>
+                                            <td>₹ {{custome_money_format($ff1r)}}</td>
+                                            <td>₹ {{custome_money_format($ax63)}}</td>
+                                            @if(isset($interest2))
+                                            <td>₹ {{custome_money_format($ff2r)}}</td>
+                                            <td>₹ {{custome_money_format($be63)}}</td>
+                                            @endif
+                                            </tr>
+                                        @php
+                                        $z++;
+                                        $ff1=0;
+                                        if(isset($interest2))
+                                        {
+                                            $ff2=0;
+                                        }
+                                        }
+                                        }
+                                    @endphp
+                            </tbody>
+                            </table>
+                            @else
+
+                                <table class="table table-bordered text-center" style="background: #fff;">
+                                    <tbody>
+                                    @if(isset($interest2))
+                                        <tr>
+                                            <th rowspan="2" style="vertical-align: middle;">@if(isset($current_age) && $current_age!=0) Age @else Year @endif</th>
+                                            <th colspan="2">Scenario 1 @ {{$interest1?number_format((float)$interest1, 2, '.', ''):0}} %</th>
+                                            <th colspan="2">Scenario 2 @ {{$interest2?number_format((float)$interest2, 2, '.', ''):0}} %</th>
+                                        </tr>
+                                        <tr>
+                                            <th>Monthly SWP</th>
+                                            <th>Year End Balance</th>
+                                            <th>Monthly SWP</th>
+                                            <th>Year End Balance</th>
+                                        </tr>
+
+                                        @for($i=1;$i<=$period;$i++)
+                                            @php
+                                            //Year End Value (AS67*(1+AU67)^(AR67*12)-(AW67*((1+AU67)^(AR67*12)-1)/AU67))
+                                                $year_end_value_senario_1 = ($initial_investment*(1+$monthly_rate_of_return1)**($i*12)-($monthly_annuity_amount1*((1+$monthly_rate_of_return1)**($i*12)-1)/$monthly_rate_of_return1));
+                                                //Year End Value (AT67*(1+AV67)^(AR67*12)-(AX67*((1+AV67)^(AR67*12)-1)/AV67))
+                                                $year_end_value_senario_2 = ($initial_investment*(1+$monthly_rate_of_return2)**($i*12)-($monthly_annuity_amount2*((1+$monthly_rate_of_return2)**($i*12)-1)/$monthly_rate_of_return2));
+                                            
+                                            @endphp
+
+                                            <tr>
+                                                <td>{{$count_sec+$dif_sec+$i}}</td>
+                                                <td>₹ {{custome_money_format($monthly_annuity_amount1)}}</td>
+                                                <td>₹ {{custome_money_format($year_end_value_senario_1)}}</td>
+                                                <td>₹ {{custome_money_format($monthly_annuity_amount2)}}</td>
+                                                <td>₹ {{custome_money_format($year_end_value_senario_2)}}</td>
+                                            </tr>
+                                        @endfor
+                                    @else
+                                        <tr>
+                                            <th rowspan="2" style="vertical-align: middle;">@if(isset($current_age) && $current_age!=0) Age @else Year @endif</th>
+                                            @if($deferment=='no')
+                                            <th colspan="2">Scenario 1 @ {{$interest1?number_format((float)$interest1, 2, '.', ''):0}} %</th>
+                                            @else
+                                            <th colspan="2">Scenario 1 @ {{$distribution_phase_interest_rate_1?number_format((float)$distribution_phase_interest_rate_1, 2, '.', ''):0}} %</th>
+                                            @endif
+                                        </tr>
+                                        <tr>
+                                            <th>Monthly SWP</th>
+                                            <th>Year End Balance</th>
+                                        </tr>
+                                        @for($i=1;$i<=$period;$i++)
+                                            @php
+                                                //Year End Value (AS67*(1+AU67)^(AR67*12)-(AW67*((1+AU67)^(AR67*12)-1)/AU67))
+                                                $year_end_value_senario_1 = ($initial_investment*(1+$monthly_rate_of_return1)**($i*12)-($monthly_annuity_amount1*((1+$monthly_rate_of_return1)**($i*12)-1)/$monthly_rate_of_return1));
+
+                                            @endphp
+                                            <tr>
+                                                <td>{{$count_sec+$dif_sec+$i}}</td>
+                                                <td>₹ {{custome_money_format($monthly_annuity_amount1)}}</td>
+                                                <td>₹ {{custome_money_format($year_end_value_senario_1)}}</td>
+                                            </tr>
+                                        @endfor
+                                    @endif
+                                    </tbody>
+                                </table>
+
+                            @endif
+
+                            @if($include_taxation=='yes')
+                                <h5 class="text-center">Annual Tax & Post-Tax Withdrawal</h5>
+                                <table class="table table-bordered text-center" style="background: #fff;">
+                                    <tbody>
+                                    <tr>
+                                            <th rowspan="2" style="vertical-align: middle;">@if(isset($current_age) && $current_age!=0) Age @else Year @endif</th>
+                                            <th colspan="3">Scenario 1 @ {{$interest1?number_format((float)$interest1, 2, '.', ''):0}} %</th>
+                                            @if(isset($interest2))
+                                            <th colspan="3">Scenario 2 @ {{$interest2?number_format((float)$interest2, 2, '.', ''):0}} %</th>
+                                            @endif
+                                        </tr>
+                                        <tr>
+                                            <th>Annual Withdrawal</th>
+                                            <th>Tax Payable</th>
+                                            <th>Post - Tax Withdrawal</th>
+                                            @if(isset($interest2))
+                                            <th>Annual Withdrawal</th>
+                                            <th>Tax Payable</th>
+                                            <th>Post - Tax Withdrawal</th>
+                                            @endif
+                                    </tr>
+                                    @if($include_inflation=='yes')
+
+                                    @php
+                                        $yr=1;
+                                        $l147=0;
+                                        $q147=0;
+                                        $g103=0;
+
+                                        $w103=0;
+                                        $ab107=0;
+                                        $ag107=0;
+                                        for($i=1;$i<=$period*12;$i++)
+                                        {
+
+                                        $av41_inf=(1+($expected_inflation_rate/100))**(1/12)-1;
+                                        if($i==1)
+                                        {
+                                            $ax=$monthly_annuity_amount1;
+                                        }else{
+                                            $ax=$ax+$ax*$av41_inf;
+                                        }
+
+                                        $av37=(1+($interest1/100))**(1/12)-1;
+                                        $az=$ax/(1+$av37)**$i;
+
+                                        $bc63=$az*(1+($assumed_inflation_rate_for_indexation/100))**($yr-1);
+
+                                        if($yr<=$for_period_upto)
+                                        {
+                                            $bd63=$ax-$az;
+                                        }else{
+                                            $bd63=$ax-$bc63;
+                                        }
+
+                                        if($yr<=$for_period_upto)
+                                        {
+                                            $bg63=$bd63*($applicable_short_term_tax_rate/100);
+                                        }else{
+                                            $bg63=$bd63*($applicable_long_term_tax_rate/100);
+                                        }
+
+                                        $bh63=$ax-$bg63;
+
+                                        $g103+=$ax;
+                                        $l147+=$bg63;
+                                        $q147+=$bh63;
+                                        
+                                    //--------ggggggggg
+
+                                        if(isset($interest2))
+                                        {
+
+                                        $av41_inf=(1+($expected_inflation_rate/100))**(1/12)-1;
+                                        if($i==1)
+                                        {
+                                            $bo=$monthly_annuity_amount2;
+                                        }else{
+                                            $bo=$bo+$bo*$av41_inf;
+                                        }
+
+                                        $w103+=$bo;
+
+                                        $bl63=(1+($interest2/100))**(1/12)-1;
+                                        $bq63=$bo/(1+$bl63)**$i;
+
+                                        $bt63=$bq63*(1+($assumed_inflation_rate_for_indexation/100))**($yr-1);
+
+                                        if($yr<=$for_period_upto)
+                                        {
+                                            $bu63=$bo-$bq63;
+                                        }else{
+                                            $bu63=$bo-$bt63;
+                                        }
+
+                                        if($yr<=$for_period_upto)
+                                        {
+                                            $bx63=$bu63*($applicable_short_term_tax_rate/100);
+                                        }else{
+                                            $bx63=$bu63*($applicable_long_term_tax_rate/100);
+                                        }
+
+                                        $ab107+=$bx63;
+                                        $by63=$bo-$bx63;
+                                        $ag107+=$by63;
+
+                                        }
+
+                                        if($i%12==0)
+                                        {
+                                    @endphp
+                                    <!-- nnnnnnnnnnnnnn -->
+                                    <tr>
+                                        <td>{{$count_sec+$dif_sec+$yr}}</td>
+                                        <td>₹ {{custome_money_format($g103)}}</td>
+                                        <td>₹ {{custome_money_format($l147)}}</td>
+                                        <td>₹ {{custome_money_format($q147)}}</td>
+                                        @if(isset($interest2))
+                                        <td>₹ {{custome_money_format($w103)}}</td>
+                                        <td>₹ {{custome_money_format($ab107)}}</td>
+                                        <td>₹ {{custome_money_format($ag107)}}</td>
+                                        @endif
+                                    </tr>
+                                    @php
+                                            $g103=0;
+                                            $q147=0;
+                                            $l147=0;
+                                            
+                                            $w103=0;
+                                            $ag107=0;
+                                            $ab107=0;
+                                            $yr++;
+                                        }
+                                        }
+                                    @endphp
+
+                                    @else
+                                    @php
+                                        $yr=1;
+                                        $l147=0;
+                                        $q147=0;
+                                        $g103=0;
+
+                                        $w103=0;
+                                        $ab107=0;
+                                        $ag107=0;
+                                        for($i=1;$i<=$period*12;$i++)
+                                        {
+                                        //zzzzzzzzzzzz
+                                        
+                                        $ax=$monthly_annuity_amount1;
+                                        
+
+                                        $av37=(1+($interest1/100))**(1/12)-1;
+                                        $az=$ax/(1+$av37)**$i;
+
+                                        $bc63=$az*(1+($assumed_inflation_rate_for_indexation/100))**($yr-1);
+
+                                        if($yr<=$for_period_upto)
+                                        {
+                                            $bd63=$ax-$az;
+                                        }else{
+                                            $bd63=$ax-$bc63;
+                                        }
+
+                                        if($yr<=$for_period_upto)
+                                        {
+                                            $bg63=$bd63*($applicable_short_term_tax_rate/100);
+                                        }else{
+                                            $bg63=$bd63*($applicable_long_term_tax_rate/100);
+                                        }
+
+                                        $bh63=$ax-$bg63;
+
+                                        $g103+=$ax;
+                                        $l147+=$bg63;
+                                        $q147+=$bh63;
+                                        
+                                    //--------
+
+                                        if(isset($interest2))
+                                        {
+
+                                    
+                                        $bo=$monthly_annuity_amount2;
+                                    
+
+                                        $w103+=$bo;
+
+                                        $bl63=(1+($interest2/100))**(1/12)-1;
+                                        $bq63=$bo/(1+$bl63)**$i;
+
+                                        $bt63=$bq63*(1+($assumed_inflation_rate_for_indexation/100))**($yr-1);
+
+                                        if($yr<=$for_period_upto)
+                                        {
+                                            $bu63=$bo-$bq63;
+                                        }else{
+                                            $bu63=$bo-$bt63;
+                                        }
+
+                                        if($yr<=$for_period_upto)
+                                        {
+                                            $bx63=$bu63*($applicable_short_term_tax_rate/100);
+                                        }else{
+                                            $bx63=$bu63*($applicable_long_term_tax_rate/100);
+                                        }
+
+                                        $ab107+=$bx63;
+                                        $by63=$bo-$bx63;
+                                        $ag107+=$by63;
+
+                                        }
+
+                                        if($i%12==0)
+                                        {
+                                    @endphp
+                                    <!-- nnnnnnnnnnnnnn -->
+                                    <tr>
+                                        <td>{{$count_sec+$dif_sec+$yr}}</td>
+                                        <td>₹ {{custome_money_format($monthly_annuity_amount1*12)}}</td>
+                                        <td>₹ {{custome_money_format($l147)}}</td>
+                                        <td>₹ {{custome_money_format($q147)}}</td>
+                                        @if(isset($interest2))
+                                        <td>₹ {{custome_money_format($monthly_annuity_amount2*12)}}</td>
+                                        <td>₹ {{custome_money_format($ab107)}}</td>
+                                        <td>₹ {{custome_money_format($ag107)}}</td>
+                                        @endif
+                                    </tr>
+                                    @php
+                                            $g103=0;
+                                            $q147=0;
+                                            $l147=0;
+                                            
+                                            $w103=0;
+                                            $ag107=0;
+                                            $ab107=0;
+                                            $yr++;
+                                        }
+                                        }
+                                    @endphp
+
+                                    @endif
+
+                                    </tbody>
+                                </table>
+
+
+                                @endif
+
+                                @endif
+                                <p style="text-align: left; margin-top: 20px;">*Returns are not guaranteed. The above is for illustration purpose only.  Report Date : {{date('d/m/Y')}}</p>
+                            @endif
+
+
+                        </div>
+                        @if($is_note == 1 && isset($note) && !empty($note))
+                            <h1 class="midheading">Comments</h1>
+                            <div class="roundBorderHolder">
+                                <table class="table table-bordered text-center">
+                                    <tbody>
+                                        <tr>
+                                            <td>{{$note}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        @endif
+                        <p class="text-left">*Returns are not guaranteed. The above is for illustration purpose only.  Report Date : {{date('d/m/Y')}}</p>
+
+                        @include('frontend.calculators.suggested.output')
+                    </div>
+                    <div class="text-center" style="padding:83px 0 20px 0;">
+                        <a href="javascript:history.back()" class="btn btn-primary btn-round"><i class="fa fa-angle-left"></i> Back</a>
+                        
+                        @if($permission['is_download'])
+                            @if($permission['is_cover'])
+                                <a href="javascript:void(0);" onclick="openModal();" class="btn btn-primary btn-round btn-solid">Download / Print </a>
+                            @else
+                                <a href="{{route('frontend.monthlyAnnuityForLumpsumInvestment_pdf')}}" target="_blank" id="cmd" class="btn btn-primary btn-round btn-solid">Download / Print </a>
+                            @endif
+                            
+                        @else
+                            <a href="javascript:void(0);" class="btn btn-primary btn-round btn-solid" onclick="openDownloadPermissionModal();">Download / Print </a>
+                        @endif
+
+                        <a href="javascript:void(0)" class="btn btn-primary btn-round" data-toggle="modal" data-target="#mergeSalesPresentersOutput" style="width: 320px;">Save & Merge with Sales Presenters</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="btm-shape-prt">
+            <img class="img-fluid" src="{{asset('')}}/f/images/shape2.png" alt=""/>
+        </div>
+    </section>
+    <script type="text/javascript">
+        var base_url = "{{route('frontend.monthlyAnnuityForLumpsumInvestment_pdf')}}";
+    </script>
+    @include('frontend.calculators.modal')
+    @include('frontend.calculators.common.cover')
+
+    <div class="modal fade" id="mergeSalesPresentersOutput" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">SALES PRESENTER SOFTCOPY SAVED LIST</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form target="_blank" action="{{route('frontend.monthlyAnnuityForLumpsumInvestment_merge_download')}}" method="get">
+                        <input type="hidden" name="save_file_id" value="{{$id}}">
+                        <table>
+                            <tbody>
+                            <tr>
+                                <th></th>
+                                <th>Date</th>
+                                <th>List Name</th>
+                                <th>Valid Till</th>
+                            </tr>
+                            @if(isset($savelists) && count($savelists)>0)
+                                @foreach($savelists as $svlist)
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" name="saved_sp_list_id[]" value="{{$svlist['id']}}">
+                                        </td>
+                                        <td>{{$svlist['created_at']->format('d/m/Y - h:i A')}}</td>
+                                        <td>{{$svlist['title']}} ({{$svlist->softcopies->count()}} images)</td>
+                                        <td>{{date('d/m/Y - h:i A',strtotime($svlist['validate_at']))}}</td>
+                                    </tr>
+                                @endforeach
+                            @endif
+                            </tbody>
+                        </table>
+                        <h5 class="modal-title">SUGGESTED PRESENTATION LIST</h5>
+                        <table>
+                            <tbody>
+                            <tr>
+                                <th></th>
+                                <th style="text-align: left">List Name</th>
+                            </tr>
+                            @if(isset($suggestedlists) && count($suggestedlists)>0)
+                                @foreach($suggestedlists as $sglist)
+                                    <tr>
+                                        <td>
+                                            <input type="radio" name="saved_list_id" value="{{$sglist['id']}}">
+                                        </td>
+                                        <td style="text-align: left" >{{$sglist['title']}} ({{$sglist->softcopies->count()}} images)</td>
+                                    </tr>
+                                @endforeach
+                            @endif
+                            </tbody>
+                        </table>
+                        <h5 class="modal-title">WHERE YOU WANT TO MERGE?</h5>
+                        <table>
+                            <tbody>
+                            <tr>
+                                <td style="text-align: left">
+                                    <div class="form-check-inline">
+                                        <label class="form-check-label">
+                                            <input type="radio" class="form-check-input" value="before" name="mergeposition">Before
+                                        </label>
+                                    </div>
+                                    <div class="form-check-inline">
+                                        <label class="form-check-label">
+                                            <input type="radio" class="form-check-input" value="after" name="mergeposition" checked>After
+                                        </label>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        @if($permission['is_cover'])
+                            <h5 class="modal-title">&nbsp;</h5>
+                            <table>
+                                <tbody>
+                                <tr>
+                                    <td style="text-align: left">
+                                        <div class="form-check-inline">
+                                            <label class="form-check-label">
+                                                <input type="radio" class="form-check-input" value="1" name="is_cover" onchange="changeCover(1);">With Cover
+                                            </label>
+                                        </div>
+                                        <div class="form-check-inline">
+                                            <label class="form-check-label">
+                                                <input type="radio" class="form-check-input" value="0" name="is_cover"  onchange="changeCover(0);" checked>Without Cover
+                                            </label>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        @endif
+                        <h5 class="modal-title">&nbsp;</h5>
+                        <div id="pdf_title_line_id" style="display: none;">
+                            <div class="form-group">
+                                <input type="text" name="pdf_title_line1" class="form-control" id="pdf_title_line1" placeholder="PDF Title Line 1" value="" maxlength="22">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" name="pdf_title_line2" class="form-control" id="pdf_title_line2" placeholder="PDF Title Line 2" value="" maxlength="22">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" name="client_name" class="form-control" id="client_name" placeholder="Client Name" value="" maxlength="22">
+                            </div>
+                        </div>
+                        <p></p>
+                        <button type="button" class="btn btn-secondary btn-round" data-dismiss="modal">Back</button>
+                        <button type="submit" class="btn btn-primary btn-round" >Merge & Download</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection
+

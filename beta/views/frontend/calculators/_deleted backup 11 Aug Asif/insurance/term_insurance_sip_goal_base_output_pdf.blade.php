@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Result</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <style>
+        .clearfix:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        a {
+            color: #001028;
+            text-decoration: none;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            position: relative;
+            width: 21cm;
+            height: 29.7cm;
+            margin: 0 auto;
+            color: #001028;
+            font-size: 14px;
+        }
+
+        table {
+            width: 100%;
+            border-spacing: 0;
+            margin-bottom: 30px;
+        }
+
+        table th,
+        table td {
+            text-align: center;
+            border: 1px solid #b8b8b8;
+            padding: 5px 20px;
+            font-weight: normal;
+            color: #000;
+        }
+
+        table {
+            margin: 0;
+        }
+
+        table th {
+            font-weight: bold;
+            background: #a9f3ff;
+        }
+
+        .table-bordered th, .table-bordered td{
+            padding: 10px;
+            font-size: 18px;
+        }
+
+        h1 {
+            font-size: 20px !important;
+            color: #131f55 !important;
+            margin-bottom: 0 !important;
+            margin-top: 15px !important;
+        }
+
+        .page-break {
+            page-break-after: always;
+        }
+
+        @page {
+            margin-top: 160px
+        }
+
+        header {
+            position: fixed;
+            top: -130px;
+            left: 0px;
+            right: 94px;
+            height: 50px;
+        }
+
+        footer {
+            position: fixed;
+            bottom: -20px;
+            left: 0px;
+            right: 0px;
+            height: 50px;
+        }
+
+        .watermark{
+            font-size: 60px;
+            color: rgba(0,0,0,0.10);
+            position: absolute;
+            top: 42%;
+            left: 26%;
+            z-index: 1;
+            transform: rotate(-25deg);
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+
+@php
+    //Number of Months R9*12
+    $number_of_months = $term_insurance_period*12;
+     //Rate of Return (1+R11%)^(1/12)-1
+    $rate_of_return2 = (1+$rate_of_return/100)**(1/12)-1;
+     //Monthly SIP Amount (R7*AV28)/((1+AV28)*((1+AV28)^(AV27)-1))
+    $monthly_sip_amount = ($goal_amount*$rate_of_return2)/((1+$rate_of_return2)*((1+$rate_of_return2)**($number_of_months)-1));
+
+@endphp
+
+<main style="width: 760px; margin-left: 20px;">
+    <SALESPRESENTER_BEFORE/>
+    <header>
+        <table style="border:0 !important;" cellpadding="0" cellspacing="0">
+            <tbody>
+            <tr>
+                <td style="text-align:left; border:0;" align="left">&nbsp;</td>
+                <td style="text-align:right; border:0;" align="left" valign="middle"><img style="display:inline-block;" src="{{$company_logo}}" alt=""></td>
+            </tr>
+            </tbody>
+        </table>
+    </header>
+
+    <div style="padding: 0 15%;">
+        <h1 style="color: #000;font-size:16px;margin-bottom:20px !important;text-align:center;">Term Insurance + SIP (Goal Based) @if(isset($clientname)) Proposal <br> For {{$clientname?$clientname:''}} @else Planning @endif</h1>
+        <table>
+            <tbody>
+            <tr>
+                <td style="text-align: left;Width:50%;">
+                    <strong>Current Age</strong>
+                </td>
+                <td style="text-align: left;Width:50%;">
+                    {{$current_age?$current_age:0}} Years
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: left;Width:50%;">
+                    <strong>Term Insurance / Goal Amount</strong>
+                </td>
+                <td style="text-align: left;Width:50%;">
+                    <span style="font-family: DejaVu Sans; sans-serif;">&#8377;</span> {{custome_money_format($goal_amount)}}
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: left;Width:50%;">
+                    <strong>Term Insurance Period</strong>
+                </td>
+                <td style="text-align: left;Width:50%;">
+                    {{$term_insurance_period?$term_insurance_period:0}} Years
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: left;Width:50%;">
+                    <strong>Term Insurance Annual Premium</strong>
+                </td>
+                <td style="text-align: left;Width:50%;">
+                    <span style="font-family: DejaVu Sans; sans-serif;">&#8377;</span> {{custome_money_format($term_insurance_annual_premium)}}
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+    <div style="padding: 0 25%;">
+        <h1 style="color: #000;font-size:16px;margin-bottom:5px !important;margin-top: 30px !important;text-align:center;"> Monthly SIP Required <br>
+            To Achieve Goal @ {{number_format($rate_of_return, 2, '.', '')}} %
+        </h1>
+        <table class="table table-bordered text-center">
+            <tbody>
+            <tr>
+                <td>
+                    <span style="font-family: DejaVu Sans; sans-serif;">&#8377;</span> {{custome_money_format($monthly_sip_amount)}}
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <p>
+        If you take Term Cover of  <b><span style="font-family: DejaVu Sans; sans-serif;">&#8377;</span></b> {{custome_money_format($goal_amount)}} and do Monthly SIP of <b><span style="font-family: DejaVu Sans; sans-serif;">&#8377;</span> {{custome_money_format($monthly_sip_amount)}}</b> you may be
+        assured of minimum payout of<br> <b><span style="font-family: DejaVu Sans; sans-serif;">&#8377;</span> {{custome_money_format($goal_amount)}}</b> either on survival at age <b>{{$term_insurance_period+$current_age}}</b> or unfortunate event of death, subject to fund performance at Assumed rate of return mentioned herewith.
+    </p>
+    <p style="text-align: left">
+       @php
+        $note_data1 = \App\Models\Calculator_note::where('category','summery')->where('calculator','Term_Insurance_+_SIP_(Goal_Based)')->first();
+        if(!empty($note_data1)){
+        @endphp
+        {!!$note_data1->description!!}
+        @php } @endphp
+    </p>
+    @include('frontend.calculators.common.footer')
+
+    @if(isset($report) && $report=='detailed')
+        <div class="page-break"></div>
+            <header>
+                <table style="border:0 !important;" cellpadding="0" cellspacing="0">
+                    <tbody>
+                    <tr>
+                        <td style="text-align:left; border:0;" align="left">&nbsp;</td>
+                        <td style="text-align:right; border:0;" align="left" valign="middle"><img style="display:inline-block;" src="{{$company_logo}}" alt=""></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </header>
+            <h1 style="background-color: #131f55;color:#fff !important;font-size:20px;padding:10px;text-align:center;">
+                Yearwise Projected Value
+            </h1>
+            <table>
+                <tbody>
+                <tr>
+                    <th>Age</th>
+                    <th style="width: 20%">Life Cover</th>
+                    <th>Annual Investment<br>(Insurance Premium + SIP)</th>
+                    <th>Year End SIP Value @ {{$rate_of_return?number_format($rate_of_return, 2, '.', ''):0}} %</th>
+                    <th>In case of Death<br> (Life Cover + SIP Value)</th>
+                </tr>
+                @for($i=1;$i<=$term_insurance_period;$i++)
+                    @php
+                        //Annual Investment (Insurance Premium + SIP) AS59+AT59*12
+                        $annual_investment = $term_insurance_annual_premium+$monthly_sip_amount*12;
+                        //Year End Value  (1+AW59)*AT59*(((1+AW59)^(AV59*12)-1)/AW59)
+                        $year_end_value = (1+$rate_of_return2)*$monthly_sip_amount*(((1+$rate_of_return2)**($i*12)-1)/$rate_of_return2);
+                        $current_age++;
+                    @endphp
+                    <tr>
+                        <td>{{$current_age}}</td>
+                        <td><span style="font-family: DejaVu Sans; sans-serif;">&#8377;</span> {{custome_money_format($goal_amount)}}</td>
+                        <td><span style="font-family: DejaVu Sans; sans-serif;">&#8377;</span> {{custome_money_format($annual_investment)}}</td>
+                        <td><span style="font-family: DejaVu Sans; sans-serif;">&#8377;</span> {{custome_money_format($year_end_value)}}</td>
+                        <td><span style="font-family: DejaVu Sans; sans-serif;">&#8377;</span> {{custome_money_format($goal_amount+$year_end_value)}}</td>
+                    </tr>
+                    @if($i%25==0 && $term_insurance_period>25  && $term_insurance_period>$i)
+                            </tbody>
+                        </table>
+                            @include('frontend.calculators.common.footer')
+                            <div class="page-break"></div>
+                            <header>
+                                <table style="border:0 !important;" cellpadding="0" cellspacing="0">
+                                    <tbody>
+                                    <tr>
+                                        <td style="text-align:left; border:0;" align="left">&nbsp;</td>
+                                        <td style="text-align:right; border:0;" align="left" valign="middle"><img style="display:inline-block;" src="{{$company_logo}}" alt=""></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </header>
+                            <table>
+                                <tbody>
+                                <tr>
+                                    <th>Year</th>
+                                    <th style="width: 20%">Life Cover</th>
+                                    <th>Annual Investment<br>(Insurance Premium + SIP)</th>
+                                    <th>Year End SIP Value @ {{$rate_of_return?number_format($rate_of_return, 2, '.', ''):0}} %</th>
+                                    <th>In case of Death<br> (Life Cover + SIP Value)</th>
+                                </tr>
+                                @endif
+                @endfor
+
+                </tbody>
+            </table>
+        @php
+        $note_data2 = \App\Models\Calculator_note::where('category','cashflow')->where('calculator','Term_Insurance_+_SIP_(Goal_Based)')->first();
+        if(!empty($note_data2)){
+        @endphp
+        {!!$note_data2->description!!}
+        @php } @endphp
+            <p>
+                Report Date : {{date('d/m/Y')}}
+            </p>
+        @include('frontend.calculators.common.footer')
+@endif
+    @include('frontend.calculators.suggested.pdf')
+</main>
+</body>
+</html>

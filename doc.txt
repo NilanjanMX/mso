@@ -1,0 +1,6 @@
+views\frontend\calculators\futurevaluelumpsumsip\future_value_of_lumpsum_sip_output.blade.
+
+views\frontend\calculators\future_value_of_sip_stp\output.blade.php
+views\frontend\calculators\siplumpsuminvestmentrequiredfortargetfuturevalue\output.blade.php
+
+views\frontend\calculators\sip_or_stp_required_for_target_future_value\output.blade.php

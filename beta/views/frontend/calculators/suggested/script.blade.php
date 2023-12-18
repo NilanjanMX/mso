@@ -1,0 +1,519 @@
+<script>
+
+
+    $(document).on("click",".rcheck_c_n",function(e){
+
+                if($(".rcheck_c_n:checkbox:checked").length > 7)
+                {
+                    e.preventDefault();
+                    alert("Maximum 7 column can selected!");
+                }else{
+                    return true;
+                }
+
+    });
+    $(document).ready(function() {
+
+        $(".maxtwodigit").attr('maxlength','2');
+        $('.number').keypress(function(event) {
+            var $this = $(this);
+            var text = $(this).val();
+            if ((event.which == 46) && (text.indexOf('.') == -1)) {
+                setTimeout(function() {
+                    if ($this.val().substring($this.val().indexOf('.')).length > 3) {
+                        $this.val($this.val().substring(0, $this.val().indexOf('.') + 3));
+                    }
+                }, 1);
+            }
+
+            if ((text.indexOf('.') != -1) &&
+                (text.substring(text.indexOf('.')).length > 2) &&
+                (event.which != 0 && event.which != 8) &&
+                ($(this)[0].selectionStart >= text.length - 2)) {
+                event.preventDefault();
+            }
+        });
+
+        console.log($('.include-performance-container').length);
+        //$('.js-example-basic-single').select2(); save_title
+        if($('.include-performance-container').length>0) {
+            $('.include-performance-container').hide();
+        }
+
+        $('.save_only').click(function() {
+          setTimeout(function(){
+            $("#save_title").focus();
+          },500);
+        });
+
+
+    });
+    //Suggetion
+    $("#is_suggest").click( function(){
+        if( $(this).is(':checked') ){
+            $('.include-performance-container').show(500);
+        }else {
+            $('.include-performance-container').hide(500);
+        }
+    });
+
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+        }
+    });
+
+    function getAssetType() {
+        $.ajax({
+            url: "{{ url('/suggested/get-asset-type') }}",
+            method: 'get',
+            success: function (result) {
+                var options = '<option value="">All</option>';
+                $(result).each(function (index, value) {
+                    options += '<option value="' + value.asset_code + '">' + value.asset_type + '</option>';
+                });
+                $('#asset').html(options);
+                //$('#asset').select2();
+            }
+        });
+        //console.log("k");
+    }
+
+    function getAMC() {
+        $.ajax({
+            url: "{{ url('/suggested/get-amc') }}",
+            method: 'get',
+            success: function (result) {
+                var amcoptions = '';
+                $(result).each(function (index, value) {
+                    amcoptions += '<option value="' + value.AMC_CODE + '">' + value.FUND + '</option>';
+                });
+                $('#fund').html(amcoptions);
+               // $('#fund').select2();
+            }
+        });
+    }
+
+    function getCategory() {
+        $.ajax({
+            url: "{{ url('/suggested/get-category') }}",
+            method: 'get',
+            data: {
+                asset: $('#asset').val(),
+                fund: $('#fund').val()
+            },
+            success: function (result) {
+                var catoptions = '<option value="">All</option>';
+                $(result).each(function (index, value) {
+                    catoptions += '<option value="' + value.CLASSCODE + '">' + value.CLASSNAME + '</option>';
+                });
+                $('#category').html(catoptions);
+                //$('#category').select2();
+            }
+        });
+    }
+
+    $.fn.select2.defaults.set('matcher', function(params, data) {
+        // If there are no search terms, return all of the data
+        if ($.trim(params.term) === '') {
+            return data;
+        }
+
+        // Do not display the item if there is no 'text' property
+        if (typeof data.text === 'undefined') {
+            return null;
+        }
+
+        var words = params.term.toUpperCase().split(" ");
+
+        for (var i = 0; i < words.length; i++) {
+            if (data.text.toUpperCase().indexOf(words[i]) < 0) {
+                return null;
+            }
+        }
+
+        return data;
+    });
+
+    function GetSchemeDirreg(){
+
+        $.ajax({
+            url: "{{ url('/suggested/get-scheme-dirreg') }}",
+            method: 'get',
+            data: {
+                asset: $('#asset').val(),
+                fund: $('#fund').val(),
+                category: $('#category').val(),
+                option: $('#option').val(),
+                type: $('#type').val()
+            },
+            success: function (result) {
+                var schemeoptions = '<option value=""> </option>';
+                $(result).each(function (index, value) {
+                    schemeoptions += '<option value="' + value.SCHEMECODE + '">' + value.S_NAME + '</option>';
+                });
+                $('#scheme').html(schemeoptions);
+                $('#scheme').select2({
+                    placeholder: "Search Scheme"
+                });
+            }
+        });
+    }
+
+    function GetSchemeDirregFP(){
+        
+        $.ajax({
+            url: "{{ url('/suggested/get-scheme-dirreg') }}",
+            method: 'get',
+            data: {
+                asset: $('#asset').val(),
+                fund: $('#fund').val(),
+                category: $('#category').val(),
+                option: $('#option').val(),
+                type: $('#type').val()
+            },
+            success: function (result) {
+                var schemeoptions = '<option value=""> </option>';
+                $(result).each(function (index, value) {
+                    schemeoptions += '<option value="' + value.SCHEMECODE + '">' + value.S_NAME + '</option>';
+                });
+                $('#scheme_fp').html(schemeoptions);
+                $('#scheme_fp').select2({
+                    placeholder: "Search Scheme"
+                });
+            }
+        });
+    }
+
+    function GetSchemeReturnswithNAV(){
+        var performance = $('input[name="include_performance"]:checked').val();
+        if(!performance){
+            performance="with_performance";
+        }
+
+        $.ajax({
+            url: "{{ url('/suggested/get-scheme-return-with-nav') }}",
+            method: 'get',
+            data: {
+                schemecode: $('#scheme').val(),
+                option: $('#option').val(),
+                performance: performance,
+                trdata: $('table.suggested-scheme-details tr').length
+            },
+            success: function (result) {
+                if(result.length>0) {
+                    var schemecode = result[0]['Schemecode'];
+                    var option = result[0]['OPTION'];
+                    var asset_type = result[0]['ASSET_TYPE'];
+
+                    var rowCount = -3 + $('table.suggested-scheme-details tr').length;
+
+                    if(result[0]['AUM'] == ''){
+                        var AUM = '0.00';
+                    }else{
+                        var AUM = parseInt(result[0]['AUM']/100);
+                    }
+
+                    if(result[0]['1WEEKRET'] == ''){
+                        var WEEKRET1 = '0.00';
+                    }else{
+                        var WEEKRET1 = parseFloat(result[0]['1WEEKRET']).toFixed(2);
+                    }
+
+                     if(result[0]['1MONTHRET'] == ''){
+                            var MONTHRET1 = '0.00';
+                     }else{
+                            var MONTHRET1 = parseFloat(result[0]['1MONTHRET']).toFixed(2);
+                     }
+
+                     if(result[0]['3MONTHRET'] == ''){
+                            var MONTHRET3 = '0.00';
+                     }else{
+                            var MONTHRET3 = parseFloat(result[0]['3MONTHRET']).toFixed(2);
+                     }
+
+                     if(result[0]['6MONTHRET'] == ''){
+                            var MONTHRET6 = '0.00';
+                     }else{
+                            var MONTHRET6 = parseFloat(result[0]['6MONTHRET']).toFixed(2);
+                     }
+
+                     if(result[0]['1YEARRET'] == ''){
+                            var YEARRET1 = '0.00';
+                     }else{
+                            var YEARRET1 = parseFloat(result[0]['1YEARRET']).toFixed(2);
+                     }
+
+                     if(result[0]['3YEARRET'] == ''){
+                            var YEARRET3 = '0.00';
+                     }else{
+                            var YEARRET3 = parseFloat(result[0]['3YEARRET']).toFixed(2);
+                     }
+
+                     if(result[0]['5YEARRET'] == ''){
+                            var YEARRET5 = '0.00';
+                     }else{
+                            var YEARRET5 = parseFloat(result[0]['5YEARRET']).toFixed(2);
+                     }
+
+                     if(result[0]['10YEARRET'] == ''){
+                            var YEARRET10 = '0.00';
+                     }else{
+                            var YEARRET10 = parseFloat(result[0]['10YEARRET']).toFixed(2);
+                     }
+
+                     if(result[0]['PERCHANGE'] == ''){
+                            var PERCHANGE = '0.00';
+                     }else{
+                            var PERCHANGE = parseFloat(result[0]['PERCHANGE']).toFixed(2);
+                     }
+
+                     if(result[0]['INCRET'] == ''){
+                            var INCRET = '0.00';
+                     }else{
+                            var INCRET = parseFloat(result[0]['INCRET']).toFixed(2);
+                     }
+
+                    var trdata = "<tr><td><strong>" + result[0]['S_NAME'] + "</strong> <div class='font-italic' style='color: #458ff6;padding: 5px 0px;'>" + result[0]['ASSET_TYPE'] + "</div><div class='font-italic'> " + result[0]['CATEGORY'] + "</div></td>" +
+                        "<td>" + AUM + "</td>" +
+                        "<td>" + PERCHANGE + "%</td>" +
+                        "<td>" + WEEKRET1 + "%</td>" +
+                        "<td>" + MONTHRET1 + "%</td>" +
+                        "<td>" + MONTHRET3 + "%</td>" +
+                        "<td>" + MONTHRET6 + "%</td>" +
+                        "<td>" + YEARRET1 + "%</td>" +
+                        "<td>" + YEARRET3 + "%</td>" +
+                        "<td>" + YEARRET5 + "%</td>" +
+                        "<td>" + YEARRET10 + "%</td>" +
+                        "<td>" + INCRET + "%</td>" +
+                        "<td><select class='number-wrapper' name='scheme_type[]' style='border: 1px solid #F1F3F4;height: 21px;color: #000;font-size: 13px;width: 88px;padding: 0px 5px;'><option value=''></option><option>SIP</option><option>Lumpsum</option></select></td>" +
+                        "<td><span class='number-wrapper' style='padding: 0px 5px;'><input type=\"number\" name=\"scheme_amount[]\"  style='width: 75px;'> ₹</span></td>" +
+                        "<td style='text-align: center;'><a href=\"#\" class=\"text-danger remove-suggested-tr\" dataid="+rowCount+" title=\"Remove\"><img src='{{asset('')}}/f/images/delblack.png'></a>";
+                    trdata += '<input class="schemecode-input" type="hidden" name="schemecode[]" value="' + asset_type + "_" + schemecode  + "_" + option + '" /> </td></tr>';
+
+                    $('table.suggested-scheme-details tbody').append(trdata);
+                    if ($('table.suggested-scheme-details tr').length > 1){
+                        $('.suggested-scheme-details').css('display','block');
+                    }
+                    // <i class=\"fa fa-trash\"></i>
+                    /*$('#option').prop('selectedIndex',0).trigger("change");
+                    $('#asset').empty();
+                    getAssetType();
+                    $('#fund').empty();
+                    getAMC();
+                    $('#category').empty();
+                    getCategory();
+                    $('#type').prop('selectedIndex',0).trigger("change");
+                    $('#scheme').empty();*/
+                    GetSchemeDirreg();
+                }
+            }
+        });
+    }
+    
+    
+    function GetSchemeReturnswithNAVFP(){
+        var performance = $('input[name="include_performance"]:checked').val();
+        if(!performance){
+            performance="with_performance";
+        }
+
+        $.ajax({
+            url: "{{ url('/suggested/get-scheme-return-with-nav') }}",
+            method: 'get',
+            data: {
+                schemecode: $('#scheme_fp').val(),
+                option: $('#option').val(),
+                performance: performance,
+                trdata: $('table.suggested-scheme-details tr').length
+            },
+            success: function (result) {
+                if(result.length>0) {
+                    var schemecode = result[0]['Schemecode'];
+                    var option = result[0]['OPTION'];
+                    var asset_type = result[0]['ASSET_TYPE'];
+
+                    var rowCount = -3 + $('table.suggested-scheme-details tr').length;
+
+                    if(result[0]['AUM'] == ''){
+                        var AUM = '0.00';
+                    }else{
+                        var AUM = parseInt(result[0]['AUM']/100);
+                    }
+
+                    if(result[0]['1WEEKRET'] == ''){
+                        var WEEKRET1 = '0.00';
+                    }else{
+                        var WEEKRET1 = parseFloat(result[0]['1WEEKRET']).toFixed(2);
+                    }
+
+                     if(result[0]['1MONTHRET'] == ''){
+                            var MONTHRET1 = '0.00';
+                     }else{
+                            var MONTHRET1 = parseFloat(result[0]['1MONTHRET']).toFixed(2);
+                     }
+
+                     if(result[0]['3MONTHRET'] == ''){
+                            var MONTHRET3 = '0.00';
+                     }else{
+                            var MONTHRET3 = parseFloat(result[0]['3MONTHRET']).toFixed(2);
+                     }
+
+                     if(result[0]['6MONTHRET'] == ''){
+                            var MONTHRET6 = '0.00';
+                     }else{
+                            var MONTHRET6 = parseFloat(result[0]['6MONTHRET']).toFixed(2);
+                     }
+
+                     if(result[0]['1YEARRET'] == ''){
+                            var YEARRET1 = '0.00';
+                     }else{
+                            var YEARRET1 = parseFloat(result[0]['1YEARRET']).toFixed(2);
+                     }
+
+                     if(result[0]['3YEARRET'] == ''){
+                            var YEARRET3 = '0.00';
+                     }else{
+                            var YEARRET3 = parseFloat(result[0]['3YEARRET']).toFixed(2);
+                     }
+
+                     if(result[0]['5YEARRET'] == ''){
+                            var YEARRET5 = '0.00';
+                     }else{
+                            var YEARRET5 = parseFloat(result[0]['5YEARRET']).toFixed(2);
+                     }
+
+                     if(result[0]['10YEARRET'] == ''){
+                            var YEARRET10 = '0.00';
+                     }else{
+                            var YEARRET10 = parseFloat(result[0]['10YEARRET']).toFixed(2);
+                     }
+
+                     if(result[0]['PERCHANGE'] == ''){
+                            var PERCHANGE = '0.00';
+                     }else{
+                            var PERCHANGE = parseFloat(result[0]['PERCHANGE']).toFixed(2);
+                     }
+
+                     if(result[0]['INCRET'] == ''){
+                            var INCRET = '0.00';
+                     }else{
+                            var INCRET = parseFloat(result[0]['INCRET']).toFixed(2);
+                     }
+
+                    var trdata = "<tr><td><strong>" + result[0]['S_NAME'] + "</strong></td>" +
+                        "<td>" + result[0]['ASSET_TYPE'] + "</td>" +
+                        "<td>" + result[0]['CATEGORY'] + "</td>" +
+                        "<td>" + AUM + "</td>" +
+                        "<td>" + PERCHANGE + "%</td>" +
+                        "<td>" + WEEKRET1 + "%</td>" +
+                        "<td>" + MONTHRET1 + "%</td>" +
+                        "<td>" + MONTHRET3 + "%</td>" +
+                        "<td>" + MONTHRET6 + "%</td>" +
+                        "<td>" + YEARRET1 + "%</td>" +
+                        "<td>" + YEARRET3 + "%</td>" +
+                        "<td>" + YEARRET5 + "%</td>" +
+                        "<td>" + YEARRET10 + "%</td>" +
+                        "<td>" + INCRET + "%</td>" +
+                        "<td><a href=\"#\" class=\"text-danger remove-suggested-tr\" dataid="+rowCount+" title=\"Remove\"><i class=\"fa fa-trash\"></i></a>";
+                    trdata += '<input class="schemecode-input" type="hidden" name="schemecode[]" value="' + asset_type + "_" + schemecode  + "_" + option + '" /> </td></tr>';
+
+                    $('table.suggested-scheme-details tbody').append(trdata);
+                    if ($('table.suggested-scheme-details tr').length > 1){
+                        $('.suggested-scheme-details').css('display','block');
+                    }
+                    /*$('#option').prop('selectedIndex',0).trigger("change");
+                    $('#asset').empty();
+                    getAssetType();
+                    $('#fund').empty();
+                    getAMC();
+                    $('#category').empty();
+                    getCategory();
+                    $('#type').prop('selectedIndex',0).trigger("change");
+                    $('#scheme').empty();*/
+                    GetSchemeDirregFP();
+                }
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        if ($('#scheme').length>0) {
+            //$('#option').select2();
+            //$('#type').select2();
+            getAssetType();
+            getAMC();
+            getCategory();
+            GetSchemeDirreg();
+        }
+        if ($('#scheme_fp').length>0) {
+            //$('#option').select2();
+            //$('#type').select2();
+            getAssetType();
+            getAMC();
+            getCategory();
+            GetSchemeDirregFP();
+        }
+    });
+
+    $('#asset, #fund').on('change',function () {
+        getCategory();
+    });
+
+    $('#option, #asset, #fund, #category, #type').on('change',function () {
+        
+        @if(Request::path() == "calculators/fund-performance/mylist")
+            GetSchemeDirregFP();
+        @else
+            GetSchemeDirreg();
+        @endif
+    });
+
+    $('#scheme').on('change',function () {
+        GetSchemeReturnswithNAV();
+    });
+    $('#scheme_fp').on('change',function () {
+        GetSchemeReturnswithNAVFP();
+    });
+    $(document).on('click','.remove-suggested-tr',function(e) {
+        e.preventDefault();
+        $.ajax({
+            url: "{{ url('/suggested/reset-suggested-scheme') }}",
+            method: 'get',
+            data: { id: $(this).attr('dataid') },
+            success: function (result) {  }
+        });
+        $(this).closest('tr').remove();
+        if ($('table.suggested-scheme-details tr').length < 2){
+            $('.suggested-scheme-details').css('display','none');
+        }
+    });
+
+    $('input:radio[name="suggestedlist_type"]').change(
+        function(){
+            if ($(this).is(':checked') && $(this).val() == 'customlist') {
+                $('.customlist-suggested-scheme-container').css('display','block');
+                $('.categorylist-suggested-scheme-container').css('display','none');
+                $('.createlist-suggested-scheme-container').css('display','none');
+
+            }else if ($(this).is(':checked') && $(this).val() == 'categorylist'){
+                $('.customlist-suggested-scheme-container').css('display','none');
+                $('.categorylist-suggested-scheme-container').css('display','block');
+                $('.createlist-suggested-scheme-container').css('display','none');
+                //$('#mycategorylist').DataTable({searching: false, bSort: false, info: false});
+            }else {
+                $('.customlist-suggested-scheme-container').css('display','none');
+                $('.categorylist-suggested-scheme-container').css('display','none');
+                $('.createlist-suggested-scheme-container').css('display','block');
+            }
+        });
+    $(document).ready(function () {
+        if ($('#mycustomelist').length>0){
+            $('#mycustomelist').DataTable({searching: false, bSort: false, info: false});
+        }
+        if ($('#mycategorylist').length>0){
+            $('#mycategorylist').DataTable({searching: false, bSort: false, info: false});
+        }
+    });
+
+</script>

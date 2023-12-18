@@ -1,0 +1,237 @@
+@extends('layouts.frontend')
+
+@section('js_after')
+    <script>
+        $("#is_client").click( function(){
+            if( $(this).is(':checked') ){
+                $('input[name="clientname"]').prop("readonly", false);
+            }else {
+                $('input[name="clientname"]').prop("readonly", true);
+            }
+        });
+
+        jQuery.validator.addMethod("twodecimalplaces", function(value, element) {
+            return this.optional(element) || /^\d{0,4}(\.\d{0,2})?$/i.test(value);
+        }, "You must include two decimal places");
+
+        var validator = $(".js-validate-form").validate({
+            errorElement: "em",
+            errorContainer: $("#warning, #summary"),
+            errorPlacement: function(error, element) {
+                error.appendTo(element.parent());
+            },
+            rules: {
+                current_age: {
+                    required: true,
+                    digits: true,
+                    maxlength: 2,
+                    range: [1, 99]
+                },
+                annual_investment: {
+                    required: true,
+                    digits: true,
+                    maxlength: 10,
+                    range: [100, 9999999999]
+                },
+                term_insurance_sum_assured: {
+                    required: true,
+                    digits: true,
+                    maxlength: 10,
+                    range: [10000, 9999999999]
+                },
+                term_insurance_period: {
+                    required: true,
+                    digits: true,
+                    maxlength: 2,
+                    range: [1, 99]
+                },
+                term_insurance_annual_premium: {
+                    required: true,
+                    digits: true,
+                    maxlength: 10,
+                    range: [100, 99999999]
+                },
+                rate_of_return: {
+                    required: true,
+                    number: true,
+                    twodecimalplaces: true,
+                    range: [0.10, 15.00]
+                }
+            }
+        });
+    </script>
+
+    @if(old('client')!='')
+        <script>
+            $('input[name="clientname"]').prop("readonly", false);
+        </script>
+    @else
+        <script>
+            $('input[name="clientname"]').prop("readonly", true);
+        </script>
+    @endif
+
+@endsection
+
+@section('content')
+    <div class="banner">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <h2 class="page-title">CALCULATORS CUM CLIENT PROPOSALS</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    <section class="main-sec">
+        <div class="container">
+            <div class="row">
+                @include('frontend.calculators.left_sidebar')
+                <div class="col-md-12">
+                    <h3 class="mb-3 text-center">Term Insurance + SIP</h3>
+                    <div class="card sip-calculator">
+                        @include('frontend.calculators.common_bio')
+                        <div class="card-body">
+                        <form class="js-validate-form" action="{{route('frontend.termInsuranceSIPOutput')}}" method="post">
+                            @csrf
+                            <div class="form-group row">
+                                <label class="col-sm-5 col-form-label">Current Age</label>
+                                <div class="col-sm-7">
+                                    <input type="text" class="form-control maxtwodigit {{ $errors->has('current_age') ? ' is-invalid' : '' }}" name="current_age" value="{{old('current_age')}}"  required>
+                                    <div class="cal-icon">
+                                        Yrs
+                                    </div>
+                                    @if ($errors->has('current_age'))
+                                        <div class="invalid-feedback" role="alert">
+                                            <strong>{{ $errors->first('current_age') }}</strong>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-5 col-form-label">Annual Outlay</label>
+                                <div class="col-sm-7">
+                                    <input type="text" class="form-control {{ $errors->has('annual_investment') ? ' is-invalid' : '' }}" name="annual_investment" value="{{old('annual_investment')}}" maxlength="10"  required>
+                                    <div class="cal-icon">
+                                        ₹
+                                    </div>
+                                    @if ($errors->has('annual_investment'))
+                                        <div class="invalid-feedback" role="alert">
+                                            <strong>{{ $errors->first('annual_investment') }}</strong>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-5 col-form-label">Term Insurance Sum Assured</label>
+                                <div class="col-sm-7">
+                                    <input type="text" class="form-control {{ $errors->has('term_insurance_sum_assured') ? ' is-invalid' : '' }}" name="term_insurance_sum_assured" value="{{old('term_insurance_sum_assured')}}" maxlength="10"  required>
+                                    <div class="cal-icon">
+                                        ₹
+                                    </div>
+                                    @if ($errors->has('term_insurance_sum_assured'))
+                                        <div class="invalid-feedback" role="alert">
+                                            <strong>{{ $errors->first('term_insurance_sum_assured') }}</strong>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-5 col-form-label">Term Insurance Period</label>
+                                <div class="col-sm-7">
+                                    <input type="text" class="form-control maxtwodigit {{ $errors->has('term_insurance_period') ? ' is-invalid' : '' }}" name="term_insurance_period" value="{{old('term_insurance_period')}}"  required>
+                                    <div class="cal-icon">
+                                        Yrs
+                                    </div>
+                                    @if ($errors->has('term_insurance_period'))
+                                        <div class="invalid-feedback" role="alert">
+                                            <strong>{{ $errors->first('term_insurance_period') }}</strong>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-5 col-form-label">Term Insurance Annual Premium</label>
+                                <div class="col-sm-7">
+                                    <input type="text" class="form-control {{ $errors->has('term_insurance_annual_premium') ? ' is-invalid' : '' }}" name="term_insurance_annual_premium" value="{{old('current_market_value_of_investment')}}" maxlength="10"  required>
+                                    <div class="cal-icon">
+                                        ₹
+                                    </div>
+                                    @if ($errors->has('term_insurance_annual_premium'))
+                                        <div class="invalid-feedback" role="alert">
+                                            <strong>{{ $errors->first('term_insurance_annual_premium') }}</strong>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-5 col-form-label">Assumed Rate Of Return On Balance Investment </label>
+                                <div class="col-sm-7">
+                                    <input type="text" class="form-control number {{ $errors->has('rate_of_return') ? ' is-invalid' : '' }}" name="rate_of_return" value="{{old('rate_of_return')}}"   required>
+                                    <div class="cal-icon">
+                                        %
+                                    </div>
+                                    @if ($errors->has('rate_of_return'))
+                                        <div class="invalid-feedback" role="alert">
+                                            <strong>{{ $errors->first('rate_of_return') }}</strong>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label class="col-sm-5 col-form-label">
+                                    <input id="is_client" type="checkbox" name="client" value="1" @if(old('client')=='1') checked  @endif> Add Client Name
+                                </label>
+                                <div class="col-sm-7">
+                                    <input type="text" class="form-control {{ $errors->has('clientname') ? ' is-invalid' : '' }}" name="clientname"   value="{{old('clientname')}}" maxlength="30">
+                                    <div class="cal-icon">
+                                        <i class="fa fa-user"></i>
+                                    </div>
+                                    @if ($errors->has('clientname'))
+                                        <div class="invalid-feedback" role="alert">
+                                            <strong>{{ $errors->first('clientname') }}</strong>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-5 col-form-label">Get Report</label>
+                                <div class="col-sm-7">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="report" id="inlineRadio1" value="summary" @if(old('report')=='summary') checked  @endif>
+                                        <label class="form-check-label" for="inlineRadio1">Summary Report</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="report" id="inlineRadio2" value="detailed" @if(old('report')=='summary')  @else checked  @endif >
+                                        <label class="form-check-label" for="inlineRadio2">Detailed Report</label>
+                                    </div>
+                                </div>
+                            </div>
+                            @include('frontend.calculators.suggested.form')
+                            <div class="form-group row">
+
+                                <div class="offset-5 col-sm-7">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <button type="button" onclick="window.history.go(-1); return false;" class="btn btn-primary btn-round btn-block"><i class="fa fa-angle-left"></i> Back</button>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <button class="btn btn-primary btn-round btn-block">Calculate</button>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="btm-shape-prt">
+            <img class="img-fluid" src="{{asset('')}}/f/images/shape2.png" alt="" />
+        </div>
+    </section>
+
+@endsection
