@@ -646,10 +646,50 @@
             // console.log(all_data);
         }
 
-        function changeRowCheckbox(){
+        function highligts() {
             var filter_brand_list_id = document.getElementById('mf_scanner_list').querySelectorAll('input[class=schemecheckbox]:checked');
 
-            console.log("kkk",filter_brand_list_id);
+            console.log("kkk", filter_brand_list_id);
+            var no_checked_id = document.getElementById('mf_scanner_list').querySelectorAll('input[class=schemecheckbox]:not(:checked)')
+
+            for (let i = 0; i < no_checked_id.length; i++) {
+                let tr_main =  no_checked_id[i].parentNode.parentNode;
+                tr_main.style.backgroundColor = '';
+
+
+                let td1 = tr_main.querySelector('td:first-child');
+                let td2 = tr_main.querySelector('td:nth-child(2)')
+                // td1.style.backgroundColor = '';
+                // td2.style.backgroundColor = '';
+                let tdElements = tr_main.getElementsByTagName('td');
+
+                for (let j = 0; j < tdElements.length; j++) {
+                    tdElements[j].style.backgroundColor = '';
+                }
+                
+            }
+
+            for (let i = 0; i < filter_brand_list_id.length; i++) {
+                let tr_main =  filter_brand_list_id[i].parentNode.parentNode;
+                tr_main.style.backgroundColor = '#c7edcf';
+                let tdElements = tr_main.getElementsByTagName('td');
+
+                for (let j = 0; j < tdElements.length; j++) {
+                    tdElements[j].style.backgroundColor = '#c7edcf';
+                }
+
+                let td1 = tr_main.querySelector('td:first-child');
+                let td2 = tr_main.querySelector('td:nth-child(2)')
+                // td2.style.backgroundColor = '#c7edcf';
+                // td1.style.backgroundColor = '#c7edcf';
+            }
+        }
+
+        function changeRowCheckbox(){
+            highligts();
+            var filter_brand_list_id = document.getElementById('mf_scanner_list').querySelectorAll('input[class=schemecheckbox]:checked');
+
+            console.log("kkk", filter_brand_list_id);
             var return_list = [];
             var mf_scanner_compare_value = "";
             filter_brand_list_id.forEach(function(val){
@@ -704,7 +744,7 @@
                 }
                 document.getElementById("schemecode_id").value = null;
             }
-
+            highligts();
         }
         
         function renderTableView(){
@@ -1662,6 +1702,50 @@
             $("#permissionModal").modal('show');
         }
     </script>
+
+    <script>
+
+    //     $(window).scroll(function(){
+    //         var top1 = parseInt($('.dataTableArea').offset().top - $(window).scrollTop());
+    //         if( top1 <= 0 ){
+
+    //             $('.dataTableArea').addClass('sticky container');
+    //         }
+    //         else {
+
+    //             $('.dataTableArea').removeClass('sticky container');
+
+    //         }
+    // })
+
+//     window.onscroll = function() {myFunction()};
+
+//     var header = document.getElementById("dataTableArea");
+//     var sticky = header.offsetTop;
+
+//     function myFunction() {
+//     if (window.pageYOffset > sticky) {
+//         header.classList.add("sticky");
+//     } else {
+//         header.classList.remove("sticky");
+//     }
+// }
+
+var distance = $('#mf_scanner_list').offset().top,
+    $window = $(window);
+
+$window.scroll(function() {
+    if ( $window.scrollTop() >= distance ) {
+       //alert("top");
+       $('.dataTableArea .mt-1').addClass("stickyEl");
+    }else{
+        $('.dataTableArea .mt-1').removeClass("stickyEl");
+    }
+});
+
+
+    </script>
+
 @endsection
 
 @section('content')
@@ -1776,13 +1860,19 @@
             border-left: 1px solid #b5b3b3;
         }
         #mf_scanner_list tbody tr td  {
-            padding: 1px 4px;
+            padding: 10px 4px;
             text-align: right;
             line-height: 14px;
             font-size: 11px;
             font-family: 'Poppins', sans-serif;
             font-weight: 400;
             white-space: nowrap;
+        }
+        #mf_scanner_list tbody tr:hover, #mf_scanner_list tbody tr:hover td.firstrow, #mf_scanner_list tbody tr:hover td.secondrow{
+            background-color:#c7edcf;
+        }
+        table.dataTable tbody tr:nth-child(even):hover, table.dataTable tbody tr:nth-child(even):hover td.secondrow, table#mf_scanner_list tbody tr.even:hover td:nth-child(2), table#mf_scanner_list tbody tr.even:hover td:nth-child(3), table#mf_scanner_list tbody tr.even:hover td:nth-child(4){
+            background-color:#c7edcf !important;
         }
         .downloadButton {
             border-radius: 9px;
@@ -2065,10 +2155,12 @@
               .theDiv {
                 overflow-x: scroll;
                 margin-left: 331px;
-                overflow-y: visible;
+                /* overflow-y: visible; */
+                /* overflow-y:scroll;
                 padding: 0;
+                height:400px; */
               }
-            
+              
               table#mf_scanner_list tr td.firstrow, table#mf_scanner_list tr td.secondrow, 
               table#mf_scanner_list tr td.thirdrow, table#mf_scanner_list tr td.fourthrow, 
               table#mf_scanner_list tr td.fivethrow, table#mf_scanner_list tr td.sixthrow {
@@ -2123,7 +2215,9 @@
                 line-height: 27px !important;
               }
               table#mf_scanner_list tbody tr td.secondrow {
-                min-width: 300px;
+                /* min-width: 300px; */
+                min-width: 292px;
+                background-color: #fff;
               }
               table#mf_scanner_list tbody tr td.thirdrow, table#mf_scanner_list tbody tr td.fourthrow, 
               table#mf_scanner_list tbody tr td.fivethrow, table#mf_scanner_list tbody tr td.sixthrow {
@@ -2136,8 +2230,8 @@
                 height: 28px;
               }
             table#mf_scanner_list tbody tr td:nth-child(1) {
-                padding-top: 2px !important;
-                height: 16px;
+                /* padding-top: 2px !important; */
+                height: 14px;
             }
             table#mf_scanner_list thead td b {
                 font-weight: 600;
@@ -2154,6 +2248,8 @@
                 border-bottom: 1px solid #b5b3b3;
                 margin-top:0.02em;
             }
+
+
 
             #manageModal_view {
                 max-height: 350px;
@@ -2175,6 +2271,89 @@
                 right:0;
                 width: auto;
             }
+</style>
+<style type="text/css">
+
+            .theDiv{
+                height: 400px;
+                margin-left: 0px !important;
+            }
+            table#mf_scanner_list thead tr td.secondrow, table#mf_scanner_list thead tr td.firstrow{
+                background-color: #b5b3b3;
+            }
+            table#mf_scanner_list thead tr td.secondrow{
+                position: sticky;
+            }
+            table#mf_scanner_list thead tr td.firstrow{
+                position: sticky;
+            }
+            table#mf_scanner_list tbody tr td.secondrow, table#mf_scanner_list tbody tr td.firstrow{
+                position: sticky !important;
+                background-color: white;
+            }
+            .dataHintHold{
+                position: static !important;
+            } 
+            .firstrow{
+                text-align: center !important;
+            }
+            .rt-pnl{
+                padding: 26px 15px 30px !important;
+            }
+            table#mf_scanner_list tr td.secondrow{
+                left: 20px !important;
+            }
+            #mf_scanner_list thead{
+                position:sticky;
+                top:0;
+                z-index:1;
+                border-top:0;
+            }
+            .large-table-fake-top-scroll-container-3{
+                display:none;
+            }
+            .newsletter{
+                position: inherit !important;
+            }
+            .btm-shape-prt{
+                display:none;
+            }
+            footer{
+                z-index:-1 !important;
+            }
+            .stickyEl
+            {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                border: 0;
+                margin: 0 auto;
+                max-width: 1140px;
+            }
+            </style>
+            <style>
+
+            
+             /* .sticky{
+                position: fixed;
+                top: 0;
+                right: 0;
+                left: 0;
+                z-index: 1030;
+                max-width: 1140px;
+                background-color:#fff;
+                margin: 0 auto;
+                height:400px;
+                overflow-y:scroll;
+                overflow-x:hidden;
+            } */
+            /*.dataTableArea{
+                height:400px;
+                overflow-y:scroll ;
+                position: relative;
+            } */
+
     </style>
     <div class="banner">
         <div class="container">
@@ -2599,17 +2778,24 @@
                             </div>
                         </div>
                         
-                        <div class="row mt-1">
-                          <div class="col-md-12 text-center" id="mf_scanner_loading" style="display: none;">
-                             Loading...
-                          </div>
-                          <div class="theDiv">
-                            <table id="mf_scanner_list" style="width:100%"> 
-                            
-                            </table>
-                          </div>
-                          <div class="pagin"></div>
+                        <div class="dataTableArea" id="dataTableArea">
+                            <div class="row mt-1" >
+                            <div class="col-md-12 text-center" id="mf_scanner_loading" style="display: none;">
+                                Loading...
+                            </div>
+
+                            <div class="theDiv" >
+                            <div class="large-table-fake-top-scroll-container-3">
+                                <div>&nbsp;</div>
+                            </div>
+                                <table id="mf_scanner_list" style="width:100%"> 
+                                
+                                </table>
+                            </div>
+                            <div class="pagin"></div>
+                            </div>
                         </div>
+
                         <div class="row mt-1">
                             @php
                                 $note_data1 = \App\Models\Mfresearch_note::where('type',"mf-screener")->first();
