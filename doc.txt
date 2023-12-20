@@ -7,3 +7,5 @@ views\frontend\calculators\sip_or_stp_required_for_target_future_value\output.bl
 
 controllers\Frontend\Calculators\InvestmentProposalController.php
 beta/views/frontend/mf_scanner/index.blade.php
+
+beta/views/frontend/calculators/swp_comprehensive/pdf.blade.php

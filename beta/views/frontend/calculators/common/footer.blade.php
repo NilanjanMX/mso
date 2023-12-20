@@ -1,7 +1,6 @@
 @php
 $amf='AMFI-Registered Mutual Fund Distributor';
 @endphp
-    
     <div class="footer" style="width:100%;"> 
         <p style="text-align: center;font-size:14px;">
             {!! ($name!='')?$name.'<br>':'' !!}

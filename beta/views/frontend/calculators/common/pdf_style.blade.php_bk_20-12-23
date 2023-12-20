@@ -62,7 +62,7 @@
     }
 
     @page {
-        margin-top: 160px
+        margin-top: 120px
     }
 
     header {
@@ -154,7 +154,7 @@
         border: none;
         border-top: 1px solid #458ff6;
         border-right: 1px solid #458ff6;
-        padding: 6px 5px;
+        padding: 5px 4px;
         font-size: 15px;
     }
     .styleApril table table tr:first-child td, .styleApril table tr:first-child td,
@@ -229,7 +229,7 @@
         text-align: center;
     }
     .graphViewImg {
-        width: 800px
+        width: 900px;
     }
     .pdfBlueCell {
         color: #000;
