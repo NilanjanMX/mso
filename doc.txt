@@ -9,3 +9,11 @@ controllers\Frontend\Calculators\InvestmentProposalController.php
 beta/views/frontend/mf_scanner/index.blade.php
 
 beta/views/frontend/calculators/swp_comprehensive/pdf.blade.php
+--------------------------------------22-12-23
+crop image
+web.php
+Route::get('/account/cover-image-remove/{id}','Frontend\AccountController@cover_image_remove')->name('account.cover-image-remove');
+Route::post('/image-crop', 'Frontend\AccountController@imageUpload');
+
+beta/controllers/Frontend/AccountController.php       
+beta/views/frontend/account/display-settings.blade.php

@@ -1,5 +1,6 @@
 @extends('layouts.frontend')
 @section('js_after')
+<script src="{{asset('f/js/')}}/jcrop.js"></script>
 <script>
     $('#amfi_registered_no').click(function (e) {
         //e.preventDefault();
@@ -32,6 +33,86 @@
         
     }
 
+    var base_url = "{{url("/")}}";
+    
+    function upload_image1SetNull() {
+        $('#upload_image1').val('');
+    }
+
+    function uploadImg() {
+        document.getElementById('PDF_cover_modal_close_btn').click();       
+        document.getElementById('upload_image1').click();
+    }
+
+    $(document).ready(function(){
+
+        $("#upload_image1").change(function(){
+            
+            picture(this);
+            $('#uploadimageModal').modal('show');
+        });
+        var picture_width;
+        var picture_height;
+        var crop_max_width = 300;
+        var crop_max_height = 300;
+
+        function picture(input) {
+            if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $("#image_jcrop, #preview").html("").append("<img src=\""+e.target.result+"\" alt=\"\" />");
+                picture_width = $("#preview img").width();
+                picture_height = $("#preview img").height();
+                $("#image_jcrop  img").Jcrop({
+                    onChange: canvas,
+                    onSelect: canvas,
+                    boxWidth: crop_max_width,
+                    boxHeight: crop_max_height
+                });
+            }
+            reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function canvas(coords){
+            var imageObj = $("#image_jcrop img")[0];
+            var canvas = $("#demo_canvas")[0];
+            canvas.width  = coords.w;
+            canvas.height = coords.h;
+            var context = canvas.getContext("2d");
+            context.drawImage(imageObj, coords.x, coords.y, coords.w, coords.h, 0, 0, canvas.width, canvas.height);
+            png();
+        }
+
+        function png() {
+            var png = $("#demo_canvas")[0].toDataURL('image/png');
+            $("#demo_png").val(png);
+        }
+
+    });
+
+    $.ajaxSetup({
+    headers: {
+    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    }
+    });
+
+    function uploadToServer() {
+        var data = {};
+        data.image = document.getElementById("demo_png").value;
+        document.getElementById("crop_upload").innerHTML = "Uploading..."
+        $.ajax({
+            url: base_url+'/image-crop  ',
+            type: "post",
+            data:data,
+            dataType: "json",
+            success:function(data) {
+                console.log(data);
+                window.location.reload();
+                // $('#uploadimageModal').modal('hide');
+            }
+        });
+    }
 </script>
 @endsection
 @section('content')
@@ -531,24 +612,28 @@
       <div class="modal-content" style="width: 900px;">
         <div class="modal-header">
            <h4 class="modal-title">Choose PDF Cover Image</h4>
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <button type="button" id="PDF_cover_modal_close_btn" class="close" data-dismiss="modal">&times;</button>
         </div>
         <div class="modal-body">
             <form action="{{route('account.display-pdfcover.update',['id'=> $displayInfo->id])}}" method="post" name="update_pdf_cover" enctype="multipart/form-data">
                 @csrf
-                  <!--<img src="{{asset('f/images/instruction.png')}}" width="850px;">-->
                   <div class="row">
                       @if(!empty($coverImages))
                           @foreach($coverImages as $adminlogo)
-                              <div class="col-md-4 text-center">
+                              <div class="col-md-4 text-center" id="div_{{$adminlogo->id}}" >
                                   <input type="radio" id="male{{$adminlogo->id}}" name="cover_image" value="{{$adminlogo->id}}">
                                   <label for="male{{$adminlogo->id}}"><img width="200px" src="{{asset('uploads/salespresentersoftcopy')}}/{{$adminlogo->image}}"></label>
+                                  <img class="img-fluid" style="cursor: pointer;" src="{{asset('/img/removeLogo.png')}}" alt="delete" id="deleteIcon_{{$adminlogo->id}}" onclick="removeCoverImg({{ $adminlogo->id }})">
                               </div>
                            @endforeach
                        @endif
                    </div>
                    <br>
                    <button type="submit" name="update_pdf_cover" id="update_pdf_cover" class="btn btn-primary btn-round">Update</button>
+                   <a href="#upload_image1" onclick="uploadImg()" class="btn btn-outline-primary btn-round">Upload File</a>
+                   <div>
+                        <input type="file" id="upload_image1" name="company_logo_old" hidden="">
+                    </div>
               </form>
         </div>
         <!-- <div class="modal-footer">
@@ -558,10 +643,77 @@
   
     </div>
 </div>
-  
+<div id="uploadimageModal" class="modal" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+      		<div class="modal-header">
+        		<!-- <button type="button" class="close" data-dismiss="modal">&times;</button>
+        		<h4 class="modal-title">Upload & Crop Logo</h4> -->
+      		</div>
+      		<div class="modal-body">
+        		<div class="row">
+  					<div class="col-md-12 text-center">
+						  <div id="image_jcrop" style="width:350px; margin-top:30px"></div>
+  					</div>
+  					<div class="col-md-4" style="padding-top:30px;display: none;">
+  						
+              <canvas id="demo_canvas" ></canvas>
+              <input id="demo_png" type="hidden" />
+					</div>
+				</div>
+      		</div>
+      		<div class="modal-footer">
+            <button class="btn btn-success" id="crop_upload" onclick="uploadToServer();">Crop & Upload</button>
+        		<button type="button" onclick="upload_image1SetNull()" class="btn btn-default" data-dismiss="modal">Close</button>
+      		</div>
+    	</div>
+    </div>
+</div>
 <style>
 .invalid-feedback {
     display:block;
+}
+.jcrop-holder{direction:ltr;text-align:left;}
+  .jcrop-vline,.jcrop-hline{background:#FFF url(Jcrop.gif);font-size:0;position:absolute;}
+  .jcrop-vline{height:100%;width:1px!important;}
+  .jcrop-vline.right{right:0;}
+  .jcrop-hline{height:1px!important;width:100%;}
+  .jcrop-hline.bottom{bottom:0;}
+  .jcrop-tracker{-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;-webkit-user-select:none;height:100%;width:100%;}
+  .jcrop-handle{background-color:#333;border:1px #EEE solid;font-size:1px;height:7px;width:7px;}
+  .jcrop-handle.ord-n{left:50%;margin-left:-4px;margin-top:-4px;top:0;}
+  .jcrop-handle.ord-s{bottom:0;left:50%;margin-bottom:-4px;margin-left:-4px;}
+  .jcrop-handle.ord-e{margin-right:-4px;margin-top:-4px;right:0;top:50%;}
+  .jcrop-handle.ord-w{left:0;margin-left:-4px;margin-top:-4px;top:50%;}
+  .jcrop-handle.ord-nw{left:0;margin-left:-4px;margin-top:-4px;top:0;}
+  .jcrop-handle.ord-ne{margin-right:-4px;margin-top:-4px;right:0;top:0;}
+  .jcrop-handle.ord-se{bottom:0;margin-bottom:-4px;margin-right:-4px;right:0;}
+  .jcrop-handle.ord-sw{bottom:0;left:0;margin-bottom:-4px;margin-left:-4px;}
+  .jcrop-dragbar.ord-n,.jcrop-dragbar.ord-s{height:7px;width:100%;}
+  .jcrop-dragbar.ord-e,.jcrop-dragbar.ord-w{height:100%;width:7px;}
+  .jcrop-dragbar.ord-n{margin-top:-4px;}
+  .jcrop-dragbar.ord-s{bottom:0;margin-bottom:-4px;}
+  .jcrop-dragbar.ord-e{margin-right:-4px;right:0;}
+  .jcrop-dragbar.ord-w{margin-left:-4px;}
+  .jcrop-light .jcrop-vline,.jcrop-light .jcrop-hline{background:#FFF;filter:alpha(opacity=70)!important;opacity:.70!important;}
+  .jcrop-light .jcrop-handle{-moz-border-radius:3px;-webkit-border-radius:3px;background-color:#000;border-color:#FFF;border-radius:3px;}
+  .jcrop-dark .jcrop-vline,.jcrop-dark .jcrop-hline{background:#000;filter:alpha(opacity=70)!important;opacity:.7!important;}
+  .jcrop-dark .jcrop-handle{-moz-border-radius:3px;-webkit-border-radius:3px;background-color:#FFF;border-color:#000;border-radius:3px;}
+  .solid-line .jcrop-vline,.solid-line .jcrop-hline{background:#FFF;}
+  .jcrop-holder img,img.jcrop-preview{max-width:none;}
+.rotating_image {
+    /* width: 100%; 
+    height: 100%;  */
+    animation: rotateAnimation 0.3s linear infinite; /* Adjust the animation duration as needed */
+}
+
+@keyframes rotateAnimation {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
 </style>
 
@@ -574,6 +726,27 @@
         }
         return true;
     }
+
+    const removeCoverImg = ( id ) => {
+        if (confirm('Are you sure you want to remove this cover image?')) {
+            document.getElementById('deleteIcon_'+id).classList.add('rotating_image');
+            let url = "{{ url('/account/cover-image-remove')}}/"+id;
+            
+            fetch(url).then(response => {
+                
+                if (!response.ok) {
+                    return alert('Somethings went wrong! Please try again later.');
+                }
+                document.getElementById('div_'+id).remove();
+            
+            })
+            .catch(error => {
+                // Handle errors
+                console.error('There was a problem with the fetch operation:', error);
+            });
+        }
+    }
+
 </script>
 
 @endsection

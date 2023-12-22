@@ -411,6 +411,9 @@ Route::post('/account/profile-update/{id}','Frontend\AccountController@profileUp
 Route::post('/account/profile-updatelogo/{id}','Frontend\AccountController@profileUpdate')->name('account.profile.updatelogo');
 Route::get('/account/profile-remove-logo/{id}','Frontend\AccountController@profileRemoveLogo')->name('account.profile.remove-logo');
 
+Route::get('/account/cover-image-remove/{id}','Frontend\AccountController@cover_image_remove')->name('account.cover-image-remove');
+Route::post('/image-crop', 'Frontend\AccountController@imageUpload');
+
 Route::get('/account/display-settings','Frontend\AccountController@display_settings')->name('account.display-settings');
 Route::post('/account/display-settings-update/{id}','Frontend\AccountController@displaysettingsUpdate')->name('account.display-settings.update');
 

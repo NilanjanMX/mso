@@ -197,6 +197,44 @@ class AccountController extends Controller
             return view('frontend.account.display-settings')->with(compact('displayInfo','left_menu', 'coverImages'));
         }
     }
+
+    public function cover_image_remove( Request $request) {
+        SalespresenterCover::where('id', $request->id)->update([
+            'is_active' => 0
+        ]);
+
+        return response()->json(['success' => 'The cover image was removed'], 200);
+    }
+
+    public function imageUpload(Request $request){
+        //echo $data = $_POST["image"];
+        $input = $request->all();
+        $data = $input['image'];
+        $image_array_1 = explode(";", $data);
+        $image_array_2 = explode(",", $image_array_1[1]);
+        $data = base64_decode($image_array_2[1]);
+        $imageName = time() . '.png';
+        $destinationPath = public_path('/uploads/salespresentersoftcopy/'.$imageName);
+    
+        file_put_contents($destinationPath, $data);
+
+        $url = asset('/uploads/salespresentersoftcopy/'.$imageName);
+        
+        $latest_data = SalespresenterCover::latest()->first();
+        
+        $last_insert_data = SalespresenterCover::create([
+            'salespresentercategories_id' => 0,
+            'title' => 'Cover Page_'.$latest_data->id,
+            'slug' => 'cover-page-'.$latest_data->id,
+            'image' => $imageName,
+            'is_active' => 1,
+        ]);
+
+        return response([
+            'id' => $last_insert_data->id,
+            'url' => $url,
+        ]);
+    }
     
     public function coverImageUpdate(Request $request,$id){
         // dd($request);
