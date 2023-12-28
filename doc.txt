@@ -17,3 +17,17 @@ Route::post('/image-crop', 'Frontend\AccountController@imageUpload');
 
 beta/controllers/Frontend/AccountController.php       
 beta/views/frontend/account/display-settings.blade.php
+
+MSONLINE-27
+MSONLINE-29
+MSONLINE-33
+MSONLINE-53
+MSONLINE-55
+MSONLINE-58
++++++++++++++++++ uploaded in live
+
+---------------------------------------- free/basic user 27-12-23
+\views\layouts\frontend.blade.php
+
+---------------------------------------------- crop image 28-12-23
+ALTER TABLE `salespresenter_covers` ADD `uploaded_by` ENUM('A','U') NOT NULL DEFAULT 'A' AFTER `position`;

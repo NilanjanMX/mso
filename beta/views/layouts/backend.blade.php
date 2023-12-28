@@ -1,0 +1,1730 @@
+<!doctype html>
+<html lang="{{ config('app.locale') }}" class="no-focus">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+
+    <title>Master Stroke || Webadmin </title>
+
+    <meta name="robots" content="noindex, nofollow">
+
+    <!-- CSRF Token -->  
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <!-- Icons -->
+{{--<link rel="shortcut icon" href="{{ asset('media/favicons/favicon.png') }}">
+<link rel="icon" sizes="192x192" type="image/png" href="{{ asset('media/favicons/favicon-192x192.png') }}">
+<link rel="apple-touch-icon" sizes="180x180" href="{{ asset('media/favicons/apple-touch-icon-180x180.png') }}">--}}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.0/css/toastr.css" rel="stylesheet" />
+
+<!-- Fonts and Styles -->
+    @yield('css_before')
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Muli:300,400,400i,600,700">
+    <link rel="stylesheet" id="css-main" href="{{ asset('/css/codebase.css') }}">
+    <link  href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css" rel="stylesheet">
+
+    <link  href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css" rel="stylesheet">
+
+    <link  href="https://cdn.datatables.net/buttons/1.6.2/css/buttons.dataTables.min.css" rel="stylesheet">
+    
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+
+    <link id="bsdp-css" href="https://unpkg.com/bootstrap-datepicker@1.9.0/dist/css/bootstrap-datepicker3.min.css" rel="stylesheet">
+    
+    <link href="{{ asset('/css/selectstyle.css') }}" rel="stylesheet" type="text/css">
+
+    <!-- You can include a specific file from public/css/themes/ folder to alter the default color theme of the template. eg: -->
+{{--<link rel="stylesheet" id="css-theme" href="{{ asset('/css/themes/earth.css') }}">--}}
+@yield('css_after')
+
+<!-- Scripts -->
+    <script>window.Laravel = {!! json_encode(['csrfToken' => csrf_token(),]) !!};</script>
+</head>
+<body>
+
+<div id="page-container" class="sidebar-o enable-page-overlay side-scroll page-header-fixed main-content-boxed sidebar-inverse">
+    <!-- Side Overlay-->
+    <aside id="side-overlay">
+        <!-- Side Header -->
+        <div class="content-header content-header-fullrow">
+            <div class="content-header-section align-parent">
+                <!-- Close Side Overlay -->
+                <!-- Layout API, functionality initialized in Template._uiApiLayout() -->
+                <button type="button" class="btn btn-circle btn-dual-secondary align-v-r" data-toggle="layout" data-action="side_overlay_close">
+                    <i class="fa fa-times text-danger"></i>
+                </button>
+                <!-- END Close Side Overlay -->
+
+                <!-- User Info -->
+                <div class="content-header-item">
+                    <a class="img-link mr-5" href="javascript:void(0)">
+                        <img class="img-avatar img-avatar32" src="{{ asset('media/avatars/avatar15.jpg') }}" alt="">
+                    </a>
+                    <a class="align-middle link-effect text-primary-dark font-w600" href="javascript:void(0)">John Smith</a>
+                </div>
+                <!-- END User Info -->
+            </div>
+        </div>
+        <!-- END Side Header -->
+
+        <!-- Side Content -->
+        <div class="content-side">
+            <p>
+                Content..
+            </p>
+        </div>
+        <!-- END Side Content -->
+    </aside>
+    <!-- END Side Overlay -->
+
+    <nav id="sidebar">
+        <!-- Sidebar Content -->
+        <div class="sidebar-content">
+            <!-- Side Header -->
+            <div class="content-header content-header-fullrow px-15 bg-black-op-10">
+                <!-- Mini Mode -->
+                <div class="content-header-section sidebar-mini-visible-b">
+                    <!-- Logo -->
+                    <span class="content-header-item font-w700 font-size-xl float-left animated fadeIn">
+                                <span class="text-dual-primary-dark">m</span><span class="text-primary">s</span>
+                            </span>
+                    <!-- END Logo -->
+                </div>
+                <!-- END Mini Mode -->
+
+                <!-- Normal Mode -->
+                <div class="content-header-section text-center align-parent sidebar-mini-hidden">
+                    <!-- Close Sidebar, Visible only on mobile screens -->
+                    <!-- Layout API, functionality initialized in Template._uiApiLayout() -->
+                    <button type="button" class="btn btn-circle btn-dual-secondary d-lg-none align-v-r" data-toggle="layout" data-action="sidebar_close">
+                        <i class="fa fa-times text-danger"></i>
+                    </button>
+                    <!-- END Close Sidebar -->
+
+                    <!-- Logo -->
+                    <div class="content-header-item">
+                        <a class="link-effect font-w700" href="{{route('webadmin.dashboard')}}">
+                            <span class="font-size-xl text-dual-primary-dark">master</span><span class="font-size-xl text-primary">stroke</span>
+                        </a>
+                    </div>
+                    <!-- END Logo -->
+                </div>
+                <!-- END Normal Mode -->
+            </div>
+            <!-- END Side Header -->
+
+            <!-- Side Navigation -->
+            <div class="content-side content-side-full">
+
+                <ul class="nav-main">
+                    <li>
+                        <a class="{{ request()->is('webadmin/dashboard') ? ' active' : '' }}" href="{{route('webadmin.dashboard')}}">
+                            <i class="si si-cup"></i><span class="sidebar-mini-hide">Dashboard</span>
+                        </a>
+                    </li>
+                    @if(session()->get('admmin_is_super') == 1)
+                        <li>
+                            <a class="{{ request()->is('webadmin/stat') ? ' active' : '' }}" href="{{route('webadmin.stat')}}">
+                                <i class="si si-cup"></i><span class="sidebar-mini-hide">Stat</span>
+                            </a>
+                        </li>
+                    @endif
+                    <li class="nav-main-heading">
+                        <span class="sidebar-mini-visible">VR</span><span class="sidebar-mini-hidden">Pages</span>
+                    </li>
+                    
+                    @if(session()->get('admmin_is_super') == 1)
+                        <li class="{{ request()->is('webadmin/admin-user') ? ' open' : '' }}
+                            {{ request()->is('webadmin/admin-user-role') ? ' open' : '' }}
+                            ">
+                            <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-notebook"></i><span class="sidebar-mini-hide">Admin User</span></a>
+                            <ul>
+                                <li>
+                                    <a class="{{ request()->is('webadmin/admin-user') ? ' active' : '' }}" href="{{route('webadmin.admin_userIndex')}}">Admin User</a>
+                                </li>
+                                <li>
+                                    <a class="{{ request()->is('webadmin/admin-user-role') ? ' active' : '' }}" href="{{route('webadmin.admin_user_roleIndex')}}">Admin User Role</a>
+                                </li>
+                            </ul>
+                        </li>
+                    @endif
+                    
+                    
+                    @if(session()->get('admmin_is_super') == 1)
+                    <li class="{{ request()->is('webadmin/analytics/*') ? ' open' : '' }}">
+                        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-notebook"></i><span class="sidebar-mini-hide">Analytics</span></a>
+                        <ul>
+                            <li>
+                                <a class="{{ request()->is('webadmin/analytics/dashboard') ? ' active' : '' }}" href="{{route('webadmin.analytics.dashboard')}}">Dashboard</a>
+                            </li>
+                            <!-- <li>
+                                <a class="{{ request()->is('webadmin/analytics/calculator') ? ' active' : '' }}" href="{{route('webadmin.analytics.calculator')}}">Calculator</a>
+                            </li>
+                            <li>
+                                <a class="{{ request()->is('webadmin/analytics/calculators') ? ' active' : '' }}" href="{{route('webadmin.analytics.calculators')}}">Calculator Details</a>
+                            </li>
+                            <li>
+                                <a class="{{ request()->is('webadmin/analytics/mf-research') ? ' active' : '' }}" href="{{route('webadmin.analytics.mf_research')}}">MF Research</a>
+                            </li>
+                            <li>
+                                <a class="{{ request()->is('webadmin/analytics/mf-research-detail') ? ' active' : '' }}" href="{{route('webadmin.analytics.mf_research_detail')}}">MF Research Details</a>
+                            </li> -->
+                            <li>
+                                <a class="{{ request()->is('webadmin/analytics/user-module') ? ' active' : '' }}" href="{{route('webadmin.analytics.user_module')}}">User Module</a>
+                            </li>
+                            <li>
+                                <a class="{{ request()->is('webadmin/analytics/user-profile') ? ' active' : '' }}" href="{{route('webadmin.analytics.user_profile')}}">User Profile Completion</a>
+                            </li>
+                        </ul>
+                    </li>
+                    @endif
+                    
+                    @if(session()->get('admmin_is_super') == 1)
+                        <li class="{{ request()->is('webadmin/membership-module/*') ? ' open' : '' }}">
+                            <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-notebook"></i><span class="sidebar-mini-hide">Membership Module</span></a>
+                            <ul>
+                                <li>
+                                    <a class="{{ request()->is('webadmin/membership-module/trial_taken') ? ' active' : '' }}" href="{{route('webadmin.membership_module.trial_taken')}}">Trial Taken</a>
+                                </li>
+                                <li>
+                                    <a class="{{ request()->is('webadmin/membership-module/upgrade_to_premium') ? ' active' : '' }}" href="{{route('webadmin.membership_module.upgrade_to_premium')}}">Upgrade to Premium</a>
+                                </li>
+                                <li>
+                                    <a class="{{ request()->is('webadmin/membership-module/downgrade_to_basic') ? ' active' : '' }}" href="{{route('webadmin.membership_module.downgrade_to_basic')}}">Downgrade to Basic</a>
+                                </li>
+                                <li>
+                                    <a class="{{ request()->is('webadmin/membership-module/discontinued') ? ' active' : '' }}" href="{{route('webadmin.membership_module.discontinued')}}">Discontinued</a>
+                                </li>
+                                <li>
+                                    <a class="{{ request()->is('webadmin/membership-module/new_sub_user') ? ' active' : '' }}" href="{{route('webadmin.membership_module.new_sub_user')}}">New Sub User</a>
+                                </li>
+                            </ul>
+                        </li>
+                    @endif
+
+                    
+                    @if(is_permitted('membership-point', 'menu'))
+                    <li class="{{ request()->is('webadmin/reward-point/*') ? ' open' : '' }} {{ request()->is('webadmin/referral-point') ? ' open' : '' }} {{ request()->is('webadmin/referral-point-setting') ? ' open' : '' }}">
+                        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-notebook"></i><span class="sidebar-mini-hide">Membership Point</span></a>
+                        <ul>
+                            @if(is_permitted('membership-point-dashboard', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/reward-point/dashboard') ? ' active' : '' }}" href="{{route('webadmin.reward_point.dashboard')}}">Dashboard</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('membership-point-total-points-not-claimed', 'list'))
+                            <!--<li>-->
+                            <!--    <a class="{{ request()->is('webadmin/reward-point/total-points-not-claimed') ? ' active' : '' }}" href="{{route('webadmin.reward_point.total_points_not_claimed')}}">Total Points Not Claimed</a>-->
+                            <!--</li>-->
+                            @endif
+                            @if(is_permitted('membership-point-membership-point', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/referral-point') ? ' active' : '' }}" href="{{route('webadmin.referral_code_list')}}">Membership Point</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('membership-point-membership-point-setting', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/referral-point-setting') ? ' active' : '' }}" href="{{route('webadmin.referral_code_setting')}}">Membership Point Setting</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('membership-point-admin-user', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/reward-point/admin-user') ? ' active' : '' }}" href="{{route('webadmin.reward_point.admin_user')}}">Admin User</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('membership-point-view-points-by-source', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/reward-point/claim-point') ? ' active' : '' }}" href="{{route('webadmin.reward_point.claim_point')}}">View Points by Source</a>
+                            </li>
+                            @endif
+                        </ul>
+                    </li>
+                    @endif
+
+                    @if(is_permitted('membership-referral', 'menu'))
+                    <li class="{{ request()->is('webadmin/membership-referral/*') ? ' open' : '' }}">
+                        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-notebook"></i><span class="sidebar-mini-hide">Membership Referral</span></a>
+                        <ul>
+                            @if(is_permitted('membership-referral-list', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/membership-referral/list') ? ' active' : '' }}" href="{{route('webadmin.membership_referral.list')}}">List</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('membership-referral-setting', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/membership-referral/setting') ? ' active' : '' }}" href="{{route('webadmin.membership_referral.setting')}}">Setting</a>
+                            </li>
+                            @endif
+                        </ul>
+                    </li>
+                    @endif
+                    
+                    @if(is_permitted('trigger', 'menu'))
+                    <li class="{{ request()->is('webadmin/trigger/setup') ? ' open' : '' }}
+                        {{ request()->is('webadmin/trigger/index') ? ' open' : '' }}
+                        {{ request()->is('webadmin/trigger/list') ? ' open' : '' }}
+                        {{ request()->is('webadmin/trigger/default') ? ' open' : '' }}
+                        ">
+                        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-notebook"></i><span class="sidebar-mini-hide">Trigger</span></a>
+                        <ul>
+                            @if(is_permitted('trigger-list', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/trigger/list') ? ' active' : '' }}" href="{{route('webadmin.trigger_list')}}">List</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('trigger-setup', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/trigger/setup') ? ' active' : '' }}" href="{{route('webadmin.trigger_setup')}}">Setup</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('trigger-index', 'list'))
+                            <li style="display:none;">
+                                <a class="{{ request()->is('webadmin/trigger/index') ? ' active' : '' }}" href="{{route('webadmin.trigger_index')}}">Index</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('trigger-default', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/trigger/default') ? ' active' : '' }}" href="{{route('webadmin.trigger_default')}}">Mso Trigger</a>
+                            </li>
+                            @endif
+                        </ul>
+                    </li>
+                    @endif
+
+                    @if(is_permitted('mso-model-portfolio', 'menu'))
+                    <li class="{{ request()->is('webadmin/mso-model-portfolio/lumpsum') ? ' open' : '' }}
+                        {{ request()->is('webadmin/mso-model-portfolio/sip') ? ' open' : '' }}
+                        {{ request()->is('webadmin/mso-model-portfolio/stp') ? ' open' : '' }}
+                        {{ request()->is('webadmin/mso-model-portfolio/swp') ? ' open' : '' }}
+                        {{ request()->is('webadmin/mso-model-portfolio/addmsoinvestmentmode') ? ' open' : '' }}
+                        {{ request()->is('webadmin/mso-model-portfolio/addmsoassetclass') ? ' open' : '' }}
+                        {{ request()->is('webadmin/mso-model-portfolio/addmsotimehorizon') ? ' open' : '' }}
+                        {{ request()->is('webadmin/mso-model-portfolio/addmsointerestrate') ? ' open' : '' }}
+                        {{ request()->is('webadmin/mso-model-portfolio/addmsoequitymark') ? ' open' : '' }}
+                        {{ request()->is('webadmin/mso-model-portfolio/addmsoriskprofile') ? ' open' : '' }}
+                        {{ request()->is('webadmin/mso-model-portfolio/msomodelportfoliouploadcsv') ? ' open' : '' }}
+                        ">
+                        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-notebook"></i><span class="sidebar-mini-hide">Mso Model Portfolio</span></a>
+                        <ul>
+                            @if(is_permitted('mso-model-portfolio-lumpsum', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/mso-model-portfolio/lumpsum') ? ' active' : '' }}" href="{{route('webadmin.msomodelportfolio_lumpsum')}}">Lumpsum</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('mso-model-portfolio-sip', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/mso-model-portfolio/sip') ? ' active' : '' }}" href="{{route('webadmin.msomodelportfolio_sip')}}">SIP</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('mso-model-portfolio-stp', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/mso-model-portfolio/stp') ? ' active' : '' }}" href="{{route('webadmin.msomodelportfolio_stp')}}">STP</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('mso-model-portfolio-swp', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/mso-model-portfolio/swp') ? ' active' : '' }}" href="{{route('webadmin.msomodelportfolio_swp')}}">SWP</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('mso-model-portfolio-upload-csv', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/mso-model-portfolio/msomodelportfoliouploadcsv') ? ' active' : '' }}" href="{{route('webadmin.msomodelportfoliouploadcsv')}}">Mso Upload CSV</a>
+                            </li>
+                            @endif
+
+                        </ul>
+                    </li>
+                    @endif
+                    @if(is_permitted('national-conference', 'menu') && is_permitted('national-conference-index', 'list'))
+                    <li>
+                        <a class="{{ request()->is('webadmin/national-conference') ? ' active' : '' }}" href="{{route('webadmin.national_conference')}}">
+                            <i class="si si-bell"></i><span class="sidebar-mini-hide">
+                                National Conference
+                            </span>
+                        </a>
+                    </li>
+                    @endif
+                    
+                    @if(is_permitted('home', 'menu'))
+                    <li class="{{ request()->is('webadmin/home/*') ? ' open' : '' }}{{ request()->is('webadmin/mfadvisor-data') ? ' open' : '' }}{{ request()->is('webadmin/homepagebanners') ? ' open' : '' }}{{ request()->is('webadmin/freewebinar-data') ? ' open' : '' }}{{ request()->is('webadmin/hearfromexperts') ? ' open' : '' }}{{ request()->is('webadmin/video-index') ? ' open' : '' }}{{ request()->is('webadmin/testimonial-index') ? ' open' : '' }}{{ request()->is('webadmin/footerslides') ? ' open' : '' }}{{ request()->is('webadmin/homepagemembershipsData') ? ' open' : '' }}{{ request()->is('webadmin/homepagememberships') ? ' open' : '' }}{{ request()->is('webadmin/settings') ? ' open' : '' }}">
+                        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-bulb"></i><span class="sidebar-mini-hide">Home</span></a>
+                        <ul>
+                            {{-- <li>
+                                <a class="{{ request()->is('webadmin/home/banner') ? ' active' : '' }}" href="{{route('webadmin.banner')}}">Banner</a>
+                            </li> --}}
+                            @if(is_permitted('home-settings', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/settings') ? ' active' : '' }}" href="{{route('webadmin.settings')}}">Settings </a>
+                            </li>
+                            @endif
+                            @if(is_permitted('home-header-banner', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/homepagebanners') ? ' active' : '' }}" href="{{route('webadmin.homepagebanners')}}">Header Banner </a>
+                            </li>
+                            @endif
+                            @if(is_permitted('home-mf-advisor-data', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/mfadvisor-data') ? ' active' : '' }}" href="{{route('webadmin.mfadvisorData')}}">MF Advisor Data</a>
+                            </li>
+                            @endif
+                            {{-- <li>
+                                <a class="{{ request()->is('webadmin/home/usefullink-index') ? ' active' : '' }}" href="{{route('webadmin.usefullinkIndex')}}">Useful Links</a>
+                            </li> --}}
+                            @if(is_permitted('home-membership-section', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/homepagemembershipsData') ? ' active' : '' }}" href="{{route('webadmin.homepagemembershipsData')}}">Membership Section</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('home-membership-section-cards', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/homepagememberships') ? ' active' : '' }}" href="{{route('webadmin.homepagememberships')}}">Membership Section Cards</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('home-free-webinar', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/freewebinar-data') ? ' active' : '' }}" href="{{route('webadmin.freewebinarData')}}">Free Webinar</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('home-whats-new', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/home/whatsnew-index') ? ' active' : '' }}" href="{{route('webadmin.whatsnewIndex')}}">What’s New</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('home-hear-from-expert', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/hearfromexperts') ? ' active' : '' }}" href="{{route('webadmin.hearfromexperts')}}">Hear from Expert</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('customer-feedback', 'list'))
+                            <li>
+                                <a href="{{route('webadmin.testimonialIndex')}}">
+                                    Customer Feedback
+                                </a>
+                            </li>
+                            @endif
+                            @if(is_permitted('home-videos', 'list'))
+                            <li>
+                                <a href="{{route('webadmin.videoIndex')}}">
+                                    Videos
+                                </a>
+                            </li>
+                            @endif
+                            @if(is_permitted('footer-slides', 'list'))
+                            <li>
+                                <a href="{{route('webadmin.footerslides')}}">
+                                    Footer Slides
+                                </a>
+                            </li>
+                            @endif
+                            @if(is_permitted('mso-associates', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/home/business-associate') ? ' active' : '' }}" href="{{route('webadmin.businessAssociateList')}}">MSO Associates </a>
+                            </li>
+                            @endif
+                            @if(is_permitted('home-useful-links', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/home/usefullink-index') ? ' active' : '' }}" href="{{route('webadmin.usefullinkIndex')}}">Useful Links</a>
+                            </li>
+                            @endif  
+                            <!--<li>-->
+                            <!--    <a class="{{ request()->is('webadmin/home/business-associate') ? ' active' : '' }}" href="{{route('webadmin.businessAssociateList')}}">MSO Associates </a>-->
+                            <!--</li>-->                           
+                        </ul>
+                    </li>
+                    @endif
+
+                    @if(is_permitted('right-sidebar-settings', 'menu'))
+                    <li>
+                        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-bulb"></i><span class="sidebar-mini-hide">Right Sidebar Settings</span></a>
+                        <ul>
+                            @if(is_permitted('right-sidebar-settings-quick-link', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/quicklink') ? ' active' : '' }}" href="{{route('webadmin.quicklink')}}">Quick Links</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('right-sidebar-settings-quick-link-banner', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/quicklink-banner') ? ' active' : '' }}" href="{{route('webadmin.quicklinkbanner')}}">Quick Link Banner</a>
+                            </li>
+                            @endif
+
+                        </ul>
+                    </li>
+                    @endif
+
+                    <li class="nav-main-heading">
+                        <span class="sidebar-mini-visible">MR</span><span class="sidebar-mini-hidden">More</span>
+                    </li>
+
+                    <!--@if(is_permitted('videos', 'menu') && is_permitted('videos-index', 'list'))-->
+                    <!--<li>-->
+                    <!--    <a href="{{route('webadmin.videoIndex')}}">-->
+                    <!--        <i class="si si-playlist"></i><span class="sidebar-mini-hide">Videos</span>-->
+                    <!--    </a>-->
+                    <!--</li>-->
+                    <!--@endif-->
+                    
+                    @if(is_permitted('previous-webinar', 'menu') && is_permitted('previous-webinar-index', 'list'))
+                    <li>
+                        <a href="{{route('webadmin.previous_webinarIndex')}}">
+                            <i class="si si-playlist"></i><span class="sidebar-mini-hide">Previous Webinar</span>
+                        </a>
+                    </li>
+                    @endif
+
+                    @if(is_permitted('marketing-banners', 'menu'))
+                    <li class="{{ request()->is('webadmin/premiumbanner/*') ? ' open' : '' }}">
+                        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-bulb"></i><span class="sidebar-mini-hide">Marketing Banners</span></a>
+                        <ul>
+                            @if(is_permitted('marketing-banners-banners', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/premiumbanner/premiumbanner') ? ' open' : '' }}" href="{{route('webadmin.premiumbanner')}}">Banners</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('marketing-banners-category', 'list'))
+                            <li>
+                                <a class=" {{ request()->is('webadmin/premiumbanner/premiumbannercategory') ? ' active' : '' }}" href="{{route('webadmin.premiumbannercategory')}}">Category</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('marketing-banners-tag', 'list'))
+                            <li>
+                                <a class=" {{ request()->is('webadmin/premiumbanner/premiumbannertag') ? ' active' : '' }}" href="{{route('webadmin.premiumbannertag')}}">Tag</a>
+                            </li>
+                            @endif
+                        </ul>
+                    </li>
+                    @endif
+
+                    @if(is_permitted('marketing-video', 'menu'))
+                    <li>
+                        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-bulb"></i><span class="sidebar-mini-hide">Marketing Video</span></a>
+                        <ul>
+                            @if(is_permitted('marketing-video-videos', 'list'))
+                            <li>
+                                <a class="" href="{{route('webadmin.marketingvideo')}}">Videos</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('marketing-video-category', 'list'))
+                            <li>
+                                <a class="" href="{{route('webadmin.marketingvideocategory')}}">Category</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('marketing-video-tag', 'list'))
+                            <li>
+                                <a class=" {{ request()->is('webadmin/marketingvideos/mvtag') ? ' active' : '' }}" href="{{route('webadmin.mvtag')}}">Tag</a>
+                            </li>
+                            @endif
+                        </ul>
+                    </li>
+                    @endif
+
+                    @if(is_permitted('how-to-use-video', 'menu'))
+                    <li>
+                        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-bulb"></i><span class="sidebar-mini-hide">How To Use Video</span></a>
+                        <ul>
+                            @if(is_permitted('how-to-use-video-videos', 'list'))
+                            <li>
+                                <a class="" href="{{route('webadmin.howtousevideoIndex')}}">Videos</a>
+                            </li>
+                            @endif
+                        </ul>
+                    </li>
+                    @endif
+
+                    @if(is_permitted('sales-presenters', 'menu'))
+                    <li>
+                        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-bulb"></i><span class="sidebar-mini-hide">Sales Presenters</span></a>
+                        <ul>
+                            @if(is_permitted('sales-presenters-category', 'list'))
+                            <li>
+                                <a class="" href="{{route('webadmin.salespresentercategory')}}">Category</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('sales-presenters-soft-copies', 'list'))
+                            <li>
+                                <a class="" href="{{route('webadmin.salespresentersoftcopy')}}">Soft Copies</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('sales-presenters-faq', 'list'))
+                            <li>
+                                <a class="" href="{{route('webadmin.salespresenterfaq')}}">Faq</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('sales-presenters-suggested', 'list'))
+                            <li>
+                                <a class="" href="{{route('webadmin.suggestedSalespresentersoftcopy')}}">Suggested</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('sales-presenters-sample-pdf', 'list'))
+                            <li>
+                                <a class="" href="{{route('webadmin.samplepdf')}}">Sample PDF</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('sales-presenters-pdf-cover-image', 'list'))
+                            <li>
+                                    <a class="" href="{{route('webadmin.salespresentercover')}}">PDF Cover Image</a>
+                            </li>
+                            @endif
+                        </ul>
+                    </li>
+                    @endif
+
+                    @if(is_permitted('pre-made-sales-presenter', 'menu'))
+                     <li>
+                        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-bulb"></i><span class="sidebar-mini-hide">Pre made sales Presenter</span></a>
+                        <ul>
+                            @if(is_permitted('pre-made-sales-presenter-category', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/salespresenterpdfcategory') ? ' active' : '' }}" href="{{route('webadmin.salespresenterpdfcategory')}}">Category</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('pre-made-sales-presenter-sales-presenter-pdf', 'list'))
+                            <li>
+                                <a class="" href="{{route('webadmin.salesPresenterPdf')}}">Sales Presenter PDF</a>            
+                            </li>
+                            @endif
+                        </ul>
+                     </li>
+                     @endif
+
+                    @if(is_permitted('client-communication', 'menu'))
+                     <li class="{{ request()->is('webadmin/welcome-letter') ? ' open' : '' }}{{ request()->is('webadmin/welcomeletter-add') ? ' open' : '' }}{{ request()->is('webadmin/welcomeletter-edit/*') ? ' open' : '' }}">
+                        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-bulb"></i><span class="sidebar-mini-hide">Client Communication</span></a>
+                        <ul>
+                            @if(is_permitted('client-communication-category', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/client-ommunication-category') ? ' active' : '' }}" href="{{route('webadmin.clientCommunicationcategory')}}">Category</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('client-communication-client-communication-items', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/client-communication') ? ' active' : '' }}" href="{{route('webadmin.clientCommunication')}}">Client Communication Items</a>    
+                            </li>
+                            @endif
+                            @if(is_permitted('client-communication-welcome-letter', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/welcome-letter') ? ' active' : '' }}{{ request()->is('webadmin/welcomeletter-add') ? ' active' : '' }}{{ request()->is('webadmin/welcomeletter-edit/*') ? ' active' : '' }}" href="{{route('webadmin.welcomeletters')}}">Welcome Letter</a>                               
+                            </li>
+                            @endif
+                        </ul>
+                     </li>
+                    @endif
+
+                    @if(is_permitted('demo', 'menu'))
+                     
+                     <li class="{{ request()->is('webadmin/demo-details') ? ' open' : '' }}{{ request()->is('webadmin/demo-details-add') ? ' open' : '' }}{{ request()->is('webadmin/demo-details-edit/*') ? ' open' : '' }}{{ request()->is('webadmin/demo-sessions') ? ' open' : '' }}{{ request()->is('webadmin/demo-sessions-add') ? ' open' : '' }}{{ request()->is('webadmin/demo-sessions-edit/*') ? ' open' : '' }}{{ request()->is('webadmin/demo-session-details') ? ' open' : '' }}{{ request()->is('webadmin/demo') ? ' open' : '' }}">
+                        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-bulb"></i><span class="sidebar-mini-hide">Demo</span></a>
+                        <ul>
+                            @if(is_permitted('demo-demo-list', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/demo') ? ' active' : '' }}" href="{{route('webadmin.demo')}}">Demo List</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('demo-demo-session-details', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/demo-details') ? ' active' : '' }}" href="{{route('webadmin.demoSessionDetails')}}">Demo Session Details</a>
+                            </li>
+                            @endif
+                            {{-- <li>
+                                <a class="{{ request()->is('webadmin/demo-details') ? ' active' : '' }}" href="{{route('webadmin.demoDetails')}}">Demo Details</a>
+                            </li>
+                            <li>
+                                <a class="{{ request()->is('webadmin/demo-sessions') ? ' active' : '' }}" href="{{route('webadmin.demoSessions')}}">Demo Sessions</a>
+                            </li> --}}
+                        </ul>
+                     </li>
+                     @endif
+
+                     {{-- <li>
+                        <a href="{{route('webadmin.notification')}}">
+                            <i class="si si-bell"></i><span class="sidebar-mini-hide">Notification</span>
+                        </a>
+                    </li> --}}
+
+                    @if(is_permitted('notification', 'menu'))
+                    <li class="{{ request()->is('webadmin/notification') || request()->is('webadmin/notification/*') || request()->is('webadmin/notification-setting') ? ' open' : '' }}">
+                        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-bulb"></i><span class="sidebar-mini-hide">Notification</span></a>
+                        <ul>
+                            @if(is_permitted('notification-index', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/notification') ? ' active' : '' }}" href="{{route('webadmin.notification')}}">Notifications</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('notification-setting', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/notification-setting') ? ' active' : '' }}" href="{{route('webadmin.notification_setting')}}">Notification Setting</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('notification-group', 'menu'))
+                            <li class="{{ request()->is('webadmin/notification/group-create') || request()->is('webadmin/notification/group-index') ? ' open' : '' }}">
+                                <a class="nav-submenu sidebar-mini-hide" data-toggle="nav-submenu" href="#"><span class="sidebar-mini-hide">Notification Group</span></a>
+                                <ul>
+                                    @if(is_permitted('notification-group-create', 'list'))
+                                    <li>
+                                        <a class="{{ request()->is('webadmin/notification/group-create') ? ' active' : '' }}" href="{{route('webadmin.notificationGroupCreate')}}">Create Group</a>
+                                    </li>
+                                    @endif
+                                    @if(is_permitted('notification-group-list', 'list'))
+                                    <li>
+                                        <a class="{{ request()->is('webadmin/notification/group-index') ? ' active' : '' }}" href="{{route('webadmin.notificationgroupIndex')}}">Group List</a>
+                                    </li>
+                                    @endif
+                                </ul>
+                            </li>
+                            @endif
+                        </ul>
+                    </li>
+                    @endif
+
+                    @if(is_permitted('blogs', 'menu'))
+                    <li>
+                        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-bulb"></i><span class="sidebar-mini-hide">Blogs</span></a>
+                        <ul>
+                            @if(is_permitted('blogs-blogs', 'list'))
+                            <li>
+                                <a class="" href="{{route('webadmin.blogIndex')}}">Blogs</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('blogs-category', 'list'))
+                            <li>
+                                <a class="" href="{{route('webadmin.blogcategoryIndex')}}">Category</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('blogs-comments', 'list'))
+                            <li>
+                                <a class="" href="{{route('webadmin.blogComments')}}">Comments</a>
+                            </li>
+                            @endif
+                        </ul>
+                    </li>
+                    @endif
+
+                    @if(is_permitted('thought', 'menu'))
+                    <li >
+                        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-bulb"></i><span class="sidebar-mini-hide">Thought</span></a>
+                        <ul>
+                            @if(is_permitted('thought-thought', 'list'))
+                            <li>
+                                <a href="{{route('webadmin.thoughtIndex')}}">Thought</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('thought-category', 'list'))
+                            <li>
+                                <a class="" href="{{route('webadmin.thoughtcategoryIndex')}}">Category</a>
+                            </li>
+                            @endif
+                        </ul>
+                    </li>
+                    @endif
+
+                    @if(is_permitted('readymade-portfolio', 'menu'))
+                    <li class="{{ request()->is('webadmin/readymade-portfolio/*') ? ' open' : '' }}">
+                        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-bulb"></i><span class="sidebar-mini-hide">Readymade Portfolio</span></a>
+                        <ul>
+                            @if(is_permitted('readymade-portfolio-category', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/readymade-portfolio/category') ? ' active' : '' }}" href="{{route('webadmin.readymadePortfolioCategory')}}">Category</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('readymade-portfolio-readymade-portfolio', 'list'))
+                            <li>
+                                <a href="{{route('webadmin.readymadeIndex')}}">Readymade Portfolio</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('readymade-portfolio-investment-mode', 'list'))
+                            <li>
+                                <a href="{{route('webadmin.readymadeportfolioIndex',['task'=> 'mode'])}}">Investment Mode</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('readymade-portfolio-risk-profile', 'list'))
+                            <li>
+                                <a href="{{route('webadmin.readymadeportfolioIndex',['task'=> 'profile'])}}">Risk Profile</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('readymade-portfolio-portfolio', 'list'))
+                            <li>
+                                <a href="{{route('webadmin.readymadeportfolioIndex',['task'=> 'portfolio'])}}">Portfolio</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('readymade-portfolio-period', 'list'))
+                            <li>
+                                <a href="{{route('webadmin.readymadeportfolioIndex',['task'=> 'period'])}}">Period</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('readymade-portfolio-amount', 'list'))
+                            <li>
+                                <a href="{{route('webadmin.readymadeportfolioIndex',['task'=> 'amount'])}}">Amount</a>
+                            </li>
+                            @endif
+                        </ul>
+                    </li>
+                    @endif
+
+                    @if(is_permitted('success-story', 'menu'))
+                    <li>
+                        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-bulb"></i><span class="sidebar-mini-hide">Success Story</span></a>
+                        <ul>
+                            @if(is_permitted('success-story-success-story', 'list'))
+                            <li>
+                                <a href="{{route('webadmin.successstory')}}">Success Story</a>
+                            </li>
+                            @endif
+                        </ul>
+                    </li>
+                    @endif
+
+                    @if(is_permitted('business-faq', 'menu'))
+                    <li>
+                        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-bulb"></i><span class="sidebar-mini-hide">Business FAQ</span></a>
+                        <ul>
+                            @if(is_permitted('business-faq-business-faq', 'list'))
+                            <li>
+                                <a href="{{route('webadmin.businessfaq')}}">Business FAQ</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('business-faq-business-faq-category', 'list'))
+                            <li>
+                                <a class="" href="{{route('webadmin.businessfaqcategory')}}">Business FAQ Category</a>
+                            </li>
+                            @endif
+                        </ul>
+                    </li>
+                    @endif
+
+                    @if(is_permitted('product-faq', 'menu'))
+                    <li>
+                        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-bulb"></i><span class="sidebar-mini-hide">Product FAQ</span></a>
+                        <ul>
+                            @if(is_permitted('product-faq-product-faq', 'list'))
+                            <li>
+                                <a href="{{route('webadmin.productfaq')}}">Product FAQ</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('product-faq-product-faq-category', 'list'))
+                            <li>
+                                <a class="" href="{{route('webadmin.productfaqcategory')}}">Product FAQ Category</a>
+                            </li>
+                            @endif
+                        </ul>
+                    </li>
+                    @endif
+
+                    <!--<li>-->
+                    <!--    <a href="{{route('webadmin.samplereport')}}">-->
+                    <!--        <i class="si si-pencil"></i><span class="sidebar-mini-hide">Sample Report</span>-->
+                    <!--    </a>-->
+                    <!--</li>-->
+                    
+                    @if(is_permitted('gallery', 'menu') && is_permitted('gallery-index', 'list'))
+                    <li>
+                        <a href="{{route('webadmin.gallery')}}">
+                            <i class="si si-pencil"></i><span class="sidebar-mini-hide">Gallery</span>
+                        </a>
+                    </li>
+                    @endif
+
+                    @if(is_permitted('articles', 'menu'))
+                    <li>
+                        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-pencil"></i><span class="sidebar-mini-hide">Articles</span></a>
+                        <ul>
+                            @if(is_permitted('articles-articles', 'list'))
+                            <li>
+                                <a class="" href="{{route('webadmin.articleIndex')}}">Articles</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('articles-comments', 'list'))
+                            <li>
+                                <a class="" href="{{route('webadmin.articleComments')}}">Comments</a>
+                            </li>
+                            @endif
+                        </ul>
+                    </li>
+                    @endif
+
+                    @if(is_permitted('news', 'menu') && is_permitted('news-index', 'list'))
+                    <li>
+                        <a href="{{route('webadmin.newsIndex')}}">
+                            <i class="si si-pencil"></i><span class="sidebar-mini-hide">News</span>
+                        </a>
+                    </li>
+                    @endif
+
+                    @if(is_permitted('complain-feedback', 'menu') && is_permitted('complain-feedback-index', 'list'))
+                    <li>
+                        <a href="{{route('webadmin.askbrijesh')}}">
+                            <i class="si si-pencil"></i><span class="sidebar-mini-hide">Complain/Feedback</span>
+                        </a>
+                    </li>
+                    @endif
+
+                    @if(is_permitted('admin-logos', 'menu') && is_permitted('admin-logos-index', 'list'))
+                    <li>
+                        <a href="{{route('webadmin.adminlogoIndex')}}">
+                            <i class="si si-pencil"></i><span class="sidebar-mini-hide">Admin Logos</span>
+                        </a>
+                    </li>
+                    @endif
+
+                    @if(is_permitted('ifa-tools', 'menu'))
+                    <li>
+                        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-bulb"></i><span class="sidebar-mini-hide">IFA Tools</span></a>
+                        <ul>
+                            @if(is_permitted('ifa-tools-download-tool', 'list'))
+                            <li>
+                                <a class="" href="{{route('webadmin.downloadtools')}}">Download Tool</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('ifa-tools-client-objection-handling', 'list'))
+                            <li>
+                                <a class="" href="{{route('webadmin.coh')}}">Client Objection Handling</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('ifa-tools-book-recommendation-for-ifas', 'list'))
+                            <li>
+                                <a class="" href="{{route('webadmin.bookrecommendations')}}">Book Recommendation for IFAs</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('ifa-tools-product-suitablity', 'list'))
+                            <li>
+                                <a class="" href="{{route('webadmin.productsuitablity')}}">Product Suitablity</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('ifa-tools-survey', 'menu'))
+                            <li>
+                                <a class="nav-submenu sidebar-mini-hide" data-toggle="nav-submenu" href="#"><span class="sidebar-mini-hide">Survey</span></a>
+                                <ul>
+                                    @if(is_permitted('ifa-tools-survey-survey-category', 'list'))
+                                    <li>
+                                        <a class="" href="{{route('webadmin.surveycategory')}}">Survey Category</a>
+                                    </li>
+                                    @endif
+                                    @if(is_permitted('ifa-tools-survey-survey', 'list'))
+                                    <li>
+                                        <a class="" href="{{route('webadmin.survey')}}">Survey</a>
+                                    </li>
+                                    @endif
+                                </ul>
+                            </li>
+                            @endif
+                        </ul>
+                    </li>
+                    @endif
+
+                    <!--@if(is_permitted('customer-feedback', 'list'))-->
+                    <!--<li>-->
+                    <!--    <a href="{{route('webadmin.testimonialIndex')}}">-->
+                    <!--        <i class="si si-pencil"></i><span class="sidebar-mini-hide">What’s Our Client Say</span>-->
+                    <!--    </a>-->
+                    <!--</li>-->
+                    <!--@endif-->
+
+                    @if(is_permitted('users', 'menu'))
+                    <li class="{{ request()->is('webadmin/users/*') ? ' open' : '' }}">
+                        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-bulb"></i><span class="sidebar-mini-hide">Users</span></a>
+                        <ul>
+                            @if(is_permitted('user-all-users', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/users/all-user') ? ' active' : '' }}" href="{{route('webadmin.users')}}">All Users</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('user-add-user', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/users/register') ? ' active' : '' }}" href="{{route('webadmin.users.register')}}">Add User</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('user-user-export', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/users/exportusers-csv') ? ' active' : '' }}" href="{{route('webadmin.users.exportusers-csv')}}">User Export</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('user-multiuser', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/users/multi') ? ' active' : '' }}" href="{{route('webadmin.users.multi')}}">Multiuser</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('user-multiuser-export', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/users/multi-export') ? ' active' : '' }}" href="{{route('webadmin.users.multiUserExport')}}">Multiuser Export</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('user-user-subscription-export', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/users/exportuser-subscription-csv') ? ' active' : '' }}" href="{{route('webadmin.users.exportuser-subscription-csv')}}">User Subscription Export</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('user-referral-code', 'list'))
+                            <!--<li>-->
+                            <!--    <a class="{{ request()->is('webadmin/referral_code_list') ? ' active' : '' }}" href="{{route('webadmin.referral_code_list')}}">Referral code</a>-->
+                            <!--</li>-->
+                            @endif
+                            @if(is_permitted('user-referral-code-setting', 'list'))
+                            <!--<li>-->
+                            <!--    <a class="{{ request()->is('webadmin/referral_code_setting') ? ' active' : '' }}" href="{{route('webadmin.referral_code_setting')}}">Referral code Setting</a>-->
+                            <!--</li>-->
+                            @endif
+                        </ul>
+                    </li>
+                    @endif
+
+                    @if(is_permitted('all-pages', 'menu'))
+                    <li class="{{ request()->is('webadmin/pages/*') ? ' open' : '' }} {{ request()->is('webadmin/page-share/*') ? ' open' : '' }} {{ request()->is('webadmin/calculator-heading/*') ? ' open' : '' }}">
+                        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-bulb"></i><span class="sidebar-mini-hide">All Pages</span></a>
+                        <ul>
+                            @if(is_permitted('all-pages-pages', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/pages/page-index') ? ' active' : '' }}" href="{{route('webadmin.pageIndex')}}">Pages</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('all-pages-pages-shares', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/page-share/index') ? ' active' : '' }}" href="{{route('webadmin.pageShareIndex')}}">Page Shares</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('all-pages-product', 'list'))
+                            <li style="display:none;">
+                                <a class="{{ request()->is('webadmin/product/product') ? ' active' : '' }}" href="{{route('webadmin.product')}}">Product</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('all-pages-product-type', 'list'))
+                            <li style="display:none;">
+                                <a class="{{ request()->is('webadmin/product/product-type') ? ' active' : '' }}" href="{{route('webadmin.productType')}}">Product Type</a>
+                            </li>
+                            @endif
+                        </ul>
+                    </li>
+                    @endif
+
+                    @if(is_permitted('exam', 'menu'))
+                    <li class="{{ request()->is('webadmin/exam/*') ? ' open' : '' }}">
+                        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-notebook"></i><span class="sidebar-mini-hide">Exam</span></a>
+                        <ul>
+                            @if(is_permitted('exam-group', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/exam/group-index') ? ' active' : '' }}" href="{{route('webadmin.questionGroupIndex')}}">Group</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('exam-level', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/exam/level-index') ? ' active' : '' }}" href="{{route('webadmin.questionLevelIndex')}}">Level</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('exam-bank', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/exam/bank-index') ? ' active' : '' }}" href="{{route('webadmin.questionBankIndex')}}">Bank</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('exam-online-exam', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/exam/onlineexam-index') ? ' active' : '' }}" href="{{route('webadmin.onlineExamIndex')}}">Online Exam</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('exam-exam-report', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/exam/report-index') ? ' active' : '' }}" href="{{route('webadmin.onlineReportIndex')}}">Exam Report</a>
+                            </li>
+                            @endif
+                        </ul>
+                    </li>
+                    @endif
+
+                    @if(is_permitted('product-management', 'menu'))
+                    <li class="{{ request()->is('webadmin/stationary/*') ? ' open' : '' }}">
+                        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-notebook"></i><span class="sidebar-mini-hide">Product Management</span></a>
+                        <ul>
+                            @if(is_permitted('product-management-products', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/stationary') ? ' active' : '' }}" href="{{route('webadmin.stationary')}}">Products</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('product-management-product-type', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/stationary/product-type') ? ' active' : '' }}" href="{{route('webadmin.stationaryProductType')}}">Product Type</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('product-management-product-category', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/stationary/category') ? ' active' : '' }}" href="{{route('webadmin.stationaryCategory')}}">Categories</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('product-management-product-subcategory', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/stationary/sub-category') ? ' active' : '' }}" href="{{route('webadmin.stationarySubCategory')}}">Sub Categories</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('product-management-product-creategroup', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/stationary/group-create') ? ' active' : '' }}" href="{{route('webadmin.stationaryGroupCreate')}}">Create Group</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('product-management-product-group', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/stationary/group-index') ? ' active' : '' }}" href="{{route('webadmin.stationaryGroupIndex')}}">Group</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('product-management-product-giftcard', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/stationary/gift-card') ? ' active' : '' }}" href="{{route('webadmin.stationaryGiftCard')}}">Gift Card</a>
+                            </li>
+                            @endif
+                        </ul>
+                    </li>
+                    @endif
+
+                    @if(is_permitted('coupon-management', 'menu'))
+                    <li class="{{ request()->is('webadmin/coupon/*') ? ' open' : '' }}">
+                        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-notebook"></i><span class="sidebar-mini-hide">Coupon Management</span></a>
+                        <ul>
+                            @if(is_permitted('coupon-management-coupons', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/coupon/coupons') ? ' active' : '' }}" href="{{route('webadmin.coupons')}}">Coupons</a>
+                            </li>
+                            @endif
+                        </ul>
+                    </li>
+                    @endif
+
+                    @if(is_permitted('calculator', 'menu'))
+                    <li class="{{ request()->is('webadmin/notes/*') ? ' open' : '' }} {{ request()->is('webadmin/calculator-category/*') ? ' open' : '' }} {{ request()->is('webadmin/calculator/*') ? ' open' : '' }} {{ request()->is('webadmin/samplereport/*') ? ' open' : '' }}  {{ request()->is('webadmin/samplereport') ? ' open' : '' }} {{ request()->is('webadmin/calculator-footer/*') ? ' open' : '' }}">
+                        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-notebook"></i><span class="sidebar-mini-hide">Calculator</span></a>
+                        <ul>
+                            @if(is_permitted('calculator-notes', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/notes') ? ' active' : '' }}" href="{{route('webadmin.notes')}}">Notes</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('calculator-heading', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/calculator-heading/index') ? ' active' : '' }}" href="{{route('webadmin.calculatorHeadingIndex')}}">Heading</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('calculator-product', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/product/product') ? ' active' : '' }}" href="{{route('webadmin.product')}}">Product</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('calculator-product-type', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/product/product-type') ? ' active' : '' }}" href="{{route('webadmin.productType')}}">Product Type</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('calculator-index', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/calculator/*') ? ' active' : '' }}" href="{{route('webadmin.calculatorIndex')}}">Index</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('calculator-calculator-category', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/calculator-category/*') ? ' active' : '' }}" href="{{route('webadmin.calculatorCategoryIndex')}}">Calculator Category</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('calculator-sample-report', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/samplereport/*') ? ' active' : '' }}  {{ request()->is('webadmin/samplereport') ? ' active' : '' }}" href="{{route('webadmin.samplereport')}}">
+                                    Sample Report
+                                </a>
+                            </li>
+                            @endif
+                            @if(is_permitted('calculator-stp-custom-disclaimers', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/calculator-footer/*') ? ' active' : '' }}  {{ request()->is('webadmin/calculator-footer') ? ' active' : '' }}" href="{{route('webadmin.calculatorFooterIndex')}}">
+                                    STP Custom Disclaimers
+                                </a>
+                            </li>
+                            @endif
+                            @if(is_permitted('calculator-swp-comprehensive-disclaimers', 'list'))
+                            <li>
+                                <a href="{{route('webadmin.swpcompfooter')}}">
+                                    SWP Comprehensive Disclaimers
+                                </a>
+                            </li>
+                            @endif
+                            @if(is_permitted('calculator-capital-gains-calculator', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/capital-gains-tax-calculator/*') ? ' active' : '' }}" href="{{route('webadmin.CapitalGainsCalculatorIndex')}}">Capital Gains Calculator</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('calculator-capital-gains-tax-rate', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/capital-gains-tax-calculator/*') ? ' active' : '' }}" href="{{route('webadmin.CapitalGainsTaxRateIndex')}}">Capital Gains Tax Rate</a>
+                            </li>
+                            @endif
+                        </ul>
+                    </li>
+                    @endif
+
+                    @if(is_permitted('mf-research', 'menu'))
+                    <li class="{{ request()->is('webadmin/mf-research-notes') ? ' open' : '' }} {{ request()->is('webadmin/mf-research-master') ? ' open' : '' }} 
+                                {{ request()->is('webadmin/mf-research-plan') ? ' open' : '' }} {{ request()->is('webadmin/mf-research-category') ? ' open' : '' }}
+                                {{ request()->is('webadmin/mf-research-avg') ? ' open' : '' }}{{ request()->is('webadmin/updateaccorddata') ? ' open' : '' }} 
+                                {{ request()->is('webadmin/accordupdatedata') ? ' open' : '' }} {{ request()->is('webadmin/viewaccord') ? ' open' : '' }} 
+                                {{ request()->is('webadmin/shortcategory') ? ' open' : '' }} {{ request()->is('webadmin/mf-category-wise-performance') ? ' open' : '' }}
+                                {{ request()->is('webadmin/mf-portfolio-analysis') ? ' open' : '' }} {{ request()->is('webadmin/mf-portfolio') ? ' open' : '' }} 
+                                {{ request()->is('webadmin/mf-research/*') ? ' open' : '' }}   {{ request()->is('webadmin/mf-disclaimer') ? ' open' : '' }}   
+                                {{ request()->is('webadmin/mf-research/cron') ? ' open' : '' }}">
+                        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-notebook"></i><span class="sidebar-mini-hide">MF Research</span></a>
+                        <ul>
+                            @if(is_permitted('mf-research-index', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/mf-research/*') ? ' active' : '' }}" href="{{route('webadmin.mfResearchIndex')}}">Index</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('mf-research-disclaimer-note', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/mf-research-notes') ? ' active' : '' }}" href="{{route('webadmin.mf-research-notes')}}">Disclaimer note</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('mf-research-disclaimer', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/mf-disclaimer') ? ' active' : '' }}" href="{{route('webadmin.mf-disclaimer')}}">Disclaimer</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('mf-research-master', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/mf-research-master') ? ' active' : '' }}" href="{{route('webadmin.mf-research-master')}}">Master</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('mf-research-plan', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/mf-research-plan') ? ' active' : '' }}" href="{{route('webadmin.mf-research-plan')}}">Plan</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('mf-research-category', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/mf-research-category') ? ' active' : '' }}" href="{{route('webadmin.mf-research-category')}}">Category</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('mf-research-avg', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/mf-research-avg') ? ' active' : '' }}" href="{{route('webadmin.mf-research-avg')}}">Avg</a>
+                            </li>
+                            @endif
+                            <!--<li>-->
+                            <!--    <a class="{{ request()->is('webadmin/shortcategory') ? ' active' : '' }}" href="{{route('webadmin.shortcategory')}}">Short Category</a>-->
+                            <!--</li>-->
+                            @if(is_permitted('mf-research-rating', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/ratting') ? ' active' : '' }}" href="{{route('webadmin.ratting')}}">Rating</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('mf-research-calender-year', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/mf-category-wise-performance') ? ' active' : '' }}" href="{{route('webadmin.mf-category-wise-performance')}}">Calender Year</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('mf-research-mf-portfolio', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/mf-portfolio') ? ' active' : '' }}" href="{{route('webadmin.mfPortfolio')}}">MF Portfolio</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('mf-research-portfolio-analysis', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/mf-portfolio-analysis') ? ' active' : '' }}" href="{{route('webadmin.mfPortfolioAnalysis')}}">Portfolio Analysis</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('mf-research-nav-hist', 'list'))
+                            <li style="display:none;">
+                                <a class="{{ request()->is('webadmin/mf-research/navhist') ? ' active' : '' }}" href="{{route('webadmin.navhistIndex')}}">Nav Hist</a>
+                            </li>
+                            @endif
+                            <!-- <li>
+                                <a class="{{ request()->is('webadmin/updateaccorddata') ? ' active' : '' }}" href="{{route('webadmin.updateaccorddata')}}">Upload Zip</a>
+                            </li> -->
+                            @if(is_permitted('mf-research-view-data', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/viewaccord') ? ' active' : '' }}" href="{{route('webadmin.viewaccord')}}">View Data</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('mf-research-accord-data', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/accordupdatedata') ? ' active' : '' }}" href="{{route('webadmin.accordupdatedata')}}">Accord Data</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('mf-research-accord-cron-history', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/mf-research/cron') ? ' active' : '' }}" href="{{route('webadmin.mf-research-cron')}}">Accord Cron History</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('mf-research-live-report-cron', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/mf-research/cron-list') ? ' active' : '' }}" href="{{route('webadmin.mf-research-cron-list')}}">Live Report Cron</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('mf-research-live-report-cron-history', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/mf-research/cron-history') ? ' active' : '' }}" href="{{route('webadmin.mf-research-cron-history')}}">Live Report Cron History</a>
+                            </li>
+                            @endif
+                        </ul>
+                    </li>
+                    @endif
+
+                    @if(is_permitted('dynamic-email', 'menu'))
+                    <li class="{{ request()->is('webadmin/dynamic-email/*') ? ' open' : '' }}">
+                        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-notebook"></i><span class="sidebar-mini-hide">Dynamic Email</span></a>
+                        <ul>
+                            @if(is_permitted('dynamic-email-dynamic-email', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/dynamic-email-index') ? ' active' : '' }}" href="{{route('webadmin.dynamic-email-index')}}">Dynamic Email</a>
+                            </li>
+                            @endif
+                        </ul>
+                    </li>
+                    @endif
+
+                    @if(is_permitted('asset-allocation', 'menu'))
+                    <li class="{{ request()->is('webadmin/asset-allocation/*') ? ' open' : '' }}">
+                        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-notebook"></i><span class="sidebar-mini-hide">Asset Allocation</span></a>
+                        <ul>
+                            @if(is_permitted('asset-allocation-upload-questionaire-file', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/asset-allocation/upload-questionaire') ? ' active' : '' }}" href="{{route('webadmin.upload-questionaire')}}">Upload Questionaire File</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('asset-allocation-asset-allocation-question', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/asset-allocation/question') ? ' active' : '' }}" href="{{route('webadmin.asset-allocation-question')}}">Asset Allocation Question</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('asset-allocation-asset-allocation-score', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/asset-allocation/score') ? ' active' : '' }}" href="{{route('webadmin.asset-allocation-score')}}">Asset Allocation Score</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('asset-allocation-asset-allocation-products', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/asset-allocation/products') ? ' active' : '' }}" href="{{route('webadmin.asset-allocation-products')}}">Asset Allocation Products</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('asset-allocation-manage-group', 'list'))
+                             <li>
+                                <a class="{{ request()->is('webadmin/asset-allocation/groups') ? ' active' : '' }}" href="{{route('webadmin.asset-allocation-groups')}}">Manage Group</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('asset-allocation-investment-period', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/asset-allocation/periods') ? ' active' : '' }}" href="{{route('webadmin.asset-allocation-periods')}}">Investment period</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('asset-allocation-user-define-asset-class', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/asset-allocation/user-define-asset-class') ? ' active' : '' }}" href="{{route('webadmin.asset-allocation-user-define-asset-class')}}">User Define Asset Class</a>
+                            </li>
+                            @endif
+                        </ul>
+                    </li>
+                    @endif
+
+                    @if(is_permitted('order-management', 'menu'))
+                    <li class="{{ request()->is('webadmin/order/*') ? ' open' : '' }}">
+                        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-notebook"></i><span class="sidebar-mini-hide">Order Management</span></a>
+                        <ul>
+                            @if(is_permitted('order-management-orders', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/order/orders') ? ' active' : '' }}" href="{{route('webadmin.order.orders')}}">Orders</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('order-management-orderstatus', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/order/status') ? ' active' : '' }}" href="{{route('webadmin.orderStatus')}}">Order Status</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('order-management-export-orders-by-user', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/order/export-order-data-by-user') ? ' active' : '' }}" href="{{route('webadmin.orders.export-order-data-by-user')}}">Export Orders By User</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('order-management-export-order-period-wise', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/order/export-order-data-datewise') ? ' active' : '' }}" href="{{route('webadmin.orders.export-order-data-datewise')}}">Export Order Period Wise</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('order-management-export-order-product-period-wise', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/order/export-order-data-by-product') ? ' active' : '' }}" href="{{route('webadmin.orders.export-order-data-by-product')}}">Export Order Product & Period Wise</a>
+                            </li>
+                            @endif
+                        </ul>
+                    </li>
+                    @endif
+
+                    @if(is_permitted('whatsapp-share', 'menu'))
+                    <li class="{{ request()->is('webadmin/whatsappshare/*') ? ' open' : '' }}">
+                        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-notebook"></i><span class="sidebar-mini-hide">Whatsapp Share</span></a>
+                        <ul>
+                            @if(is_permitted('whatsapp-share-create-group', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/whatsappshare/group-create') ? ' active' : '' }}" href="{{route('webadmin.whatsapShareGroupCreate')}}">Create Group</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('whatsapp-share-group-list', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/whatsappshare/group-index') ? ' active' : '' }}" href="{{route('webadmin.groupIndex')}}">Group List</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('whatsapp-share-share', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/whatsappshare/send-image-from') ? ' active' : '' }}" href="{{route('webadmin.sendForm')}}">Share</a>
+                            </li>
+                            @endif
+                        </ul>
+                    </li>
+                    @endif
+
+                    @if(is_permitted('webinars', 'menu') && is_permitted('webinars-index', 'list'))
+                    <li class="{{ request()->is('webadmin/webinars/*') ? ' open' : '' }}">
+                        <a href="{{route('webadmin.webinars')}}" class="{{ request()->is('webadmin/webinars') ? ' active' : '' }}">
+                            <i class="si si-pencil"></i><span class="sidebar-mini-hide">Webinars</span>
+                        </a>
+                    </li>
+                    @endif
+
+                    @if(is_permitted('website-tree', 'menu') && is_permitted('website-tree-index', 'list'))
+                    <li class="{{ request()->is('webadmin/website-tree/*') ? ' open' : '' }}">
+                        <a href="{{route('webadmin.websitetree')}}" class="{{ request()->is('webadmin/website-tree') ? ' active' : '' }}">
+                            <i class="si si-pencil"></i><span class="sidebar-mini-hide">Website Tree</span>
+                        </a>
+                    </li>
+                    @endif
+
+                    @if(is_permitted('auto-renewal-setting', 'menu') && is_permitted('auto-renewal-setting-index', 'list'))
+                    <li>
+                        <a href="{{route('webadmin.autorenewalEdit')}}">
+                            <i class="si si-pencil"></i><span class="sidebar-mini-hide">Auto Renewal Setting</span>
+                        </a>
+                    </li>
+                    @endif
+
+                    @if(is_permitted('famous-quotes', 'menu') && is_permitted('famous-quotes-index', 'list'))
+                    <li>
+                        <a href="{{route('webadmin.famousQuotes')}}">
+                            <i class="si si-pencil"></i><span class="sidebar-mini-hide">Famous Quotes</span>
+                        </a>
+                    </li>
+                    @endif
+
+                    @if(is_permitted('analytics', 'menu'))
+                    <li class="{{ request()->is('webadmin/analytics-inactive-users') ? ' open' : '' }} {{ request()->is('webadmin/analytics-live-users') ? ' open' : '' }} {{ request()->is('webadmin/analytics-report') ? ' open' : '' }}">
+                        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-notebook"></i><span class="sidebar-mini-hide">Analytics</span></a>
+                        <ul>
+                            @if(is_permitted('analytics-live-users', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/analytics-live-users') ? ' active' : '' }}" href="{{route('webadmin.analyticslivemember')}}">Live Users</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('analytics-inactive-users', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/analytics-inactive-users') ? ' active' : '' }}" href="{{route('webadmin.analyticsinactiveusers')}}">Inactive Users</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('analytics-reports', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/analytics-report') ? ' active' : '' }}" href="{{route('webadmin.analyticsreport')}}">Reports</a>
+                            </li>
+                            @endif
+                        </ul>
+                    </li>
+                    @endif
+
+                    @if(is_permitted('package-creation', 'menu'))
+                    <li class="{{ request()->is('webadmin/package-creation-type') ? ' open' : '' }}  {{ request()->is('webadmin/become-a-member') ? ' open' : '' }} {{ request()->is('webadmin/package-creation-type-add') ? ' open' : '' }} {{ request()->is('webadmin/package-creation-type-edit') ? ' open' : '' }} {{ request()->is('webadmin/package-creation-dropdown-add') ? ' open' : '' }} {{ request()->is('webadmin/package-creation-dropdown-edit') ? ' open' : '' }} {{ request()->is('webadmin/package-creation-dropdown') ? ' open' : '' }} {{ request()->is('webadmin/package-creation-setting') ? ' open' : '' }} {{ request()->is('webadmin/user-subscription') ? ' open' : '' }}">
+                        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-notebook"></i><span class="sidebar-mini-hide">Package Creation</span></a>
+                        <ul>
+                            @if(is_permitted('package-creation-type', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/package-creation-type') ? ' active' : '' }}" href="{{route('webadmin.package_creation_type')}}">Type</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('package-creation-package', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/package-creation-dropdown') ? ' active' : '' }}" href="{{route('webadmin.package_creation_dropdown')}}">Package </a>
+                            </li>
+                            @endif
+                            @if(is_permitted('package-creation-setting', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/package-creation-setting') ? ' active' : '' }}" href="{{route('webadmin.package_creation_setting')}}">Setting</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('package-creation-hint', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/package-creation-hint') ? ' active' : '' }}" href="{{route('webadmin.package_creation_hint')}}">Hint</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('package-creation-user-subscription', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/user-subscription') ? ' active' : '' }}" href="{{route('webadmin.user_subscription')}}">User Subscription</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('package-creation-Coupon', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/package/coupons') ? ' active' : '' }}" href="{{route('webadmin.package')}}">Coupon</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('package-creation-renewal', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/package/renewal') ? ' active' : '' }}" href="{{route('webadmin.PackageRenewalIndex')}}">Renewal</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('package-creation-become-a-member', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/become-a-member') ? ' active' : '' }}" href="{{route('webadmin.become_a_member')}}">Become A Member</a>
+                            </li>
+                            @endif
+                        </ul>
+                    </li>
+                    @endif
+
+                    @if(is_permitted('mf-rating', 'menu'))
+                    <li class="{{ request()->is('webadmin/mf-rating/*') ? ' open' : '' }}">
+                        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-notebook"></i><span class="sidebar-mini-hide">MF Rating</span></a>
+                        <ul>
+                            @if(is_permitted('mf-rating-index', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/mf-rating/index') ? ' active' : '' }}" href="{{route('webadmin.mf_rating_index')}}">Index</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('mf-rating-cron-list', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/mf-rating/cron-list') ? ' active' : '' }}" href="{{route('webadmin.mf_rating_cron_list')}}">Cron List</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('mf-rating-equity', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/mf-rating/equity') ? ' active' : '' }}" href="{{route('webadmin.mf_rating_equity')}}">Equity</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('mf-rating-debt', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/mf-rating/debt') ? ' active' : '' }}" href="{{route('webadmin.mf_rating_debt')}}">Debt</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('mf-rating-hybrid', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/mf-rating/hybrid') ? ' active' : '' }}" href="{{route('webadmin.mf_rating_hybrid')}}">Hybrid</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('mf-rating-point', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/mf-rating/point') ? ' active' : '' }}" href="{{route('webadmin.mf_rating_point')}}">Point</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('mf-rating-point-history', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/mf-rating/point-history') ? ' active' : '' }}" href="{{route('webadmin.mf_rating_point_history')}}">Point History</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('mf-rating-point-history-delete', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/mf-rating/point-history-date') ? ' active' : '' }}" href="{{route('webadmin.mf_rating_point_history_date')}}">Point History Delete</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('mf-rating-score', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/mf-rating/score') ? ' active' : '' }}" href="{{route('webadmin.mf_rating_score')}}">Score</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('mf-rating-score-history', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/mf-rating/score-history') ? ' active' : '' }}" href="{{route('webadmin.mf_rating_score_history')}}">Score History</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('mf-rating-score-history-delete', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/mf-rating/score-history-date') ? ' active' : '' }}" href="{{route('webadmin.mf_rating_score_history_date')}}">Score History Delete</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('mf-rating-rating', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/mf-rating/rating') ? ' active' : '' }}" href="{{route('webadmin.mf_rating_rating')}}">Rating</a>
+                            </li>
+                            @endif
+                        </ul>
+                    </li>                   
+                    @endif
+
+                    @if(is_permitted('gst-report', 'menu'))
+                    <li class="{{ request()->is('webadmin/report/*') ? ' open' : '' }}">
+                        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-notebook"></i><span class="sidebar-mini-hide">GST Report</span></a>
+                        <ul>
+                            @if(is_permitted('gst-report-membership', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/report/membership') ? ' active' : '' }}" href="{{route('webadmin.report_membership')}}">Membership</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('gst-report-order', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/report/store') ? ' active' : '' }}" href="{{route('webadmin.report_store')}}">Order</a>
+                            </li>
+                            @endif
+                            @if(is_permitted('gst-report-download', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/report/download') ? ' active' : '' }}" href="{{route('webadmin.report_download')}}">Download</a>
+                            </li>
+                            @endif
+                        </ul>
+                    </li>
+                    @endif
+
+                    @if(is_permitted('site', 'menu'))
+                    <li class="{{ request()->is('webadmin/site-setting/*') ? ' open' : '' }}">
+                        <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="si si-notebook"></i><span class="sidebar-mini-hide">Site</span></a>
+                        <ul>
+                            @if(is_permitted('site-permission', 'list'))
+                            <li>
+                                <a class="{{ request()->is('webadmin/site-setting/index') ? ' active' : '' }}" href="{{route('webadmin.site_setting')}}">Permission</a>
+                            </li>
+                            @endif
+                        </ul>
+                    </li>
+                    @endif
+
+                    @if(is_permitted('database-backup', 'menu') && is_permitted('database-backup-index', 'list'))
+                    <li>
+                        <a href="{{route('webadmin.databasebackup')}}">
+                            <i class="si si-pencil"></i><span class="sidebar-mini-hide">Database Backup</span>
+                        </a>
+                    </li>
+                    @endif
+
+                    @if(is_permitted('nps', 'menu') && is_permitted('nps-index', 'list'))
+                    <li>
+                        <a href="{{route('webadmin.nps')}}">
+                            <i class="si si-pencil"></i><span class="sidebar-mini-hide">NPS</span>
+                        </a>
+                    </li>
+                    @endif
+
+                </ul>
+            </div>
+            <!-- END Side Navigation -->
+        </div>
+        <!-- Sidebar Content -->
+    </nav>
+    <!-- END Sidebar -->
+
+    <!-- Header -->
+    <header id="page-header">
+        <!-- Header Content -->
+        <div class="content-header">
+            <!-- Left Section -->
+            <div class="content-header-section">
+                <!-- Toggle Sidebar -->
+                <!-- Layout API, functionality initialized in Template._uiApiLayout() -->
+                <button type="button" class="btn btn-circle btn-dual-secondary" data-toggle="layout" data-action="sidebar_toggle">
+                    <i class="fa fa-navicon"></i>
+                </button>
+                <!-- END Toggle Sidebar -->
+
+                <!-- Open Search Section -->
+                <!-- Layout API, functionality initialized in Template._uiApiLayout() -->
+                <button type="button" class="btn btn-circle btn-dual-secondary d-sm-none" data-toggle="layout" data-action="header_search_on">
+                    <i class="fa fa-search"></i>
+                </button>
+                <!-- END Open Search Section -->
+
+                <!-- Full Search -->
+                <div class="content-header-item d-none d-sm-inline-block ml-5">
+                    <form action="javascript:void(0)" method="post" onsubmit="return false;">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Search..">
+                            <div class="input-group-append">
+                                        <span class="input-group-text">
+                                            <i class="fa fa-search"></i>
+                                        </span>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <!-- END Full Search -->
+            </div>
+            <!-- END Left Section -->
+
+            <!-- Right Section -->
+            <div class="content-header-section">
+                <!-- User Dropdown -->
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-rounded btn-dual-secondary" id="page-header-user-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Admin<i class="fa fa-angle-down ml-5"></i>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-right min-width-150" aria-labelledby="page-header-user-dropdown">
+                        <a class="dropdown-item" href="{{route('webadmin.changePassword')}}">
+                            <i class="si si-lock mr-5"></i> Change Password
+                        </a>
+                        <!--<div class="dropdown-divider"></div>-->
+                        <!--<a class="dropdown-item" href="{{route('webadmin.settings')}}" data-toggle="layout" data-action="side_overlay_toggle">-->
+                        <!--    <i class="si si-wrench mr-5"></i> Settings-->
+                        <!--</a>-->
+                        <!-- END Side Overlay -->
+
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="{{route('webadmin.logout')}}">
+                            <i class="si si-logout mr-5"></i> Sign Out
+                        </a>
+                    </div>
+                </div>
+                <!-- END User Dropdown -->
+            </div>
+            <!-- END Right Section -->
+        </div>
+        <!-- END Header Content -->
+        <!-- Header Loader -->
+        <!-- Please check out the Activity page under Elements category to see examples of showing/hiding it -->
+        <div id="page-header-loader" class="overlay-header bg-primary">
+            <div class="content-header content-header-fullrow text-center">
+                <div class="content-header-item">
+                    <i class="fa fa-sun-o fa-spin text-white"></i>
+                </div>
+            </div>
+        </div>
+        <!-- END Header Loader -->
+    </header>
+    <!-- END Header -->
+
+    <!-- Main Container -->
+    <main id="main-container">
+        @yield('content')
+    </main>
+    <!-- END Main Container -->
+
+    <!-- Footer -->
+    <footer id="page-footer" class="opacity-0">
+        <div class="content py-20 font-size-xs clearfix">
+            <div class="float-right">
+                <!--Created by <a class="font-w600" href="https://vaptech.in" target="_blank">VAP Technology Pvt. Ltd.</a>-->
+            </div>
+            <div class="float-left">
+
+            </div>
+        </div>
+    </footer>
+    <!-- END Footer -->
+</div>
+<!-- END Page Container -->
+
+<!-- Codebase Core JS -->
+<script src="{{ asset('js/codebase.app.js') }}"></script>
+
+<!-- Laravel Scaffolding JS -->
+<script src="{{ asset('js/laravel.app.js') }}"></script>
+<script src="{{ asset('../vendor/unisharp/laravel-ckeditor/ckeditor.js') }}"></script>
+<script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
+
+<script src="https://cdn.datatables.net/buttons/1.6.2/js/dataTables.buttons.min.js"></script>
+
+<script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.flash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.print.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+<script src="https://unpkg.com/bootstrap-datepicker@1.9.0/dist/js/bootstrap-datepicker.min.js"></script>
+<script src="{{ asset('js/selectstyle.js') }}"></script>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.0/js/toastr.js"></script>
+
+@toastr_render
+@yield('js_after')
+</body>
+</html>
