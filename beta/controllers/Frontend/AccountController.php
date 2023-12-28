@@ -318,12 +318,13 @@ class AccountController extends Controller
 
     public function resend_user_management($id){
         $user = User::where('id',$id)->first();
+        $master_user = User::where('id',auth()->user()->id)->first();
         $password = rand(100000, 999999);
         $insertData = [];
         $insertData['password'] = Hash::make($password);
         $email = $user->email;
         $user->update($insertData);
-        $messageData = ['email'=>$email,'name'=>$user->name,"password"=>$password];
+        $messageData = ['email'=>$email,'name'=>$user->name,'master_name'=>$master_user->name,"password"=>$password];
         Mail::send('emails.create_user',$messageData,function($message) use($email){
              $message->from('info@masterstrokeonline.com', 'Masterstroke');
             $message->to($email)->cc('info@masterstrokeonline.com')
