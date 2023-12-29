@@ -55,6 +55,8 @@
         var picture_height;
         var crop_max_width = 300;
         var crop_max_height = 300;
+        var lastCropHeight = 0;
+        var jcropAPI;
 
         function picture(input) {
             if (input.files && input.files[0]) {
@@ -67,7 +69,10 @@
                     onChange: canvas,
                     onSelect: canvas,
                     boxWidth: crop_max_width,
-                    boxHeight: crop_max_height
+                    boxHeight: crop_max_height,
+                    // aspectRatio: 798/351,
+                }, function() {
+                    jcropAPI = this;
                 });
             }
             reader.readAsDataURL(input.files[0]);
@@ -77,6 +82,15 @@
         function canvas(coords){
             var imageObj = $("#image_jcrop img")[0];
             var canvas = $("#demo_canvas")[0];
+        
+            if (coords.h !== lastCropHeight) {
+                lastCropHeight = coords.h;
+                if (coords.h >  351) {
+                    console.log([coords.x, coords.y, coords.x2, coords.y + 351]);
+                    jcropAPI.setSelect([0, 0, 798, 351]);
+                    // return;
+                }
+            }
             canvas.width  = coords.w;
             canvas.height = coords.h;
             var context = canvas.getContext("2d");
@@ -102,7 +116,7 @@
         data.image = document.getElementById("demo_png").value;
         document.getElementById("crop_upload").innerHTML = "Uploading..."
         $.ajax({
-            url: base_url+'/image-crop  ',
+            url: base_url+'/image-crop',
             type: "post",
             data:data,
             dataType: "json",
@@ -621,16 +635,19 @@
                       @if(!empty($coverImages))
                           @foreach($coverImages as $adminlogo)
                               <div class="col-md-4 text-center" id="div_{{$adminlogo->id}}" >
-                                  <input type="radio" id="male{{$adminlogo->id}}" name="cover_image" value="{{$adminlogo->id}}">
+                                  <input type="radio" id="male{{$adminlogo->id}}" name="cover_image" value="{{$adminlogo->id}}"
+                                  @if ($displayInfo->pdf_cover_image == $adminlogo->image) checked @endif >
                                   <label for="male{{$adminlogo->id}}"><img width="200px" src="{{asset('uploads/salespresentersoftcopy')}}/{{$adminlogo->image}}"></label>
-                                  <img class="img-fluid" style="cursor: pointer;" src="{{asset('/img/removeLogo.png')}}" alt="delete" id="deleteIcon_{{$adminlogo->id}}" onclick="removeCoverImg({{ $adminlogo->id }})">
+                                  @if ($adminlogo->uploaded_by == 'U')
+                                    <img class="img-fluid" style="cursor: pointer;" src="{{asset('/img/removeLogo.png')}}" alt="delete" id="deleteIcon_{{$adminlogo->id}}" onclick="removeCoverImg({{ $adminlogo->id }})">
+                                  @endif
                               </div>
                            @endforeach
                        @endif
                    </div>
                    <br>
                    <button type="submit" name="update_pdf_cover" id="update_pdf_cover" class="btn btn-primary btn-round">Update</button>
-                   <a href="#upload_image1" onclick="uploadImg()" class="btn btn-outline-primary btn-round">Upload File</a>
+                   <a href="#" onclick="uploadImg()" class="btn btn-outline-primary btn-round">Upload File</a>
                    <div>
                         <input type="file" id="upload_image1" name="company_logo_old" hidden="">
                     </div>

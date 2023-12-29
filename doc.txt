@@ -31,3 +31,10 @@ MSONLINE-58
 
 ---------------------------------------------- crop image 28-12-23
 ALTER TABLE `salespresenter_covers` ADD `uploaded_by` ENUM('A','U') NOT NULL DEFAULT 'A' AFTER `position`;
+\models\SalespresenterCover.php
+controllers\Admin\SalespresenterCoverController.php
+\controllers\Frontend\AccountController.php
+
+views\frontend\account\display-settings.blade.php
+
+/httpdocs/resources/views/frontend/account

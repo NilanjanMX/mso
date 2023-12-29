@@ -227,6 +227,7 @@ class AccountController extends Controller
             'title' => 'Cover Page_'.$latest_data->id,
             'slug' => 'cover-page-'.$latest_data->id,
             'image' => $imageName,
+            'uploaded_by' => 'U',
             'is_active' => 1,
         ]);
 

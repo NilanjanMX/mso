@@ -17,7 +17,7 @@ class SalespresenterCoverController extends Controller
         // dd(1);
         if ($request->ajax()) {
             //$data = SalespresenterCover::with('category')->latest()->get();
-            $data = SalespresenterCover::with('category')->orderBy('position','ASC')->get();
+            $data = SalespresenterCover::with('category')->where('uploaded_by', 'A')->orderBy('position','ASC')->get();
             
             return Datatables::of($data)
                 ->addIndexColumn()
