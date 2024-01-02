@@ -10,7 +10,7 @@ class SalespresenterCover extends Model
     use Sluggable;
 
     protected $fillable = [
-        'salespresentercategories_id','title','slug','image','download','position','is_active','updated_at', 'uploaded_by'
+        'salespresentercategories_id','title','slug','image','download','position','is_active','updated_at', 'uploaded_by', 'user_id'
     ];
 
     /**

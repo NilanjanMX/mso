@@ -192,7 +192,12 @@ class AccountController extends Controller
         }else{
             
             $displayInfo = Displayinfo::where('user_id',$user->id)->first();
-            $coverImages = SalespresenterCover::where('is_active', 1)->get();
+            $coverImages = SalespresenterCover::where([
+                'uploaded_by' => 'A',
+            ])->orWhere([
+                'user_id'=> $user->id
+            ])->where('is_active', 1)->get();
+
             $left_menu = "display_settings";
             return view('frontend.account.display-settings')->with(compact('displayInfo','left_menu', 'coverImages'));
         }
@@ -228,6 +233,7 @@ class AccountController extends Controller
             'slug' => 'cover-page-'.$latest_data->id,
             'image' => $imageName,
             'uploaded_by' => 'U',
+            'user_id' => Auth::id(),
             'is_active' => 1,
         ]);
 

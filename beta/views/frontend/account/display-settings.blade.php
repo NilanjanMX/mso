@@ -70,7 +70,7 @@
                     onSelect: canvas,
                     boxWidth: crop_max_width,
                     boxHeight: crop_max_height,
-                    // aspectRatio: 798/351,
+                    aspectRatio: 798/351,
                 }, function() {
                     jcropAPI = this;
                 });
@@ -82,12 +82,15 @@
         function canvas(coords){
             var imageObj = $("#image_jcrop img")[0];
             var canvas = $("#demo_canvas")[0];
-        
+            console.log(coords.w, coords.h);
+            if (coords.w > 798) {
+                // return false;
+            }
             if (coords.h !== lastCropHeight) {
                 lastCropHeight = coords.h;
                 if (coords.h >  351) {
-                    console.log([coords.x, coords.y, coords.x2, coords.y + 351]);
-                    jcropAPI.setSelect([0, 0, 798, 351]);
+                    // console.log([coords.x, coords.y, coords.x2, coords.y + 351]);
+                    // jcropAPI.setSelect([0, 0, 798, 351]);
                     // return;
                 }
             }

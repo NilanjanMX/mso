@@ -31,10 +31,18 @@ MSONLINE-58
 
 ---------------------------------------------- crop image 28-12-23
 ALTER TABLE `salespresenter_covers` ADD `uploaded_by` ENUM('A','U') NOT NULL DEFAULT 'A' AFTER `position`;
+user_id add korte hobe and DEFAULT 0 thakbe
 \models\SalespresenterCover.php
 controllers\Admin\SalespresenterCoverController.php
 \controllers\Frontend\AccountController.php
 
 views\frontend\account\display-settings.blade.php
+------------------------------------------------------- 2-jan-24
 
-/httpdocs/resources/views/frontend/account
+ALTER TABLE `displayinfos` CHANGE `address_color` `address_color` VARCHAR(151) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '#000000';
+
+ALTER TABLE `displayinfos` CHANGE `email_color` `email_color` VARCHAR(151) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '#FFFFFF';
+
+ALTER TABLE `displayinfos` CHANGE `city_color` `city_color` VARCHAR(151) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '#05014A';
+
+ALTER TABLE `displayinfos` CHANGE `address_color_background` `address_color_background` VARCHAR(151) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '#add8e6';
