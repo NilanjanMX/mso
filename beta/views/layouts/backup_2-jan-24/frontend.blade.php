@@ -579,7 +579,7 @@
                                         @endif
                                         @if (Auth::user()->package_id == 14 )
                                             {{-- basic user --}}
-                                            <li><a class="dropdown-item" href="{{url('/account/update-package')}}">Upgrade Subscription</a></li>
+                                            <li><a class="dropdown-item" href="{{url('/account/subscription')}}">Upgrade Subscription</a></li>
                                         @endif
                                     @else
                                         <li><a class="dropdown-item" href="{{route('frontend.sales-presenters')}}">Sales Presenters</a></li>
