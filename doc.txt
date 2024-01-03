@@ -31,7 +31,7 @@ MSONLINE-58
 
 ---------------------------------------------- crop image 28-12-23
 ALTER TABLE `salespresenter_covers` ADD `uploaded_by` ENUM('A','U') NOT NULL DEFAULT 'A' AFTER `position`;
-user_id add korte hobe and DEFAULT 0 thakbe
+ALTER TABLE `salespresenter_covers` ADD `user_id` BIGINT NOT NULL DEFAULT '0' AFTER `salespresentercategories_id`;
 \models\SalespresenterCover.php
 controllers\Admin\SalespresenterCoverController.php
 \controllers\Frontend\AccountController.php
