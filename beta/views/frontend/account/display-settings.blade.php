@@ -40,6 +40,11 @@
     }
 
     function uploadImg() {
+        let uploadByUserImgNo = $('#uploadByUserImgNo').val();
+        if (uploadByUserImgNo == 5) {
+            return alert('You can not upload images more than 5 times');
+        }
+
         document.getElementById('PDF_cover_modal_close_btn').click();       
         document.getElementById('upload_image1').click();
     }
@@ -636,12 +641,18 @@
                 @csrf
                   <div class="row">
                       @if(!empty($coverImages))
+                        @php
+                            $uploadByUserImgNo = 0;
+                        @endphp
                           @foreach($coverImages as $adminlogo)
                               <div class="col-md-4 text-center" id="div_{{$adminlogo->id}}" >
                                   <input type="radio" id="male{{$adminlogo->id}}" name="cover_image" value="{{$adminlogo->id}}"
                                   @if ($displayInfo->pdf_cover_image == $adminlogo->image) checked @endif >
                                   <label for="male{{$adminlogo->id}}"><img width="200px" src="{{asset('uploads/salespresentersoftcopy')}}/{{$adminlogo->image}}"></label>
                                   @if ($adminlogo->uploaded_by == 'U')
+                                    @php
+                                        $uploadByUserImgNo += 1;
+                                    @endphp
                                     <img class="img-fluid" style="cursor: pointer;" src="{{asset('/img/removeLogo.png')}}" alt="delete" id="deleteIcon_{{$adminlogo->id}}" onclick="removeCoverImg({{ $adminlogo->id }})">
                                   @endif
                               </div>
@@ -649,6 +660,7 @@
                        @endif
                    </div>
                    <br>
+                   <input type="hidden" id="uploadByUserImgNo" name="uploadByUserImgNo" value="{{ $uploadByUserImgNo }}">
                    <button type="submit" name="update_pdf_cover" id="update_pdf_cover" class="btn btn-primary btn-round">Update</button>
                    <a href="#" onclick="uploadImg()" class="btn btn-outline-primary btn-round">Upload File</a>
                    <div>
@@ -757,6 +769,8 @@
                 if (!response.ok) {
                     return alert('Somethings went wrong! Please try again later.');
                 }
+                let value = $('#uploadByUserImgNo').val() - 1;
+                $('#uploadByUserImgNo').val(value) ; 
                 document.getElementById('div_'+id).remove();
             
             })
