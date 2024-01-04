@@ -192,11 +192,15 @@ class AccountController extends Controller
         }else{
             
             $displayInfo = Displayinfo::where('user_id',$user->id)->first();
-            $coverImages = SalespresenterCover::where([
-                'uploaded_by' => 'A',
-            ])->orWhere([
-                'user_id'=> $user->id
-            ])->where('is_active', 1)->get();
+            $coverImages = SalespresenterCover::where(function ($query){
+                $query->where('uploaded_by', 'A')
+                      ->where('is_active', 1);
+            })
+            ->orWhere(function ($query) use ($user) {
+                $query->where('user_id', $user->id)
+                      ->where('is_active', 1);
+            })
+            ->get();
 
             $left_menu = "display_settings";
             return view('frontend.account.display-settings')->with(compact('displayInfo','left_menu', 'coverImages'));
