@@ -37,9 +37,11 @@
     
     function upload_image1SetNull() {
         $('#upload_image1').val('');
+        $('#demo_png').val('');
     }
 
     function uploadImg() {
+        
         let uploadByUserImgNo = $('#uploadByUserImgNo').val();
         if (uploadByUserImgNo == 5) {
             return alert('You can not upload images more than 5 times');
@@ -122,6 +124,9 @@
     function uploadToServer() {
         var data = {};
         data.image = document.getElementById("demo_png").value;
+        if (data.image == '') {
+            return alert('You can not upload image without cropping image');
+        }
         document.getElementById("crop_upload").innerHTML = "Uploading..."
         $.ajax({
             url: base_url+'/image-crop',

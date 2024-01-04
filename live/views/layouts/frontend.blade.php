@@ -721,6 +721,14 @@
                                                 <li><a class="dropdown-item" href="javascript:void(0);" onclick="openGlobalRenewalAlert();">Trail Calculator</a></li>
                                             @endif
                                         @endif
+                                        @if (Auth::user()->package_id == 15 )
+                                            {{-- free user --}}
+                                            <li><a class="dropdown-item" href="{{url('membership')}}">Become a member</a></li>
+                                        @endif
+                                        @if (Auth::user()->package_id == 14 )
+                                            {{-- basic user --}}
+                                            <li><a class="dropdown-item" href="{{url('/account/update-package')}}">Upgrade Subscription</a></li>
+                                        @endif
                                     @else
                                         <li><a class="dropdown-item" href="{{route('frontend.sales-presenters')}}">Sales Presenters</a></li>
                                         <li><a class="dropdown-item" href="{{route('frontend.calculatorAllList')}}">Client Proposals</a></li>
