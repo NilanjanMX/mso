@@ -45,4 +45,7 @@ ALTER TABLE `displayinfos` CHANGE `email_color` `email_color` VARCHAR(151) CHARA
 
 ALTER TABLE `displayinfos` CHANGE `city_color` `city_color` VARCHAR(151) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '#05014A';
 
-ALTER TABLE `displayinfos` CHANGE `address_color_background` `address_color_background` VARCHAR(151) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '#add8e6';
+ALTER TABLE `displayinfos` CHANGE `address_color_background` `address_color_background` VARCHAR(151) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '#add8e6'
+++++++++++++++++
+
+bgyq gydv kytm lutp

@@ -723,7 +723,7 @@
                                         @endif
                                         @if (Auth::user()->package_id == 15 )
                                             {{-- free user --}}
-                                            <li><a class="dropdown-item" href="{{url('membership')}}">Become a member</a></li>
+                                            <li><a class="dropdown-item" href="{{url('account/update-package')}}">Become a member</a></li>
                                         @endif
                                         @if (Auth::user()->package_id == 14 )
                                             {{-- basic user --}}
