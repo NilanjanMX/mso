@@ -55,3 +55,10 @@ MF CATEGORY-WISE SCHEME PERFORMANCE-NAV Graph not downloading
 /views/frontend/mf_research/mf_category_wise_performance/index.blade.php
 
 /controllers/Frontend/MFResearch/MFInvestmentPortfolioAnalysisController.php
+
+---------------------------------------------------------------------------
+Membership Referral Logic  MSONLINE-85
+
+/views/frontend/membership_referral/index.blade.php
+
+/controllers/Frontend/MembershipReferralController.php

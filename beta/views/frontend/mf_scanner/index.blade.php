@@ -914,7 +914,8 @@
                         glo_aum = parseFloat(val[val1.key_name])/100;
                         glo_aum = parseInt(glo_aum);
                         glo_aum_date = new Date(val.total_date);
-                        table_html = table_html+"<td class='"+is_freeze+"'><div class='dataHintHold'><randhir>"+glo_aum.toLocaleString('en-IN')+"</randhir><span>"+glo_aum_date.getDate()  + "-" + (glo_aum_date.getMonth()+1) + "-" + glo_aum_date.getFullYear()+"</span></div></td>";
+                        //table_html = table_html+"<td class='"+is_freeze+"'><div class='dataHintHold'><randhir>"+glo_aum.toLocaleString('en-IN')+"</randhir><span>"+glo_aum_date.getDate()  + "-" + (glo_aum_date.getMonth()+1) + "-" + glo_aum_date.getFullYear()+"</span></div></td>";
+                        table_html = table_html+"<td class='"+is_freeze+"'><div class='dataHintHold'><randhir>"+glo_aum.toLocaleString('en-IN')+"</randhir></div></td>";
                     }else{
                         table_html = table_html+"<td class='"+is_freeze+"'></td>";
                     }
@@ -1020,6 +1021,7 @@
             };
         
             $.fn.dataTableExt.oSort["test-asc"] = function (x, y){
+                //alert(2);
                 if(x.split('randhir').length == 3){
                     if(x.split('randhir')[1]){
                         x = parseInt(x.split('randhir')[1].replace(/[^0-9]/g, ''));
@@ -1045,7 +1047,7 @@
                 "searching": false,
                 "order": [[ 1, "asc" ]],
                 "columnDefs": [
-                    { "type": "test", targets: 3 }
+                    { "type": "test", targets: 0 }
                 ]
             });
             setTimeout(function() {
@@ -1239,6 +1241,40 @@
         function checkSave(){
             document.getElementById('page_type').value = "SAVE";
             document.getElementById('schemecode_id').value = global_selected_row;
+            var count = 0;
+            // console.log(global_table_list);
+            global_table_list.forEach(function(val){
+                if(val.table_checkbox){
+                    count = count + 1;
+                }
+            });
+
+            console.log(count);
+            if(count > 8){
+                var txt;
+                if (confirm("Landscape research reports cannot be merged with other masterstroke reports. Click to proceed or use portrait mode!")) {
+                    txt = 1;
+                } else {
+                    txt = 2;
+                }
+                if(txt == 1){
+                    //  Deciding Save File Type 
+                    document.getElementById('download_type').value = "Landscape";
+                    document.getElementById('all_colum_list').value = JSON.stringify(global_table_list);
+                    var sortedCol = $('#mf_scanner_list').dataTable().fnSettings().aaSorting[0][0];
+                    var sortedDir = $('#mf_scanner_list').dataTable().fnSettings().aaSorting[0][1];
+                    document.getElementById('shorting_id').value = sortedCol+"_"+sortedDir;
+                    $('#sentEmailModal').modal('show');
+                    setTimeout(function(){
+                        document.getElementById('modal_title').focus();
+                    },500);
+                }else{
+                    return false;
+                }
+                
+            }
+
+          
 
             document.getElementById('all_colum_list').value = JSON.stringify(global_table_list);
             var sortedCol = $('#mf_scanner_list').dataTable().fnSettings().aaSorting[0][0];
@@ -1843,12 +1879,13 @@ $window.scroll(function() {
             border-left: 1px solid #b5b3b3;
         }
         #mf_scanner_list thead tr td  {
-            padding: 8px 4px;
+            /* padding: 8px 4px; */
+            padding: 0 4px;
             text-align: center;
             line-height: 14px;
             font-size: 12px;
             font-weight: 600;
-            padding-right: 16px;
+            padding-right: 20px;
         }
         table.dataTable tbody tr:nth-child(even) {
             background-color:#f0f1f6;
@@ -2166,7 +2203,7 @@ $window.scroll(function() {
               table#mf_scanner_list tr td.fivethrow, table#mf_scanner_list tr td.sixthrow {
                 position: absolute; 
                 top: auto;
-                border-top-width: 1px;
+                /* border-top-width: 1px; */
                 margin-top: -1px;
               }
               table#mf_scanner_list tr td.firstrow {
@@ -2275,21 +2312,30 @@ $window.scroll(function() {
 <style type="text/css">
 
             .theDiv{
-                height: 400px;
+                height:600px;
                 margin-left: 0px !important;
             }
-            table#mf_scanner_list thead tr td.secondrow, table#mf_scanner_list thead tr td.firstrow{
+            table#mf_scanner_list thead tr td.firstrow,
+            table#mf_scanner_list thead tr td.secondrow,
+            table#mf_scanner_list thead tr td.thirdrow,
+            table#mf_scanner_list thead tr td.fourthrow 
+            {
                 background-color: #b5b3b3;
             }
-            table#mf_scanner_list thead tr td.secondrow{
+            table#mf_scanner_list thead tr td.firstrow,
+            table#mf_scanner_list thead tr td.secondrow,
+            table#mf_scanner_list thead tr td.thirdrow,
+            table#mf_scanner_list thead tr td.fourthrow{
                 position: sticky;
+                border-right: 1px solid #b5b3b3;
             }
-            table#mf_scanner_list thead tr td.firstrow{
-                position: sticky;
-            }
-            table#mf_scanner_list tbody tr td.secondrow, table#mf_scanner_list tbody tr td.firstrow{
+            table#mf_scanner_list tbody tr td.firstrow,
+            table#mf_scanner_list tbody tr td.secondrow,
+            table#mf_scanner_list tbody tr td.thirdrow,
+            table#mf_scanner_list tbody tr td.fourthrow {
                 position: sticky !important;
                 background-color: white;
+                border-right: 1px solid #b5b3b3;
             }
             .dataHintHold{
                 position: static !important;
@@ -2301,7 +2347,7 @@ $window.scroll(function() {
                 padding: 26px 15px 30px !important;
             }
             table#mf_scanner_list tr td.secondrow{
-                left: 20px !important;
+                left: 40px !important;
             }
             #mf_scanner_list thead{
                 position:sticky;
@@ -2313,23 +2359,24 @@ $window.scroll(function() {
                 display:none;
             }
             .newsletter{
-                position: inherit !important;
+                /* position: inherit !important; */
+                margin-bottom:0 !important;
             }
             .btm-shape-prt{
                 display:none;
             }
-            footer{
+            /* footer{
                 z-index:-1 !important;
-            }
+            } */
             .stickyEl
             {
-                position: fixed;
-                top: 0;
+                /* position: fixed;
+                top: -4px;
                 left: 0;
                 right: 0;
                 border: 0;
                 margin: 0 auto;
-                max-width: 1140px;
+                max-width: 1140px; */
             }
             </style>
             <style>
