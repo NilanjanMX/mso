@@ -665,6 +665,18 @@ class MFInvestmentPortfolioAnalysisController extends Controller
 
         Session::put('pie_chart2', $image);
         return response()->json(['message' => 'Image saved successfully']);
+        // Generate a unique filename
+        // $filename = 'image_' . time() . '.svg';
+
+        // // Specify the path where you want to save the image
+        // $path = public_path($filename);
+
+        // // Save the image to the specified path
+        // file_put_contents($path, $input['img']);
+
+        // $image = asset($filename);
+
+        // Session::put('pie_chart2', $image);
     }
     
     public function investment_analysis_action(){

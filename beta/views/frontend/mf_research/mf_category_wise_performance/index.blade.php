@@ -7,10 +7,10 @@
     <script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
     <script src="https://code.highcharts.com/stock/modules/export-data.js"></script>
     <script src="https://code.highcharts.com/stock/modules/accessibility.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.5/dist/html2canvas.min.js"></script>
 
     <script type="text/javascript">
         var glob_names = [];
+        var chart = '';
 
         const names = ['MSFT', 'AAPL', 'GOOG'];
 
@@ -27,17 +27,31 @@
             document.getElementById("save_form_data").submit();
         }
         function takeshot() {
-            let div = document.getElementById('containerss');
 
-            html2canvas(div).then(
-                function (canvas) {
-                    var imageData = canvas.toDataURL("image/png");
-                    console.log(imageData);
+            var svgString = chart.getSVG();
 
-                    // Send the base64 image data to the server
-                    sendDataToServer(imageData);
-                }
-            )
+            // Convert the SVG to a data URL
+            var svgDataURL = 'data:image/svg+xml,' + encodeURIComponent(svgString);
+
+            // Create an image element and set the SVG data as the source
+            var img = new Image();
+            img.src = svgDataURL;
+
+            // When the image is loaded, convert it to a canvas and send the data to the server
+            img.onload = function () {
+                var canvas = document.createElement('canvas');
+                var context = canvas.getContext('2d');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                context.drawImage(img, 0, 0, img.width, img.height);
+
+                // Get the data URL of the canvas (PNG format)
+                var pngDataURL = canvas.toDataURL('image/png');
+                console.log(pngDataURL);
+                // Send the image data to the server
+
+                sendDataToServer(pngDataURL)
+            }
         }
 
         function sendDataToServer(imgUri) {
@@ -58,7 +72,7 @@
 
         function createChart(series) {
 
-            Highcharts.stockChart('containerss', {
+            chart = Highcharts.stockChart('containerss', {
 
                 rangeSelector: {
                     selected: 4
