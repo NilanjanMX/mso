@@ -43,13 +43,26 @@ class MembershipReferralController extends Controller
 		return view('frontend.membership_referral.edit',$data);
 	}
 	
-	public function save(Request $request){
+	public function save(Request $request) {
         $this->validate($request, [
             'name' => 'required',
-            'email' => 'required|email|unique:users,email|unique:referral_links,email'
+            'email' => 'required|email|unique:users,email'
+        ],[
+            'email.unique' => 'The email has already been registered.'
         ]);
 
         $user = Auth::user();
+
+        $dataExits = DB::table("referral_links")->where([
+                'user_id'=> $user->id,
+                'email' => $request->email
+        ])->first();
+
+        if ($dataExits) {
+            return back()->withInput()->withErrors([
+                'email' => 'The email has already been taken.',
+            ]);
+        }
 
         $link = $user->id.rand(100000,100000000);
 

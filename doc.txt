@@ -62,3 +62,6 @@ Membership Referral Logic  MSONLINE-85
 /views/frontend/membership_referral/index.blade.php
 
 /controllers/Frontend/MembershipReferralController.php
+
+----------------------------------------------------------------------------
+

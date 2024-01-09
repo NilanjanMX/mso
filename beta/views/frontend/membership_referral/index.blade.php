@@ -172,8 +172,10 @@
                                                                 </td>
                                                                 <td>
                                                                     @if(strtotime(date('d-m-Y')) <= strtotime(date('d-m-Y', strtotime($result->expire_at))) )
+                                                                    <div class="d-flex justify-content-center align-items-center">
+                                                                    <a href="javascript:void(0);" class="subscriptionView text-nowrap" onclick="copyLinkFun('{{$result->id}}')">Copy Link</a>
                                                                     <span id="link_{{$result->id}}" style="font-size: 0px;">{{url('/')}}/membership/{{$result->link}}</span>
-                                                                    <a href="javascript:void(0);" class="subscriptionView" onclick="copyLinkFun('{{$result->id}}')">Copy Link</a>
+                                                                    </div>
                                                                     @endif
                                                                 </td>
                                                                 <td>
@@ -190,10 +192,10 @@
                                                                 <td>
                                                                    {{date('d-m-Y', strtotime($result->created_at))}}
                                                                 </td>
-                                                                <td>
+                                                                <td class="text-nowrap">
                                                                     {{date('d-m-Y', strtotime($result->expire_at))}}
                                                                  </td>
-                                                                <td>
+                                                                <td class="text-nowrap">
                                                                     <a href="{{route('account.membershipReferralEdit',['id'=>$result->id])}}" class="subscriptionView">Edit</a>&nbsp;&nbsp;
                                                                     <a href="{{route('account.membershipReferralDelete',['id'=>$result->id])}}"  onclick="return confirm('Are you sure?')"  class="subscriptionView">Delete</a>
                                                                 </td>
@@ -231,7 +233,7 @@
         document.execCommand("copy");
         window.getSelection().removeAllRanges();// to deselect
         
-        alert("Link coped successfully.");
+        alert("Link copied successfully.");
     }
 </script>
 
