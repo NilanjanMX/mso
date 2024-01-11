@@ -17,6 +17,7 @@ use Response;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
+use Illuminate\Support\Facades\Log;
 
 class UserNotificationController extends Controller
 {
@@ -163,7 +164,8 @@ class UserNotificationController extends Controller
     }
     
     public function sendMailToExpiredUser(){
-        
+        Log::info(" free user 4,10,15 days start");
+
         $current_date5 = date('Y-m-d', strtotime('+5 days'));
         $current_date10 = date('Y-m-d', strtotime('+10 days'));
         $current_date15 = date('Y-m-d', strtotime('+15 days'));
@@ -180,12 +182,15 @@ class UserNotificationController extends Controller
             $email = $value->email;
             $messageData = ['name'=>$value->name,'email_header'=>$dynamic_email->email_header,'email_footer'=>$dynamic_email->email_footer,"expire_at"=>date('d-m-Y', strtotime($value->expire_at))];
             $subject = $dynamic_email->subject;
+
+            if (isset($email) && !empty($email)) {
+                Mail::send('emails.expired_user',$messageData,function($message) use($email,$subject){
+                     $message->from('info@masterstrokeonline.com', 'Masterstroke');
+                    $message->to($email)->cc('info@masterstrokeonline.com')
+                    ->subject($subject);
+                });
+            }
             
-            Mail::send('emails.expired_user',$messageData,function($message) use($email,$subject){
-                 $message->from('info@masterstrokeonline.com', 'Masterstroke');
-                $message->to($email)->cc('info@masterstrokeonline.com')
-                ->subject($subject);
-            });
         }
         
         $membership = Membership::leftJoin('users', 'users.id', '=' , 'memberships.user_id')
@@ -201,11 +206,13 @@ class UserNotificationController extends Controller
             $messageData = ['name'=>$value->name,'email_header'=>$dynamic_email->email_header,'email_footer'=>$dynamic_email->email_footer,"expire_at"=>date('d-m-Y', strtotime($value->expire_at))];
             $subject = $dynamic_email->subject;
             
-            Mail::send('emails.expired_user',$messageData,function($message) use($email,$subject){
-                 $message->from('info@masterstrokeonline.com', 'Masterstroke');
-                $message->to($email)->cc('info@masterstrokeonline.com')
-                ->subject($subject);
-            });
+            if (isset($email) && !empty($email)) {
+                Mail::send('emails.expired_user',$messageData,function($message) use($email,$subject){
+                     $message->from('info@masterstrokeonline.com', 'Masterstroke');
+                    $message->to($email)->cc('info@masterstrokeonline.com')
+                    ->subject($subject);
+                });
+            }
         }
         
         $membership = Membership::leftJoin('users', 'users.id', '=' , 'memberships.user_id')
@@ -221,12 +228,16 @@ class UserNotificationController extends Controller
             $messageData = ['name'=>$value->name,'email_header'=>$dynamic_email->email_header,'email_footer'=>$dynamic_email->email_footer,"expire_at"=>date('d-m-Y', strtotime($value->expire_at))];
             $subject = $dynamic_email->subject;
             
-            Mail::send('emails.expired_user',$messageData,function($message) use($email,$subject){
-                 $message->from('info@masterstrokeonline.com', 'Masterstroke');
-                $message->to($email)->cc('info@masterstrokeonline.com')
-                ->subject($subject);
-            });
+            if (isset($email) && !empty($email)) {
+                Mail::send('emails.expired_user',$messageData,function($message) use($email,$subject){
+                     $message->from('info@masterstrokeonline.com', 'Masterstroke');
+                    $message->to($email)->cc('info@masterstrokeonline.com')
+                    ->subject($subject);
+                });
+            }
         }
+
+        Log::info(" free user 4,10,15 days end");
     }
     
     public function mailSendTodayOrderMembership(){

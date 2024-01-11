@@ -104,6 +104,7 @@
 
                 series
             });
+            takeshot();
 
         }
         // (async () => {
@@ -755,7 +756,6 @@
 
 
     function openModalc(){
-        takeshot();
         document.getElementById("pdf_title_line1").value = "";
         document.getElementById("pdf_title_line2").value = "";
         document.getElementById("client_name").value = "";
@@ -1362,7 +1362,7 @@
                         <div class="row mx-0" style="padding-bottom: 10px; font-size: 12px;">
                           
                           <div class="col-md-12 text-center pt-2" style="border-top: 1px solid #ccc; margin-top: 3px;">
-                            <form action="{{route('frontend.mf_category_wise_performance_save')}}" onsubmit="takeshot()" method="get" id="save_form_data">
+                            <form action="{{route('frontend.mf_category_wise_performance_save')}}" method="get" id="save_form_data">
                               <input type="hidden" name="schemecode_id" id="schemecode_id" value="">
                               <input type="hidden" name="shorting_id" id="shorting_id" value="">
                               <input type="hidden" name="all_colum_list" id="all_colum_list" value="">
