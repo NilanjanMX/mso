@@ -149,7 +149,7 @@
                                                         <th><span>Link</span></th>
                                                         <th><span>Subscribed</span></th>
                                                         <th><span>Created Date</span></th>
-                                                        <th><span>Date</span></th>
+                                                        <th><span>Valid Till Date</span></th>
                                                         <th></th>
                                                     </tr>
                                                 </thead>
