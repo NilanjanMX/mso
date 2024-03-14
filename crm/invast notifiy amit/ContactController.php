@@ -1254,7 +1254,7 @@ class ContactController extends Controller
         ->get('custom_tags.custom_tag AS custom_tag')->pluck('custom_tag')->toarray();
         $oldContactCustomTag = implode(',',$oldContactCustomTag);
 
-        try {
+        // try {
             if ($step == 'personal') {
                
                 $reletionship = $request->input('relation');
@@ -1505,10 +1505,10 @@ class ContactController extends Controller
 
             $msg = 'Contact saved successfully!!';
             $status = 'success';
-        } catch (\Exception $e) {
-            $msg = "Oops!! Something went wrong";
-            $status = 'error';
-        }
+        // } catch (\Exception $e) {
+        //     $msg = "Oops!! Something went wrong";
+        //     $status = 'error';
+        // }
         return response()->json(['message' => $msg, 'status' => $status, 'data' =>$data]);
     }
 
@@ -1546,14 +1546,14 @@ class ContactController extends Controller
                     if ($oci->status != $ci->status) 
                     {
                         $update_Investment_status = 1;
-                        $investmentStr .= 'Status : '.$oci->opportunity_type->name .'scheme status '. $oci->investment_status->name .'->'. $ci->investment_status->name;
+                        $investmentStr .= 'Status : '.$oci->opportunity_type->name .' scheme status '. $oci->investment_status->name .'->'. $ci->investment_status->name;
                         $investmentStr .= "<br>";
                     }
     
                     if ($oci->remarks != $ci->remarks) 
                     {
                         $update_Investment_status = 1;
-                        $investmentStr .= 'Remarks : '.$oci->opportunity_type->name .'scheme remarks '. $oci->remarks .'->'. $ci->remarks;
+                        $investmentStr .= 'Remarks : '.$oci->opportunity_type->name .' scheme remarks '. $oci->remarks .'->'. $ci->remarks;
                         $investmentStr .= "<br>";
                     }
                     $is_match = 1;
@@ -1562,7 +1562,7 @@ class ContactController extends Controller
             }
             if ($is_match == 0) {
                 $update_Investment_status = 1;
-                $investmentStr .= 'New '. $ci->opportunity_type->name .' schame is added. Status is '. $ci->investment_status->name .' and Remaks is '. $ci->remarks;
+                $investmentStr .= 'New '. $ci->opportunity_type->name .' schame is added. Status is '. $ci->investment_status->name .' and remarks is '. $ci->remarks;
         
                 $investmentStr .= "<br>";
             }
@@ -4910,6 +4910,7 @@ class ContactController extends Controller
             return response()->json(['success' => false]);     
         }
     }
+
     // invast notifiy amit
     public function invasStr($oldStatusStr, $newStatusStr, $schemes_name){
         $str = "<tr><td style=' width: 33%; font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #000; padding: 5px; border-right: 1px solid #C6D7FF; vertical-align: top;'>$schemes_name</td>
@@ -4926,9 +4927,10 @@ class ContactController extends Controller
     # Purpose       :  Send inapp and email notification  to  assignees about the modification of contacts. 
     # Params        : $contact,$oldContact,$emailConfigStatus,$inAppConfigStatus
     /*****************************************************/
-    // invast notifiy amit
-    public function notifyModificationContact($contact, $oldContact,$emailConfigStatus,$inAppConfigStatus, $oldContactInvestment){ // $oldContactInvestment
+     // invast notifiy amit
+    public function notifyModificationContact($contact, $oldContact,$emailConfigStatus,$inAppConfigStatus,$oldContactInvestment){ // $oldContactInvestment add
     
+
         $contactInvestment = ContactInvestment::with(['opportunity_type','investment_status'])->where('contact_id', $contact->id)->get();
         
         $investmentStr = '';
@@ -4962,14 +4964,16 @@ class ContactController extends Controller
         
             }
             if ($is_match == 0) {
-                $update_Investment_status = 1;
-                $investmentStr .= 'New '. $ci->opportunity_type->name .' schame is added. Status is '. $ci->investment_status->name .' and Remaks is '. $ci->remarks;
-        
-                $investmentStr .= "<br>";
+                $oldStatusStr = "N/A";
+                $newStatusStr = $ci->opportunity_type->name .' scheme status '.$ci->investment_status->name;
+                $invasRemarks[] = $this->invasStr($oldStatusStr, $newStatusStr, $ci->opportunity_type->name);
+
+                $oldRemarksStr = "N/A";
+                $newRemarksStr = $ci->opportunity_type->name .' scheme remarks '.$ci->remarks;
+                $invasRemarks[] = $this->invasStr($oldRemarksStr, $newRemarksStr, $ci->opportunity_type->name);
             }
         }
-        
-        // invast notifiy amit xxx
+              
         $assignee_ids= explode(',', $contact->assignee_ids);
         
         
@@ -5081,6 +5085,7 @@ class ContactController extends Controller
                 $assigneeDetails = User::findOrFail($assignee);                    
                 $assigneeEmail = $assigneeDetails->email; 
                 $newData['email'] = $assigneeEmail; 
+                
                 if($emailConfigStatus==1){
                     Mail::send('email_template.contact_modification_email', [
                         'newData' => $newData, 
@@ -5089,7 +5094,7 @@ class ContactController extends Controller
                         'invasStatus' => $invasStatus,
                         'invasRemarks' => $invasRemarks,
                         // invast notifiy amit xxx
-                    ], function ($m) use ($newData) {
+                    ],  function ($m) use ($newData) {
                         $m->from(\Config::get('constants.fromEmail'), \Config::get('constants.fromName'));
                         $m->to($newData['email'])->subject("M-Edge");
                     });
