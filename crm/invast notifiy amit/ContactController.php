@@ -1254,7 +1254,7 @@ class ContactController extends Controller
         ->get('custom_tags.custom_tag AS custom_tag')->pluck('custom_tag')->toarray();
         $oldContactCustomTag = implode(',',$oldContactCustomTag);
 
-        // try {
+        try {
             if ($step == 'personal') {
                
                 $reletionship = $request->input('relation');
@@ -1505,10 +1505,10 @@ class ContactController extends Controller
 
             $msg = 'Contact saved successfully!!';
             $status = 'success';
-        // } catch (\Exception $e) {
-        //     $msg = "Oops!! Something went wrong";
-        //     $status = 'error';
-        // }
+        } catch (\Exception $e) {
+            $msg = "Oops!! Something went wrong";
+            $status = 'error';
+        }
         return response()->json(['message' => $msg, 'status' => $status, 'data' =>$data]);
     }
 
