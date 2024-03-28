@@ -36,3 +36,5 @@ ALTER TABLE `activity_logs` ADD `is_workflow_step_delete` BOOLEAN NOT NULL DEFAU
 27/mar/2024
 
 ALTER TABLE `activity_logs` ADD `contact_step` VARCHAR(50) NULL DEFAULT NULL AFTER `contact_module_case`;
+
+ALTER TABLE `notifications` CHANGE `title` `title` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL;
