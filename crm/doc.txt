@@ -39,5 +39,13 @@ ALTER TABLE `activity_logs` ADD `contact_step` VARCHAR(50) NULL DEFAULT NULL AFT
 
 ALTER TABLE `notifications` CHANGE `title` `title` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL;
 
---------------------------- frequency_bandwidth --------------------------------------- 29/mar/2024 
+--------------------------- frequency_bandwidth --------------------------------------- 29/Mar/2024 
 ALTER TABLE `notification_settings` CHANGE `frequency_bandwidth` `frequency_bandwidth` VARCHAR(255) NULL DEFAULT NULL;
+
+--------------------------------- report filter--------------- 9-apr-2024
+report_filter_list table
+web.php
+/home/pc-124/Desktop/m/Masterstroke/resources/views/frontend/report_filter/index.blade.php
+/home/pc-124/Desktop/m/Masterstroke/app/Http/Controllers/ReportFilterController.php
+/home/pc-124/Desktop/m/Masterstroke/app/Models/ReportFilterList.php
+/home/pc-124/Desktop/m/Masterstroke/resources/views/frontend/layouts/sidebar.blade.php
