@@ -49,3 +49,5 @@ web.php
 /home/pc-124/Desktop/m/Masterstroke/app/Http/Controllers/ReportFilterController.php
 /home/pc-124/Desktop/m/Masterstroke/app/Models/ReportFilterList.php
 /home/pc-124/Desktop/m/Masterstroke/resources/views/frontend/layouts/sidebar.blade.php
+--------------------- report filter ----------------------------- 23-apr-24
+ALTER TABLE `report_filter_list` ADD `module_name` VARCHAR(255) NOT NULL DEFAULT 'NA' AFTER `filter_name`;
