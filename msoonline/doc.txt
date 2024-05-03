@@ -1,0 +1,21 @@
+bundle video -------------------
+
+bundle_coupons table create
+bundle_video_watch_times table  create
+
+/app/Http/Controllers/Admin/BundleController.php
+app/Http/Controllers/Admin/BundleCouponController.php
+app/Models/BundleCoupon.php
+resources/views/admin/bandle_coupon/add.blade.php
+resources/views/admin/bandle_coupon/edit.blade.php
+resources/views/admin/bandle_coupon/index.blade.php
+resources/views/layouts/backend.blade.php
+routes/admin.php
+routes/web.php
+resources/views/frontend/library/index.blade.php
+resources/views/frontend/library/bundles.blade.php
+resources/views/frontend/ifatools/video_bundle/playlist.blade.php
+public/f/css/style24022023.css
+app/Http/Controllers/Frontend/VideoBundleStoreController.php
+app/Models/BundleVideo.php
+app/Models/BundleVideoWatchTime.php
