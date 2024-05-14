@@ -1,8 +1,9 @@
-delete mode 100644 app/Http/Controllers/frontend/AgendaController.php_13_9_23_vishu    
-delete mode 100644 app/Http/Controllers/frontend/AgendaController.php_18-9-23
-delete mode 100644 app/Http/Controllers/frontend/ContactController_bckup_26_09_2023.php
-delete mode 100644 app/Http/Controllers/frontend/MeetingController.php_13_9_23_vishu
-------------------------------------------------------------------------------------
---------------------- report filter ---- not upload ----------------- 23-apr-24
-ALTER TABLE `report_filter_list` ADD `module_name` VARCHAR(255) NOT NULL DEFAULT 'NA' AFTER `filter_name`;
-ALTER TABLE `report_filter_list` CHANGE `module_id` `module_id` INT(11) NOT NULL DEFAULT '0' COMMENT '1=Agenda,2=Meeting,3=Task,4=Leads,5=contacts,6=opportunity,7=workflow,8=clientmaster,9=Reports,10=investment,11=contact_wise ';
+bug fixing
+
+modified:   app/Http/Controllers/frontend/AgendaController.php      
+modified:   app/Http/Controllers/frontend/ContactController.php     
+modified:   resources/views/frontend/agenda/list.blade.php
+modified:   resources/views/frontend/contact/contacts_data.blade.php
+modified:   resources/views/frontend/contact/list.blade.php
+modified:   resources/views/frontend/meeting/edit.blade.php
+modified:   resources/views/frontend/pdf/agenda_export.blade.php
