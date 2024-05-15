@@ -7,3 +7,15 @@ modified:   resources/views/frontend/contact/contacts_data.blade.php
 modified:   resources/views/frontend/contact/list.blade.php
 modified:   resources/views/frontend/meeting/edit.blade.php
 modified:   resources/views/frontend/pdf/agenda_export.blade.php
+
+bug fixing 15-05-2024
+
+ modified:   app/Http/Controllers/frontend/ContactController.php
+        modified:   app/Http/Controllers/frontend/LeadController.php
+        modified:   app/Http/Controllers/frontend/TaskController.php
+        modified:   resources/views/frontend/contact/contacts_data.blade.php
+        modified:   resources/views/frontend/contact/create.blade.php
+        modified:   resources/views/frontend/contact/edit_contact.blade.php
+        modified:   resources/views/frontend/lead/create.blade.php
+        modified:   resources/views/frontend/lead/edit.blade.php
+        modified:   resources/views/frontend/meeting/edit.blade.php
