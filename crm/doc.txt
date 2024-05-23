@@ -19,3 +19,12 @@ bug fixing 15-05-2024
         modified:   resources/views/frontend/lead/create.blade.php
         modified:   resources/views/frontend/lead/edit.blade.php
         modified:   resources/views/frontend/meeting/edit.blade.php
+===========================================================================================
+
+23-05-2024
+
+Copy of CRM CR
+
+Excel- Add a column-Assignee-Name of leader/add-on member to be listed (List + hover). Also, user can add/modify/delete assignee from client excel itself.
+
+INSERT INTO `client_master_column` (`id`, `column_name`, `column_text`, `column_data_type`, `is_permanent`, `created_by`, `main_user_id`, `leader_id`, `is_deleted`, `deleted_by`, `status`, `created_at`, `updated_at`, `deleted_at`) VALUES (NULL, 'assignee_ids', 'Assigned team', 'Text', '1', '0', '0', '0', '0', '0', '1', '2023-08-25 11:59:46', '2023-08-25 11:59:46', NULL);
