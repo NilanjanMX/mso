@@ -28,3 +28,7 @@ Copy of CRM CR
 Excel- Add a column-Assignee-Name of leader/add-on member to be listed (List + hover). Also, user can add/modify/delete assignee from client excel itself.
 
 INSERT INTO `client_master_column` (`id`, `column_name`, `column_text`, `column_data_type`, `is_permanent`, `created_by`, `main_user_id`, `leader_id`, `is_deleted`, `deleted_by`, `status`, `created_at`, `updated_at`, `deleted_at`) VALUES (NULL, 'assignee_ids', 'Assigned team', 'Text', '1', '0', '0', '0', '0', '0', '1', '2023-08-25 11:59:46', '2023-08-25 11:59:46', NULL);
+====================== 24-may-24
+table change
+accept/reject task notification is getting removed after the main user accepts the task completed by the subuser
+ALTER TABLE `notifications` ADD `actionType` INT NULL COMMENT '1=complete,2=reject' AFTER `is_read`;
