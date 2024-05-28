@@ -37,6 +37,8 @@ ALTER TABLE `notifications` ADD `actionType` INT NULL COMMENT '1=complete,2=reje
 ALTER TABLE `activity_logs` ADD `workflowTemplateStepsUrl` VARCHAR(255) NULL DEFAULT NULL AFTER `workflow_module_case`;
 
 ALTER TABLE `activity_logs` ADD `workflow_step_id` INT NOT NULL DEFAULT '0' AFTER `workflowTemplateStepsUrl`;
+ALTER TABLE `activity_logs` ADD `contact_notes_url` VARCHAR(255) NULL AFTER `contact_step`;
+
 
 
 
