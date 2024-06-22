@@ -40,6 +40,7 @@ ALTER TABLE `activity_logs` ADD `workflow_step_id` INT NOT NULL DEFAULT '0' AFTE
 ALTER TABLE `activity_logs` ADD `contact_notes_url` VARCHAR(255) NULL AFTER `contact_step`;
 
 ---------------------------------------- 22-06-2024 assign name sort ---------
-ALTER TABLE `contacts` ADD `assigne_names` TEXT NULL AFTER `assignee_ids`;
+ALTER TABLE `contacts` ADD `assignee_names` LONGTEXT NULL AFTER `assignee_ids`;
+
 
 
