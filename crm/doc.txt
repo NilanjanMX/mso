@@ -42,5 +42,9 @@ ALTER TABLE `activity_logs` ADD `contact_notes_url` VARCHAR(255) NULL AFTER `con
 ---------------------------------------- 22-06-2024 assign name sort ---------
 ALTER TABLE `contacts` ADD `assignee_names` LONGTEXT NULL AFTER `assignee_ids`;
 
+------------------------------------ 26-06-2024 mainuser activity log should be show subuser
+ALTER TABLE `activity_logs` ADD `visible_for_subuser` INT NOT NULL DEFAULT '0' AFTER `module`;
+
+
 
 
