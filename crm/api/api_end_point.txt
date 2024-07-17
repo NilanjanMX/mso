@@ -1,0 +1,5 @@
+http://localhost:8000/api/user/meetings?page=1&status=active&record_count=&seach_term=&upcoming_meeting=all&current_meeting=&sort_by=&order_by=&userTypeFilter=588&dafult_count_per_page=25
+
+http://localhost:8000/api/user/meeting/edit?id=971
+
+http://localhost:8000/api/user/meeting/delete?id=831
