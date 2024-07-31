@@ -51,7 +51,7 @@ ALTER TABLE `client_master_all_filter` ADD `is_default` INT NOT NULL DEFAULT '0'
 
 ---------------------------------------30-jul-2024  Jira: 237 (Task-Unassigned-Edit a task -back -filter goes off - Cache issue, how to solve?)
 
-ALTER TABLE `task_filter_data` ADD `filter_from_contact_task` INT NOT NULL DEFAULT '0' AFTER `creator_filter_type`;
+ALTER TABLE `task_filter_data` CHANGE `creator_filter_type` `creator_filter_type` INT(11) NULL DEFAULT NULL COMMENT '1->agenda,2->meeting,3->task,4->leads,5->contacts,6->opportunity,7-> contact_profile_task';
 
 
 
