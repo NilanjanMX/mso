@@ -53,6 +53,9 @@ ALTER TABLE `client_master_all_filter` ADD `is_default` INT NOT NULL DEFAULT '0'
 
 ALTER TABLE `task_filter_data` CHANGE `creator_filter_type` `creator_filter_type` INT(11) NULL DEFAULT NULL COMMENT '1->agenda,2->meeting,3->task,4->leads,5->contacts,6->opportunity,7-> contact_profile_task';
 
+---------------------------- 13-jul-24 lead portfolio ---------------------
+ALTER TABLE `lead_portfolios` ADD `min_value` INT NOT NULL AFTER `updated_at`, ADD `max_value` INT NOT NULL AFTER `min_value`;
+
 
 
 
