@@ -1,0 +1,1 @@
+ALTER TABLE `phd_admission_logs` ADD `start_date_time` VARCHAR(50) NULL AFTER `phd_log_end_time`, ADD `end_date_time` VARCHAR(50) NULL AFTER `start_date_time`;
