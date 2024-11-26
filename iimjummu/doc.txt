@@ -91,3 +91,148 @@ INSERT INTO `mba_settings` ( `department`, `setting_key`, `setting_val`, `create
 ( 'EMBA', 'JRF_sectional_pwd', '2', '2024-11-14 16:18:10', '2024-11-14 16:18:10');
 
 ------
+
+// insert EMBA data master_program_single_fees table
+
+INSERT INTO `master_program_single_fees`(
+    `department`,
+    `session`,
+    `fees_desc`,
+    `term_value`,
+    `is_refundable`,
+    `is_adjustable`,
+    `penalty`,
+    `created_at`,
+    `updated_at`
+)
+VALUES(
+    'EMBA',
+    '2024-2026',
+    'enrolment_fee_emba_General',
+    '1000',
+    'yes',
+    'yes',
+    0,
+    '2024-11-11 14:11:34',
+    '2024-11-26 11:00:31'
+),(
+    'EMBA',
+    '2024-2026',
+    'enrolment_fee_emba_NC-OBC',
+    '1000',
+    'no',
+    'no',
+    0,
+    '2024-11-11 14:11:34',
+    '2024-11-11 14:11:34'
+),(
+    'EMBA',
+    '2024-2026',
+    'enrolment_fee_emba_SC',
+    '500',
+    'no',
+    'no',
+    0,
+    '2024-11-11 14:11:34',
+    '2024-11-15 14:06:36'
+),(
+    'EMBA',
+    '2024-2026',
+    'enrolment_fee_emba_ST',
+    '500',
+    'no',
+    'no',
+    0,
+    '2024-11-11 14:11:34',
+    '2024-11-15 14:06:36'
+),(
+    'EMBA',
+    '2024-2026',
+    'enrolment_fee_emba_PwD',
+    '500',
+    'no',
+    'no',
+    0,
+    '2024-11-11 14:11:34',
+    '2024-11-15 14:06:36'
+),(
+    'EMBA',
+    '2024-2026',
+    'enrolment_fee_emba_General',
+    '1000',
+    'no',
+    'no',
+    0,
+    '2024-11-11 14:11:34',
+    '2024-11-11 14:11:34'
+),(
+    'EMBA',
+    '2024-2026',
+    'enrolment_fee_emba_NC-OBC',
+    '1000',
+    'no',
+    'no',
+    0,
+    '2024-11-11 14:11:34',
+    '2024-11-11 14:11:34'
+),(
+    'EMBA',
+    '2024-2026',
+    'enrolment_fee_emba_SC',
+    '500',
+    'no',
+    'no',
+    0,
+    '2024-11-11 14:11:34',
+    '2024-11-15 14:06:36'
+),(
+    'EMBA',
+    '2024-2026',
+    'enrolment_fee_emba_ST',
+    '500',
+    'no',
+    'no',
+    0,
+    '2024-11-11 14:11:34',
+    '2024-11-15 14:06:36'
+),(
+    'EMBA',
+    '2024-2026',
+    'enrolment_fee_emba_PwD',
+    '500',
+    'no',
+    'no',
+    0,
+    '2024-11-11 14:11:34',
+    '2024-11-15 14:06:36'
+),(
+    'EMBA',
+    '2024-2026',
+    'enrolment_fee_emba_EWS',
+    '500',
+    'no',
+    'no',
+    0,
+    '2024-11-11 14:11:34',
+    '2024-11-11 14:22:46'
+),(
+    'EMBA',
+    '2024-2026',
+    'enrolment_fee_emba_EWS',
+    '500',
+    'no',
+    'no',
+    0,
+    '2024-11-11 14:11:34',
+    '2024-11-11 14:22:46'
+),(
+    'EMBA',
+    '2024-2026',
+    'enrolment_fee_emba_General',
+    '1000',
+    'yes',
+    'yes',
+    0,
+    '2024-11-26 11:00:03',
+    '2024-11-26 11:00:03'
+);
