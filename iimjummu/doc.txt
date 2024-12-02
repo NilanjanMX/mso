@@ -101,3 +101,7 @@ INSERT INTO `master_program_single_fees` (`id`, `department`, `session`, `fees_d
 (71, 'EMBA', '2024-2026', 'enrolment_fee_emba_ST', '5004', 'yes', 'no', 100, '2024-11-11 14:11:34', '2024-11-26 15:27:56'),
 (77, 'EMBA', '2024-2026', 'enrolment_fee_emba_PwD', '500', 'no', 'yes', 10, '2024-11-11 14:11:34', '2024-11-26 15:27:56'),
 (79, 'EMBA', '2024-2026', 'enrolment_fee_emba_EWS', '5001', 'yes', 'no', 0, '2024-11-11 14:11:34', '2024-11-26 15:27:57');
+
+// master_emba_students phd_type default EMBA
+ALTER TABLE `master_emba_students` ADD `phd_type` VARCHAR(20) NOT NULL DEFAULT 'EMBA' AFTER `data_status`;
+
