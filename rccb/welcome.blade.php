@@ -289,6 +289,7 @@
 <script>
     var calendar;
     var G_start;
+    var G_event;
 
 
     var myEvents = [{
@@ -313,16 +314,15 @@
         var event_id = document.getElementById('event_id').value;
         let date = '';
 
-        console.log(event);
         if (event_id) {
-            let event = myEvents.find(event => {
-                if (event.id == event_id) {
-                    event.title = event_title;
-                    date = event.start;
-                    return event;
-                }
-            });
+            console.log('event_id', G_event.id);
+            
+            G_event.title = event_title;
+            $('#calendar').fullCalendar('updateEvent', G_event);
 
+            G_event = null;
+
+                       
         } else {
 
             date = G_start.format('YYYY-MM-DD');
@@ -332,17 +332,20 @@
                 start: date, // yyyy-mm-dd
                 end: G_start.format('YYYY-MM-DD'), // yyyy-mm-dd
             });
+            
+            calendar.fullCalendar('renderEvent', {
+                    id: Math.floor(Math.random() * 1000), // call api get id
+                    title: event_title,
+                    start: G_start.format('YYYY-MM-DD'), // yyyy-mm-dd
+                    end: G_start.format('YYYY-MM-DD'), // yyyy-mm-dd
+                    // allDay: allDay
+                },
+                true // make the event "stick"
+            );
 
             G_start = null;
-
+           
         }
-
-
-        $('#calendar').fullCalendar('destroy');
-        calendarView();
-
-        $('#calendar').fullCalendar('gotoDate', date);
-
 
 
         document.getElementById('event_title').value = '';
@@ -372,11 +375,7 @@
                 center: 'title',
                 right: ''
             },
-            // header: {
-            //     left: 'prevYear,nextYear', // Add custom buttons here
-            //     center: 'title',
-            //     right: 'month,agendaWeek,agendaDay' // Example view options
-            // },
+         
             validRange: {
                 start: moment().format('YYYY-MM-DD')
             },
@@ -386,7 +385,7 @@
                 console.log(document.querySelector('.fc-center h2').innerHTML)
                 document.getElementById('event_title').value = calEvent.title;
                 document.getElementById('event_id').value = calEvent.id;
-
+                G_event = calEvent; 
 
                 document.getElementById('event_btn').click();
 
@@ -431,5 +430,4 @@
         });
     }
 </script>
-
 
