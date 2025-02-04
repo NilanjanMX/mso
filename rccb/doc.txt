@@ -1,4 +1,4 @@
 $2y$10$iIGJv8qWg4peczIGRp/82OsxIt2sKYeDGzPAgca7Lvx1UVebUMOK2 => 123456
 
-
+// emp take leave between  '2025-01-01' AND '2025-01-04' 
 SELECT employee_apply_leave.*, leavetype.leaveName FROM employee_apply_leave INNER JOIN leavetype ON leavetype.id = employee_apply_leave.leave_type WHERE employee_apply_leave.start_date BETWEEN '2025-01-01' AND '2025-01-04';
