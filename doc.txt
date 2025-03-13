@@ -64,4 +64,11 @@ Membership Referral Logic  MSONLINE-85
 /controllers/Frontend/MembershipReferralController.php
 
 ----------------------------------------------------------------------------
+modified:   app/Http/Controllers/Admin/CalculatorCategoryController.php
+modified:   app/Http/Controllers/Frontend/Calculators/AssetAllocationController.php
+modified:   app/Http/Helpers/FrontHelper.php
+modified:   resources/views/admin/calculator/add.blade.php
+modified:   resources/views/admin/calculator/edit.blade.php
+modified:   resources/views/frontend/calculators/asset_allocation/infographic_output.blade.php
+modified:   resources/views/frontend/calculators/asset_allocation/output.blade.php
 
