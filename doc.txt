@@ -66,6 +66,7 @@ Membership Referral Logic  MSONLINE-85
 ----------------------------------------------------------------------------
 calculator_permissions: is_via_whatsapp is_via_mail
 mf_research_permissions: is_via_whatsapp, is_via_mail
+ms_permissions: is_via_whatsapp, is_via_mail
 
  modified:   app/Http/Controllers/Admin/CalculatorCategoryController.php
 modified:   app/Http/Controllers/Frontend/Calculators/AssetAllocationController.php
