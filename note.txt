@@ -1,0 +1,16 @@
+1. Investment Suitability Profiler
+
+http://127.0.0.1:8001/investment-suitability-profiler/output
+
+2. Welcome Letter
+http://127.0.0.1:8001/welcome-letter-edit/admin/18
+
+http://127.0.0.1:8001/webadmin/welcome-letter
+
+3. Marketing Collaterals -> Marketing Banners
+                        -> Marketing Videos
+
+4. MSO Model Portfolio
+
+
+admin site panel ae "Mso Model Portfolio" naame ache
