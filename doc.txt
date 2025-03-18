@@ -76,3 +76,25 @@ modified:   resources/views/admin/calculator/edit.blade.php
 modified:   resources/views/frontend/calculators/asset_allocation/infographic_output.blade.php
 modified:   resources/views/frontend/calculators/asset_allocation/output.blade.php
 
+
+ modified:   app/Http/Controllers/Admin/SiteSettingController.php
+        modified:   app/Http/Controllers/Frontend/AssetAllocationQuestionController.php
+        modified:   app/Http/Controllers/Frontend/FamousQuotesController.php
+        modified:   app/Http/Controllers/Frontend/FundPerformanceCategorywiseController.php
+        modified:   app/Http/Controllers/Frontend/FundPerformanceController.php
+        modified:   app/Http/Controllers/Frontend/LibraryController.php
+        modified:   app/Http/Controllers/Frontend/MFResearch/MFSipLiveController.php
+        modified:   app/Http/Controllers/Frontend/MarketingvideoController.php
+        modified:   app/Http/Controllers/Frontend/MsoPortfolioController.php
+        modified:   app/Http/Controllers/Frontend/PremiumbannerController.php
+        modified:   app/Http/Controllers/Frontend/ReadymadePortfolioController.php
+        modified:   app/Http/Controllers/Frontend/ReelvideoController.php
+        modified:   app/Http/Controllers/Frontend/SalespresenterController.php
+        modified:   app/Http/Controllers/Frontend/WelcomeLetterController.php
+        modified:   resources/views/admin/site_setting/edit.blade.php
+        modified:   resources/views/frontend/library/index.blade.php
+        modified:   resources/views/frontend/marketingvideo/index.blade.php
+        modified:   resources/views/frontend/premiumbanner/index.blade.php
+        modified:   resources/views/frontend/salespresenter/mysavelist.blade.php
+        modified:   routes/web.php
+
