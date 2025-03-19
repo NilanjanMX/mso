@@ -98,3 +98,25 @@ modified:   resources/views/frontend/calculators/asset_allocation/output.blade.p
         modified:   resources/views/frontend/salespresenter/mysavelist.blade.php
         modified:   routes/web.php
 
+
+  modified:   app/Http/Controllers/Frontend/MFResearch/MFBestWorstController.php
+        modified:   app/Http/Controllers/Frontend/MFResearch/MFCategoryPerformanceController.php
+        modified:   app/Http/Controllers/Frontend/MFResearch/MFCategoryWisePerformanceController.php
+        modified:   app/Http/Controllers/Frontend/MFResearch/MFInvestmentPortfolioAnalysisController.php
+        modified:   app/Http/Controllers/Frontend/MFResearch/MFRollingReturnController.php
+        modified:   app/Http/Controllers/Frontend/MFResearch/MFScannerCompareController.php
+        modified:   app/Http/Controllers/Frontend/MFSipLiveController.php
+        modified:   app/Http/Controllers/Frontend/SuitabilityProfilerController.php
+        modified:   resources/views/frontend/asset-allocation-exam/output.blade.php
+        modified:   resources/views/frontend/mf_research/mf_best_worst/index.blade.php
+        modified:   resources/views/frontend/mf_research/mf_category_performance/index.blade.php
+        modified:   resources/views/frontend/mf_research/mf_category_wise_performance/index.blade.php
+        modified:   resources/views/frontend/mf_research/rolling_return/index.blade.php
+        modified:   resources/views/frontend/mf_research/sip_live/index.blade.php
+        modified:   resources/views/frontend/mf_scanner/mf_scanner_compare.blade.php
+        modified:   resources/views/frontend/mso_portfolio/output.blade.php
+        modified:   resources/views/frontend/portfolio/investment_analysis.blade.php
+        modified:   resources/views/frontend/portfolio/portfolio_analysis.blade.php
+        modified:   resources/views/frontend/suitability_profiler/index.blade.php
+        modified:   resources/views/frontend/welcome_letter/edit.blade.php
+
